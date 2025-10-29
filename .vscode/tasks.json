@@ -1,0 +1,95 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Add migration",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/Server"
+      },
+      "command": "dotnet ef migrations add ${input:migrationName} --project src/Infrastructure --startup-project src/Web --output-dir Data/Migrations",
+      "problemMatcher": []
+    },
+    {
+      "label": "Update database",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/Server"
+      },
+      "command": "dotnet ef database update --project src/Infrastructure --startup-project src/Web",
+      "problemMatcher": []
+    },
+    {
+      "label": "ViteAndBuild",
+      "dependsOn": ["Build", "Vite"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Vite",
+      "type": "shell",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/Server/src/Web/ClientApp",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "command": "yarn start",
+      "problemMatcher": [
+        {
+          "owner": "vite",
+          "pattern": [
+            {
+              "regexp": "^\\s*([\\w\\d_]+)\\s*:\\s*(.*)$",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "severity": "error",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".*",
+            "endsPattern": ".*ready in.*",
+          }
+        },
+      ]
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/Server/src/Web"
+      },
+      "command": "dotnet build --configuration ${input:buildTarget} --no-restore --output '${workspaceFolder}/Server/src/Web/bin/Debug/net9.0'",
+      "problemMatcher": [
+        {
+          "owner": "dotnet",
+          "pattern": [
+            {
+              "regexp": "^\\s*([\\w\\d_]+)\\s*:\\s*(.*)$",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "severity": "error"
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "buildTarget",
+      "type": "pickString",
+      "default": "Debug",
+      "description": "Select the build target",
+      "options": ["Debug", "Release", "BuildWithoutNSwag"]
+    },
+    {
+      "id": "migrationName",
+      "type": "promptString",
+      "description": "Enter the migration name"
+    }
+  ]
+}

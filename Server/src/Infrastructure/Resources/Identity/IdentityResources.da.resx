@@ -1,0 +1,261 @@
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConcurrencyFailure" xml:space="preserve">
+    <value>Optimistisk samtidighedsfejl, objektet er blevet ændret.</value>
+    <comment>Error when optimistic concurrency fails</comment>
+  </data>
+  <data name="DefaultError" xml:space="preserve">
+    <value>En ukendt fejl er opstået.</value>
+    <comment>Default identity result error message</comment>
+  </data>
+  <data name="DuplicateEmail" xml:space="preserve">
+    <value>E-mailen '{0}' er allerede i brug.</value>
+    <comment>Error for duplicate emails</comment>
+  </data>
+  <data name="DuplicateRoleName" xml:space="preserve">
+    <value>Rolletitlen '{0}' er allerede i brug.</value>
+    <comment>Error for duplicate roles</comment>
+  </data>
+  <data name="DuplicateUserName" xml:space="preserve">
+    <value>Brugernavnet '{0}' er allerede i brug.</value>
+    <comment>Error for duplicate user names</comment>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>E-mailen '{0}' er ugyldig.</value>
+    <comment>Invalid email</comment>
+  </data>
+  <data name="InvalidManagerType" xml:space="preserve">
+    <value>Typen {0} skal nedarve fra {1}&lt;{2}&gt;.</value>
+    <comment>Error when the manager type is not derived correctly</comment>
+  </data>
+  <data name="InvalidPasswordHasherCompatibilityMode" xml:space="preserve">
+    <value>Den angivne PasswordHasherCompatibilityMode er ugyldig.</value>
+    <comment>Error when the password hasher doesn't understand the format it's being asked to produce.</comment>
+  </data>
+  <data name="InvalidPasswordHasherIterationCount" xml:space="preserve">
+    <value>Antallet af iterationer skal være et positivt heltal.</value>
+    <comment>Error when the iteration count is &lt; 1.</comment>
+  </data>
+  <data name="InvalidRoleName" xml:space="preserve">
+    <value>Rolletitlen '{0}' er ugyldig.</value>
+    <comment>Error for invalid role names</comment>
+  </data>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Ugyldig token.</value>
+    <comment>Error when a token is not recognized</comment>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Brugernavnet '{0}' er ugyldigt og må kun indeholde bogstaver eller tal.</value>
+    <comment>User names can only contain letters or digits</comment>
+  </data>
+  <data name="LoginAlreadyAssociated" xml:space="preserve">
+    <value>En bruger med dette login findes allerede.</value>
+    <comment>Error when a login already linked</comment>
+  </data>
+  <data name="MustCallAddIdentity" xml:space="preserve">
+    <value>AddIdentity skal kaldes på service-samlingen.</value>
+    <comment>Error when AddIdentity is not called</comment>
+  </data>
+  <data name="NoTokenProvider" xml:space="preserve">
+    <value>Ingen IUserTwoFactorTokenProvider&lt;{0}&gt; med navnet '{1}' er registreret.</value>
+    <comment>Error when there is no IUserTwoFactorTokenProvider</comment>
+  </data>
+  <data name="NullSecurityStamp" xml:space="preserve">
+    <value>Brugerens sikkerhedsstempel må ikke være null.</value>
+    <comment>Error when a user's security stamp is null.</comment>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Forkert adgangskode.</value>
+    <comment>Error when a password doesn't match</comment>
+  </data>
+  <data name="PasswordRequiresDigit" xml:space="preserve">
+    <value>Adgangskoder skal indeholde mindst ét tal ('0'-'9').</value>
+    <comment>Error when passwords do not have a digit</comment>
+  </data>
+  <data name="PasswordRequiresLower" xml:space="preserve">
+    <value>Adgangskoder skal indeholde mindst ét lille bogstav ('a'-'z').</value>
+    <comment>Error when passwords do not have a lowercase letter</comment>
+  </data>
+  <data name="PasswordRequiresNonAlphanumeric" xml:space="preserve">
+    <value>Adgangskoder skal indeholde mindst ét ikke-alfanumerisk tegn.</value>
+    <comment>Error when password does not have enough non alphanumeric characters</comment>
+  </data>
+  <data name="PasswordRequiresUpper" xml:space="preserve">
+    <value>Adgangskoder skal indeholde mindst ét stort bogstav ('A'-'Z').</value>
+    <comment>Error when passwords do not have an uppercase letter</comment>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Adgangskoder skal være mindst {0} tegn lange.</value>
+    <comment>Error message for passwords that are too short</comment>
+  </data>
+  <data name="RoleNotFound" xml:space="preserve">
+    <value>Rollen {0} findes ikke.</value>
+    <comment>Error when a role does not exist</comment>
+  </data>
+  <data name="StoreNotIQueryableRoleStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IQueryableRoleStore&lt;TRole&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIQueryableUserStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IQueryableUserStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIRoleClaimStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IRoleClaimStore&lt;TRole&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserAuthenticationTokenStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserAuthenticationTokenStore&lt;User&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserClaimStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserClaimStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserConfirmationStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserConfirmationStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserEmailStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserEmailStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserLockoutStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserLockoutStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserLoginStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserLoginStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserPasswordStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserPasswordStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserPhoneNumberStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserPhoneNumberStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserRoleStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserRoleStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserSecurityStampStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserSecurityStampStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserAuthenticatorKeyStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserAuthenticatorKeyStore&lt;User&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="StoreNotIUserTwoFactorStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserTwoFactorStore&lt;TUser&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="RecoveryCodeRedemptionFailed" xml:space="preserve">
+    <value>Indløsning af gendannelseskode mislykkedes.</value>
+    <comment>Error when a recovery code is not redeemed.</comment>
+  </data>
+  <data name="UserAlreadyHasPassword" xml:space="preserve">
+    <value>Brugeren har allerede en adgangskode.</value>
+    <comment>Error when AddPasswordAsync called when a user already has a password</comment>
+  </data>
+  <data name="UserAlreadyInRole" xml:space="preserve">
+    <value>Brugeren er allerede i rollen '{0}'.</value>
+    <comment>Error when a user is already in a role</comment>
+  </data>
+  <data name="UserLockedOut" xml:space="preserve">
+    <value>Brugeren er låst ude.</value>
+    <comment>Error when a user is locked out</comment>
+  </data>
+  <data name="UserLockoutNotEnabled" xml:space="preserve">
+    <value>Låsning er ikke aktiveret for denne bruger.</value>
+    <comment>Error when lockout is not enabled</comment>
+  </data>
+  <data name="UserNameNotFound" xml:space="preserve">
+    <value>Brugeren {0} findes ikke.</value>
+    <comment>Error when a user does not exist</comment>
+  </data>
+  <data name="UserNotInRole" xml:space="preserve">
+    <value>Brugeren er ikke i rollen '{0}'.</value>
+    <comment>Error when a user is not in the role</comment>
+  </data>
+  <data name="StoreNotIUserTwoFactorRecoveryCodeStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IUserTwoFactorRecoveryCodeStore&lt;User&gt;.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="PasswordRequiresUniqueChars" xml:space="preserve">
+    <value>Adgangskoder skal bruge mindst {0} forskellige tegn.</value>
+    <comment>Error message for passwords that are based on similar characters</comment>
+  </data>
+  <data name="NoRoleType" xml:space="preserve">
+    <value>Ingen RoleType blev angivet, prøv AddRoles&lt;TRole&gt;().</value>
+    <comment>Error when the IdentityBuilder.RoleType was not specified</comment>
+  </data>
+  <data name="StoreNotIProtectedUserStore" xml:space="preserve">
+    <value>Butikken implementerer ikke IProtectedUserStore&lt;TUser&gt; which is required when ProtectPersonalData = true.</value>
+    <comment>Error when the store does not implement this interface</comment>
+  </data>
+  <data name="NoPersonalDataProtector" xml:space="preserve">
+    <value>Ingen IPersonalDataProtector-tjeneste blev registreret, hvilket kræves når ProtectPersonalData = true.</value>
+    <comment>Error when there is no IPersonalDataProtector</comment>
+  </data>
+</root>
