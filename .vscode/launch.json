@@ -17,8 +17,8 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "Build",
-      "program": "${workspaceFolder}/backend/src/Web/bin/Debug/net9.0/backend.Web.dll",
-      "cwd": "${workspaceFolder}/backend/src/Web",
+      "program": "${workspaceFolder}/Server/src/Web/bin/Debug/net9.0/backend.Web.dll",
+      "cwd": "${workspaceFolder}/Server/src/Web",
       "args": [],
       "stopAtEntry": false
     }
