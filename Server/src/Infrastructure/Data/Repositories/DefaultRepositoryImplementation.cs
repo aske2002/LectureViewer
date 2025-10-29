@@ -3,7 +3,6 @@ using backend.Application.Common.Interfaces;
 using backend.Application.Common.Mappings;
 using backend.Domain.Common;
 using backend.Domain.Interfaces;
-using backend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Infrastructure.Data.Repositories;

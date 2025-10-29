@@ -53,6 +53,7 @@ app.UseCors(options =>
     options.AllowAnyMethod();
     options.AllowAnyOrigin();
 });
+
 app.MapEndpoints();
 
 app.Run();

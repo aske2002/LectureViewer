@@ -817,6 +817,7 @@ export class DestinationsClient implements IDestinationsClient {
 }
 
 export interface IResourcesClient {
+    listResources(pageNumber: number, pageSize: number): Promise<FilteredListOfResourceResponse>;
     getResourceInfo(resourceId: string): Promise<ResourceResponse>;
     getResourceContent(resourceId: string, fileName: string): Promise<void>;
 }
@@ -832,6 +833,62 @@ export class ResourcesClient implements IResourcesClient {
 
         this.baseUrl = baseUrl ?? "";
 
+    }
+
+    listResources(pageNumber: number, pageSize: number, cancelToken?: CancelToken): Promise<FilteredListOfResourceResponse> {
+        let url_ = this.baseUrl + "/api/Resources?";
+        if (pageNumber === undefined || pageNumber === null)
+            throw new Error("The parameter 'pageNumber' must be defined and cannot be null.");
+        else
+            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === undefined || pageSize === null)
+            throw new Error("The parameter 'pageSize' must be defined and cannot be null.");
+        else
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processListResources(_response);
+        });
+    }
+
+    protected processListResources(response: AxiosResponse): Promise<FilteredListOfResourceResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = FilteredListOfResourceResponse.fromJS(resultData200);
+            return Promise.resolve<FilteredListOfResourceResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FilteredListOfResourceResponse>(null as any);
     }
 
     getResourceInfo(resourceId: string, cancelToken?: CancelToken): Promise<ResourceResponse> {
@@ -2633,6 +2690,63 @@ export interface ICreateDestinationCommand {
     /** A CountryId identifier */
     countryId: string;
     description: string | undefined;
+}
+
+export class FilteredListOfResourceResponse extends FilteredQuery implements IFilteredListOfResourceResponse {
+    items!: ResourceResponse[];
+    totalPages!: number;
+    totalCount!: number;
+    hasPreviousPage!: boolean;
+    hasNextPage!: boolean;
+
+    constructor(data?: IFilteredListOfResourceResponse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(ResourceResponse.fromJS(item));
+            }
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static override fromJS(data: any): FilteredListOfResourceResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new FilteredListOfResourceResponse();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IFilteredListOfResourceResponse extends IFilteredQuery {
+    items: ResourceResponse[];
+    totalPages: number;
+    totalCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
 }
 
 export class FilteredListOfTodoItemBriefDto extends FilteredQuery implements IFilteredListOfTodoItemBriefDto {

@@ -11,7 +11,7 @@ public interface IApplicationDbContext
     DbSet<TodoItem> TodoItems { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-    DbSet<Models.ApplicationUser> Users { get; }
+    DbSet<ApplicationUser> Users { get; }
 
     virtual DatabaseFacade Database => this.Database;
 
@@ -21,5 +21,9 @@ public interface IApplicationDbContext
     DbSet<Trip> Trips { get; }
     DbSet<TripDescription> TripDescriptions { get; }
     DbSet<ClassYear> ClassYears { get; }
+    DbSet<Lecture> Lectures { get; }
+    DbSet<Course> Courses { get; }
+    DbSet<CourseEnrollment> CourseEnrollments { get; }
+    DbSet<CourseInviteLink> CourseInviteLinks { get; }
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
 }

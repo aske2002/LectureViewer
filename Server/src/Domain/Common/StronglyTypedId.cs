@@ -14,6 +14,7 @@ public interface IStronglyTypedId
 public abstract class StronglyTypedId<T> : IStronglyTypedId where T : StronglyTypedId<T>
 {
     public Guid Value { get; }
+    
     protected StronglyTypedId(Guid value) => Value = value;
 
     public override string ToString() => Value.ToString();

@@ -4,7 +4,7 @@ using backend.Domain.Identifiers;
 
 namespace backend.Application.Users.Queries.GetUserInfo;
 
-[Authorize]
+// [Authorize]
 public record GetResourceContentByIdQuery(ResourceId ResourceId) : IRequest<byte[]>;
 public class GetResourceContentByIdQueryHandler : IRequestHandler<GetResourceContentByIdQuery, byte[]>
 {

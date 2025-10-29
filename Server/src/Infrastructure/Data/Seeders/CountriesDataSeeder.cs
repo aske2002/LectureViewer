@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
 using System.Net.Mime;
+using System.Reflection;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using backend.Application.Common.Interfaces;
 using backend.Application.Countries.Queries.GetCountries;
@@ -12,49 +14,42 @@ namespace backend.Infrastructure.Data.Seeders;
 public class CountriesDataSeeder : IDataSeeder
 {
     public record CountryHrefResponse(string flag);
-    public record CountryResponse(string name, List<string> tld, string iso2, string iso3, CountryHrefResponse href);
-    public record CountryResponseList(List<CountryResponse> data);
+    public record CountryResponse(string en, string alpha2, string alpha3,
+    string ar, string bg, string br, string cs, string da, string de, string el, string eo, string es, string et, string eu, string fa, string fi, string fr, string hr, string hu, string hy, string it, string ja, string ko, string lt, string nl, string no, string pl, string pt, string ro, string ru, string sk, string sl, string sr, string sv, string th, string tr, string uk, string zh, [property:JsonPropertyName("zh-tw")] string zhtw);
     private readonly IApplicationDbContext _context;
     private readonly IResourceService _resourceService;
-    private readonly HttpClient _httpClient;
 
-    public CountriesDataSeeder(IApplicationDbContext context, IResourceService resourceService, IHttpClientFactory httpClientFactory)
+    public CountriesDataSeeder(IApplicationDbContext context, IResourceService resourceService)
     {
         _context = context;
-        _httpClient = httpClientFactory.CreateClient("RestfulCountries");
         _resourceService = resourceService;
     }
 
-    private async Task<(CountryResponse country, byte[]? flagBytes)[]> GetAllCountriesAsync()
+    private async Task<(CountryResponse country, byte[]? flagBytes, string flagPath)[]> GetAllCountriesAsync()
     {
-        var response = await _httpClient.GetAsync("countries");
-        response.EnsureSuccessStatusCode();
 
-        CountryResponseList countries = await response.Content.ReadFromJsonAsync<CountryResponseList>()
-            ?? throw new Exception("Failed to deserialize countries data.");
 
-        // Start downloading all flags in parallel
-        var flagDownloadTasks = countries.data.Select(async country =>
+        var path = Path.Combine(AppContext.BaseDirectory, "Resources", "Countries", "all.json");
+        using var stream = File.OpenRead(path);
+
+        var countries = await System.Text.Json.JsonSerializer.DeserializeAsync<List<CountryResponse>>(stream) ?? throw new Exception("Failed to deserialize countries data.");
+
+        // Start reading all flags in parallel
+        var flagReadTasks = countries.Select(async country =>
         {
-            var flagUrl = country.href.flag;
+           var flagPath = Path.Combine(AppContext.BaseDirectory, "Resources", "Countries", "Flags", $"{country.alpha2.ToLower()}.png");
 
             try
             {
-                var flagResponse = await _httpClient.GetAsync(flagUrl);
-                flagResponse.EnsureSuccessStatusCode();
-
-                var flagBytes = await flagResponse.Content.ReadAsByteArrayAsync();
-
-                // You can store the bytes in the country object if you want
-                // e.g., country.FlagBytes = flagBytes;
-                return (country, flagBytes);
+                var flagBytes = await File.ReadAllBytesAsync(flagPath);
+                return (country, flagBytes, flagPath);
             }
             catch
             {
-                return (country, (byte[]?)null); // Return empty byte array on failure
+                return (country, (byte[]?)null, flagPath);
             }
         });
-        var countriesWithFlags = await Task.WhenAll(flagDownloadTasks);
+        var countriesWithFlags = await Task.WhenAll(flagReadTasks);
         return countriesWithFlags;
     }
 
@@ -70,9 +65,9 @@ public class CountriesDataSeeder : IDataSeeder
 
         var countryEntities = countryResponses.Select(countryResponse => new Country
         {
-            Name = countryResponse.country.name,
-            IsoCode = countryResponse.country.iso2,
-            Description = countryResponse.country.name,
+            Name = countryResponse.country.en,
+            IsoCode = countryResponse.country.alpha2,
+            Description = countryResponse.country.en,
         }).ToList();
 
         await _context.Countries.AddRangeAsync(countryEntities, cancellationToken);
@@ -80,13 +75,13 @@ public class CountriesDataSeeder : IDataSeeder
 
         foreach (var countryResponse in countryResponses)
         {
-            var country = countryEntities.FirstOrDefault(c => c.IsoCode == countryResponse.country.iso2);
+            var country = countryEntities.FirstOrDefault(c => c.IsoCode == countryResponse.country.alpha2);
             if (country == null || countryResponse.flagBytes == null)
             {
                 continue;
             }
 
-            var flagUrl = new Uri(countryResponse.country.href.flag);
+            var flagUrl = new Uri(countryResponse.flagPath);
             var flagFileName = Path.GetFileName(flagUrl.LocalPath);
             var mimeType = MimeTypesMap.GetMimeType(flagFileName);
 

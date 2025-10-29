@@ -27,6 +27,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Trip> Trips => Set<Trip>();
     public DbSet<TripDescription> TripDescriptions => Set<TripDescription>();
     public DbSet<ClassYear> ClassYears => Set<ClassYear>();
+    public DbSet<Lecture> Lectures => Set<Lecture>();
+    public DbSet<Course> Courses => Set<Course>();  
+    public DbSet<CourseEnrollment> CourseEnrollments => Set<CourseEnrollment>();
+    public DbSet<CourseInviteLink> CourseInviteLinks => Set<CourseInviteLink>();
 
 
     protected override void OnModelCreating(ModelBuilder builder)

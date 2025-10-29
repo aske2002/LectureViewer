@@ -22,6 +22,8 @@ public static class DependencyInjection
 {
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
+        
+
         builder.Services.ConfigureRepositories();
         builder.Services.AddHttpClient("RestfulCountries", httpClient =>
         {

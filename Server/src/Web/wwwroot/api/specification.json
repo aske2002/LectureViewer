@@ -459,7 +459,7 @@
                   "description": "A DestinationId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "6dce6c28-5692-4da0-9831-47ebd89a789b"
+                  "example": "f91f31ed-7c0c-4b90-b938-d35b6f50b182"
                 }
               }
             }
@@ -490,6 +490,48 @@
         }
       }
     },
+    "/api/Resources": {
+      "get": {
+        "tags": [
+          "Resources"
+        ],
+        "operationId": "ListResources",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredListOfResourceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Resources/{resourceId}": {
       "get": {
         "tags": [
@@ -506,7 +548,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "1371b26f-b457-4ed4-899d-dc8c0901dcb7"
+              "example": "64ed1882-81c9-4584-826f-e36d639ae4af"
             },
             "x-position": 1
           }
@@ -541,7 +583,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "edc01cae-c8ab-44a4-a84b-952a7cb9b834"
+              "example": "8dcdd2ff-6ce9-4bd6-8391-308942a52448"
             },
             "x-position": 1
           },
@@ -578,7 +620,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "fc1bdb2a-6580-4fd6-9de3-e32f220feb9d"
+              "example": "6bfd66d0-244e-4692-a609-330ed794f8eb"
             },
             "x-position": 1
           },
@@ -643,7 +685,7 @@
                   "description": "A TodoItemId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "43991ad6-d95f-440d-a533-f8d0daa3234e"
+                  "example": "353a173c-d3f6-41ba-ba44-6691a9be12ee"
                 }
               }
             }
@@ -667,7 +709,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "cf5ad900-5637-4670-91db-c218eecf2a82"
+              "example": "ec076cd6-6019-43aa-b71a-fad71c4a76cc"
             },
             "x-position": 1
           }
@@ -733,7 +775,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "736cff09-2d3c-44b5-8887-941604287ec0"
+              "example": "0edaeeff-40dc-4494-a3b5-23f15d86bfa0"
             },
             "x-position": 1
           }
@@ -806,7 +848,7 @@
                   "description": "A TodoListId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "60f33d5e-e9d7-47fb-8c3e-132402372678"
+                  "example": "95657e74-5d33-49d0-8e87-1b13f2cf01f2"
                 }
               }
             }
@@ -830,7 +872,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "3534de03-f510-471a-8a40-542f7de133e8"
+              "example": "d2c07854-4fe5-4e57-a7ee-92c5ab565177"
             },
             "x-position": 1
           }
@@ -871,7 +913,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "fa185b9b-9fc5-49d0-99fb-36bea27ec352"
+              "example": "bdbfba7a-e39b-47ba-9693-7ac3831c12b0"
             },
             "x-position": 1
           }
@@ -1322,7 +1364,7 @@
             "description": "A ResourceId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "b3a30a33-aaf0-4740-a5ab-24bed3c8a0a4"
+            "example": "d7874505-4ec5-4e51-99a5-bc86e58e3ae7"
           }
         }
       },
@@ -1336,7 +1378,7 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "dfe25882-a719-4302-a4b3-c29803172616"
+            "example": "a468dc56-9b71-495e-ac3b-3d906097bb64"
           }
         }
       },
@@ -1350,7 +1392,7 @@
             "description": "A DestinationId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "e307b2fe-a3e3-4e8c-acad-a6c871d9cf32"
+            "example": "ed9257f5-3dbc-4c94-83a2-fb7f0db5ab84"
           }
         }
       },
@@ -1386,13 +1428,46 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "63c2b900-4f50-4a19-9a3a-fffe9bf21aca"
+            "example": "d4ba1679-0606-4e8d-8d95-7e40c10d3ded"
           },
           "description": {
             "type": "string",
             "nullable": true
           }
         }
+      },
+      "FilteredListOfResourceResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FilteredQuery"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResourceResponse"
+                }
+              },
+              "totalPages": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "totalCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "hasPreviousPage": {
+                "type": "boolean"
+              },
+              "hasNextPage": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
       },
       "FilteredListOfTodoItemBriefDto": {
         "allOf": [
@@ -1457,7 +1532,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "806b6254-3eaa-4acf-b138-8b4a8e5d9b02"
+            "example": "06cb1c32-28b4-4501-a2f1-a16902338820"
           },
           "title": {
             "type": "string",
@@ -1474,7 +1549,7 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "847b0144-24b1-4372-9e49-36b0d2076f48"
+            "example": "cd4c305d-3d27-4f5a-9421-927130bd2895"
           },
           "title": {
             "type": "string",
@@ -1494,14 +1569,14 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "32f67b7b-cb8e-4e74-86ff-a3360911290c"
+            "example": "399662ac-c4d3-48a5-b6b6-47c8917283f3"
           },
           "listId": {
             "type": "string",
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "6f9ac4af-e7c5-4baa-af95-66ab1134d342"
+            "example": "163a822f-2288-4750-9bc4-5257b587f810"
           },
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
@@ -1632,7 +1707,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "90205bbc-4d01-4ebd-84a2-779ce6a2be4c"
+            "example": "5a297b1b-c2e4-4d4e-a00f-849a3471eb23"
           },
           "title": {
             "type": "string",
