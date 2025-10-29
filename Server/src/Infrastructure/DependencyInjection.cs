@@ -22,7 +22,7 @@ public static class DependencyInjection
 {
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
-        
+
 
         builder.Services.ConfigureRepositories();
         builder.Services.AddHttpClient("RestfulCountries", httpClient =>
@@ -72,7 +72,11 @@ public static class DependencyInjection
         builder.Services.AddTransient<IIdentityService, IdentityService>();
 
         builder.Services.AddAuthorization(options =>
-            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
+        {
+            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator));
+            options.AddPolicy(Policies.CanCreateCourses, policy => policy.RequireRole(Roles.Instructor, Roles.Administrator));
+        });
+
         builder.Services.ConfigureApplicationCookie(options =>
         {
             options.Events.OnRedirectToLogin = context =>

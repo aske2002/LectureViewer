@@ -31,6 +31,7 @@ export interface KeywordOccurrence {
 }
 
 export interface SearchResult {
+  courseId: string
   lectureId: string
   lectureName: string
   matches: {
@@ -40,3 +41,17 @@ export interface SearchResult {
     context: string
   }[]
 }
+
+export interface Course {
+  id: string
+  name: string
+  code: string
+  semester: string
+  instructor: string
+  description: string
+  color: string
+  lectures: Lecture[]
+  totalDuration: string
+  lectureCount: number
+}
+

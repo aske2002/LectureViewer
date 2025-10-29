@@ -6,11 +6,12 @@ import { Link } from "@tanstack/react-router"
 
 interface LectureCardProps {
   lecture: Lecture
+  courseId: string
 }
 
-export function LectureCard({ lecture }: LectureCardProps) {
+export function LectureCard({ lecture, courseId }: LectureCardProps) {
   return (
-    <Link to="/lecture/$id" params={{ id: lecture.id }}>
+    <Link to="/course/$courseId/$lectureId" params={{ lectureId: lecture.id, courseId }}>
       <Card className="hover:border-primary transition-colors cursor-pointer h-full">
         <CardHeader>
           <div className="flex items-start justify-between gap-4">

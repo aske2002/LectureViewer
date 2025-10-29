@@ -9,68 +9,197 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as LectureIdRouteImport } from './routes/lecture.$id'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as authenticatedRouteRouteImport } from './routes/(authenticated)/route'
+import { Route as authenticatedIndexRouteImport } from './routes/(authenticated)/index'
+import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
+import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
+import { Route as authenticatedCourseCourseIdIndexRouteImport } from './routes/(authenticated)/course.$courseId/index'
+import { Route as authenticatedCourseCourseIdLectureIdRouteImport } from './routes/(authenticated)/course.$courseId/$lectureId'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
+  id: '/(authenticated)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authenticatedIndexRoute = authenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authenticatedRouteRoute,
 } as any)
-const LectureIdRoute = LectureIdRouteImport.update({
-  id: '/lecture/$id',
-  path: '/lecture/$id',
-  getParentRoute: () => rootRouteImport,
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const authenticatedCourseCourseIdIndexRoute =
+  authenticatedCourseCourseIdIndexRouteImport.update({
+    id: '/course/$courseId/',
+    path: '/course/$courseId/',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
+const authenticatedCourseCourseIdLectureIdRoute =
+  authenticatedCourseCourseIdLectureIdRouteImport.update({
+    id: '/course/$courseId/$lectureId',
+    path: '/course/$courseId/$lectureId',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/lecture/$id': typeof LectureIdRoute
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/': typeof authenticatedIndexRoute
+  '/course/$courseId/$lectureId': typeof authenticatedCourseCourseIdLectureIdRoute
+  '/course/$courseId': typeof authenticatedCourseCourseIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/lecture/$id': typeof LectureIdRoute
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/': typeof authenticatedIndexRoute
+  '/course/$courseId/$lectureId': typeof authenticatedCourseCourseIdLectureIdRoute
+  '/course/$courseId': typeof authenticatedCourseCourseIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/lecture/$id': typeof LectureIdRoute
+  '/(authenticated)': typeof authenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/(authenticated)/': typeof authenticatedIndexRoute
+  '/(authenticated)/course/$courseId/$lectureId': typeof authenticatedCourseCourseIdLectureIdRoute
+  '/(authenticated)/course/$courseId/': typeof authenticatedCourseCourseIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lecture/$id'
+  fullPaths:
+    | '/auth'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/'
+    | '/course/$courseId/$lectureId'
+    | '/course/$courseId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lecture/$id'
-  id: '__root__' | '/' | '/lecture/$id'
+  to:
+    | '/auth'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/'
+    | '/course/$courseId/$lectureId'
+    | '/course/$courseId'
+  id:
+    | '__root__'
+    | '/(authenticated)'
+    | '/auth'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/(authenticated)/'
+    | '/(authenticated)/course/$courseId/$lectureId'
+    | '/(authenticated)/course/$courseId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  LectureIdRoute: typeof LectureIdRoute
+  authenticatedRouteRoute: typeof authenticatedRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lecture/$id': {
-      id: '/lecture/$id'
-      path: '/lecture/$id'
-      fullPath: '/lecture/$id'
-      preLoaderRoute: typeof LectureIdRouteImport
+    '/(authenticated)': {
+      id: '/(authenticated)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(authenticated)/': {
+      id: '/(authenticated)/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof authenticatedIndexRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/auth/sign-up': {
+      id: '/auth/sign-up'
+      path: '/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/(authenticated)/course/$courseId/': {
+      id: '/(authenticated)/course/$courseId/'
+      path: '/course/$courseId'
+      fullPath: '/course/$courseId'
+      preLoaderRoute: typeof authenticatedCourseCourseIdIndexRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/course/$courseId/$lectureId': {
+      id: '/(authenticated)/course/$courseId/$lectureId'
+      path: '/course/$courseId/$lectureId'
+      fullPath: '/course/$courseId/$lectureId'
+      preLoaderRoute: typeof authenticatedCourseCourseIdLectureIdRouteImport
+      parentRoute: typeof authenticatedRouteRoute
     }
   }
 }
 
+interface authenticatedRouteRouteChildren {
+  authenticatedIndexRoute: typeof authenticatedIndexRoute
+  authenticatedCourseCourseIdLectureIdRoute: typeof authenticatedCourseCourseIdLectureIdRoute
+  authenticatedCourseCourseIdIndexRoute: typeof authenticatedCourseCourseIdIndexRoute
+}
+
+const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
+  authenticatedIndexRoute: authenticatedIndexRoute,
+  authenticatedCourseCourseIdLectureIdRoute:
+    authenticatedCourseCourseIdLectureIdRoute,
+  authenticatedCourseCourseIdIndexRoute: authenticatedCourseCourseIdIndexRoute,
+}
+
+const authenticatedRouteRouteWithChildren =
+  authenticatedRouteRoute._addFileChildren(authenticatedRouteRouteChildren)
+
+interface AuthRouteRouteChildren {
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  LectureIdRoute: LectureIdRoute,
+  authenticatedRouteRoute: authenticatedRouteRouteWithChildren,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

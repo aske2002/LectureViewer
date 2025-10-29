@@ -10,4 +10,6 @@ public class ApplicationUser : IdentityUser
     [Required]
     [MaxLength(100)]
     public string LastName { get; set; } = string.Empty;
+
+    public ICollection<CourseEnrollment> Enrollments { get; init; } = new List<CourseEnrollment>();
 }

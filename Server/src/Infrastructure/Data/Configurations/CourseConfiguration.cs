@@ -7,8 +7,8 @@ internal class CourseConfiguration : IEntityTypeConfiguration<Course>
 {
     public void Configure(EntityTypeBuilder<Course> builder)
     {
-        builder.HasOne(m => m.Destination).WithMany(r => r.Trips).HasForeignKey(r => r.DestinationId);
-        builder.HasOne(m => m.ClassYear).WithMany(r => r.Trips).HasForeignKey(r => r.ClassYearId);
-        builder.HasMany(m => m.DescriptionParts).WithOne(r => r.Trip).HasForeignKey(r => r.TripId);
+        builder.HasMany(c => c.Lectures).WithOne(l => l.Course).HasForeignKey(r => r.CourseId);
+        builder.HasMany(c => c.InviteLinks).WithOne(l => l.Course).HasForeignKey(i => i.CourseId);
+
     }
 }

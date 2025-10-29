@@ -1,6 +1,6 @@
-import type { Lecture } from "./types"
+import type { Lecture, Course } from "./types"
 
-export const mockLectures: Lecture[] = [
+const mlLectures: Lecture[] = [
   {
     id: "1",
     name: "Introduction to Machine Learning",
@@ -102,6 +102,9 @@ Overfitting occurs when a model learns the training data too well, including its
     mediaUrl: "/placeholder.mp4",
     thumbnailUrl: "/machine-learning-lecture.jpg",
   },
+]
+
+const dsaLectures: Lecture[] = [
   {
     id: "2",
     name: "Data Structures and Algorithms",
@@ -203,6 +206,9 @@ Time complexity analysis helps us understand algorithm efficiency. We use Big O 
     mediaUrl: "/placeholder.mp4",
     thumbnailUrl: "/data-structures-algorithms.png",
   },
+]
+
+const dbLectures: Lecture[] = [
   {
     id: "3",
     name: "Database Design Principles",
@@ -305,3 +311,47 @@ ACID properties ensure database reliability. Atomicity guarantees all-or-nothing
     thumbnailUrl: "/database-design-concept.jpg",
   },
 ]
+
+export const mockCourses: Course[] = [
+  {
+    id: "cs-401",
+    name: "Machine Learning",
+    code: "CS 401",
+    semester: "Spring 2025",
+    instructor: "Dr. Sarah Chen",
+    description:
+      "Comprehensive introduction to machine learning algorithms, neural networks, and deep learning techniques. Covers supervised and unsupervised learning, optimization, and practical applications.",
+    color: "bg-blue-500",
+    lectures: mlLectures,
+    totalDuration: "1:45:30",
+    lectureCount: 1,
+  },
+  {
+    id: "cs-302",
+    name: "Data Structures & Algorithms",
+    code: "CS 302",
+    semester: "Spring 2025",
+    instructor: "Prof. Michael Rodriguez",
+    description:
+      "In-depth study of fundamental data structures and algorithms. Topics include arrays, linked lists, trees, graphs, sorting, searching, and complexity analysis.",
+    color: "bg-purple-500",
+    lectures: dsaLectures,
+    totalDuration: "2:10:15",
+    lectureCount: 1,
+  },
+  {
+    id: "cs-350",
+    name: "Database Systems",
+    code: "CS 350",
+    semester: "Spring 2025",
+    instructor: "Dr. Emily Watson",
+    description:
+      "Comprehensive coverage of database design, implementation, and management. Includes relational model, SQL, normalization, indexing, and transaction management.",
+    color: "bg-green-500",
+    lectures: dbLectures,
+    totalDuration: "1:55:45",
+    lectureCount: 1,
+  },
+]
+
+export const mockLectures: Lecture[] = mockCourses.flatMap((course) => course.lectures)

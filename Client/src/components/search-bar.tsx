@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SearchResults } from "@/components/search-results"
-import { mockLectures } from "@/lib/mock-data"
+import { mockCourses, mockLectures } from "@/lib/mock-data"
 import type { SearchResult } from "@/lib/types"
 
 export function SearchBar() {
@@ -60,6 +60,9 @@ export function SearchBar() {
       if (matches.length > 0) {
         searchResults.push({
           lectureId: lecture.id,
+          courseId: mockCourses.find((course) =>
+            course.lectures.some((l) => l.id === lecture.id)
+          )?.id || "",
           lectureName: lecture.name,
           matches: matches.slice(0, 5), // Limit to 5 matches per lecture
         })
