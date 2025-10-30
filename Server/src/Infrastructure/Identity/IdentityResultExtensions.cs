@@ -1,6 +1,4 @@
 ﻿using backend.Application.Common.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace backend.Infrastructure.Identity;

@@ -1,6 +1,3 @@
-
-using backend.Application.Common.Models;
-
 namespace backend.Application.Common.Exceptions;
 public class UserNotFoundException : NotFoundExceptionBase<string, UserNotFoundException>
 {

@@ -14,4 +14,8 @@ public interface IIdentityService
     Task<(Result Result, ApplicationUser? User)> CreateUserAsync(string userName, string password, string firstName, string lastName);
 
     Task<Result> DeleteUserAsync(string userId);
+    Task<ApplicationUser?> GetUserAsync(System.Security.Claims.ClaimsPrincipal principal);
+    Task<ApplicationUser?> GetUserByIdAsync(string userId);
+    Task<ICollection<string>> GetUserPoliciesAsync(ApplicationUser user);
+    Task<ICollection<string>> GetUserRolesAsync(ApplicationUser user);
 }

@@ -1,14 +1,11 @@
 ﻿using backend.Application.Common.Interfaces;
-using backend.Application.Common.Models;
 using backend.Domain.Constants;
-using backend.Domain.Entities;
-using backend.Domain.Identifiers;
-using backend.Domain.Interfaces;
 using backend.Infrastructure.Data;
 using backend.Infrastructure.Data.Extensions;
 using backend.Infrastructure.Data.Interceptors;
 using backend.Infrastructure.Data.Resources;
 using backend.Infrastructure.Identity;
+using backend.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -70,10 +67,10 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
+        builder.Services.AddTransient<ICourseService, CourseService>();
 
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator));
             options.AddPolicy(Policies.CanCreateCourses, policy => policy.RequireRole(Roles.Instructor, Roles.Administrator));
         });
 

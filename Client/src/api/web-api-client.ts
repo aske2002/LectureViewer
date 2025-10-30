@@ -632,6 +632,232 @@ export class UsersClient implements IUsersClient {
     }
 }
 
+export interface ICoursesClient {
+    listCourses(): Promise<FilteredListOfCourseDto>;
+    createCourse(command: CreateCourseCommand): Promise<string>;
+    enrollInCourse(command: EnrollCourseCommand): Promise<string>;
+    getCourseById(courseId: string): Promise<CourseDto>;
+}
+
+export class CoursesClient implements ICoursesClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    listCourses( cancelToken?: CancelToken): Promise<FilteredListOfCourseDto> {
+        let url_ = this.baseUrl + "/api/Courses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processListCourses(_response);
+        });
+    }
+
+    protected processListCourses(response: AxiosResponse): Promise<FilteredListOfCourseDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = FilteredListOfCourseDto.fromJS(resultData200);
+            return Promise.resolve<FilteredListOfCourseDto>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FilteredListOfCourseDto>(null as any);
+    }
+
+    createCourse(command: CreateCourseCommand, cancelToken?: CancelToken): Promise<string> {
+        let url_ = this.baseUrl + "/api/Courses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateCourse(_response);
+        });
+    }
+
+    protected processCreateCourse(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<string>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    enrollInCourse(command: EnrollCourseCommand, cancelToken?: CancelToken): Promise<string> {
+        let url_ = this.baseUrl + "/api/Courses/enroll";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEnrollInCourse(_response);
+        });
+    }
+
+    protected processEnrollInCourse(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<string>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    getCourseById(courseId: string, cancelToken?: CancelToken): Promise<CourseDto> {
+        let url_ = this.baseUrl + "/api/Courses/{courseId}";
+        if (courseId === undefined || courseId === null)
+            throw new Error("The parameter 'courseId' must be defined.");
+        url_ = url_.replace("{courseId}", encodeURIComponent("" + courseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCourseById(_response);
+        });
+    }
+
+    protected processGetCourseById(response: AxiosResponse): Promise<CourseDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = CourseDto.fromJS(resultData200);
+            return Promise.resolve<CourseDto>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<CourseDto>(null as any);
+    }
+}
+
 export interface IDestinationsClient {
     getDestinations(pageNumber?: number | null | undefined, pageSize?: number | null | undefined, orderBy?: string | undefined): Promise<FilteredListOfDestinationDto>;
     createDestination(command: CreateDestinationCommand): Promise<string>;
@@ -1509,79 +1735,6 @@ export class TodoListsClient implements ITodoListsClient {
     }
 }
 
-export interface IWeatherForecastsClient {
-    getWeatherForecasts(): Promise<WeatherForecast[]>;
-}
-
-export class WeatherForecastsClient implements IWeatherForecastsClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
-    }
-
-    getWeatherForecasts( cancelToken?: CancelToken): Promise<WeatherForecast[]> {
-        let url_ = this.baseUrl + "/api/WeatherForecasts";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetWeatherForecasts(_response);
-        });
-    }
-
-    protected processGetWeatherForecasts(response: AxiosResponse): Promise<WeatherForecast[]> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return Promise.resolve<WeatherForecast[]>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<WeatherForecast[]>(null as any);
-    }
-}
-
 export class AccessTokenResponse implements IAccessTokenResponse {
     tokenType!: string;
     accessToken!: string;
@@ -2197,7 +2350,8 @@ export interface ICreateUserCommand {
 
 export class UserInfoVm implements IUserInfoVm {
     info!: UserInfoDto;
-    roles!: string[];
+    roles!: RoleDto[];
+    policies!: PolicyDto[];
 
     constructor(data?: IUserInfoVm) {
         if (data) {
@@ -2215,6 +2369,11 @@ export class UserInfoVm implements IUserInfoVm {
                 this.roles = [] as any;
                 for (let item of _data["roles"])
                     this.roles!.push(item);
+            }
+            if (Array.isArray(_data["policies"])) {
+                this.policies = [] as any;
+                for (let item of _data["policies"])
+                    this.policies!.push(item);
             }
         }
     }
@@ -2234,13 +2393,19 @@ export class UserInfoVm implements IUserInfoVm {
             for (let item of this.roles)
                 data["roles"].push(item);
         }
+        if (Array.isArray(this.policies)) {
+            data["policies"] = [];
+            for (let item of this.policies)
+                data["policies"].push(item);
+        }
         return data;
     }
 }
 
 export interface IUserInfoVm {
     info: UserInfoDto;
-    roles: string[];
+    roles: RoleDto[];
+    policies: PolicyDto[];
 }
 
 export class UserInfoDto implements IUserInfoDto {
@@ -2295,6 +2460,17 @@ export interface IUserInfoDto {
     lastName: string;
 }
 
+export enum RoleDto {
+    Administrator = "Administrator",
+    Instructor = "Instructor",
+}
+
+export enum PolicyDto {
+    CanCreateCourses = "CanCreateCourses",
+    CanEditCourses = "CanEditCourses",
+    CanDeleteCourses = "CanDeleteCourses",
+}
+
 export class FilteredQuery implements IFilteredQuery {
     pageNumber!: number | undefined;
     pageSize!: number | undefined;
@@ -2337,6 +2513,621 @@ export interface IFilteredQuery {
     pageNumber: number | undefined;
     pageSize: number | undefined;
     orderBy: string | undefined;
+}
+
+export class FilteredListOfCourseDto extends FilteredQuery implements IFilteredListOfCourseDto {
+    items!: CourseDto[];
+    totalPages!: number;
+    totalCount!: number;
+    hasPreviousPage!: boolean;
+    hasNextPage!: boolean;
+
+    constructor(data?: IFilteredListOfCourseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(CourseDto.fromJS(item));
+            }
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static override fromJS(data: any): FilteredListOfCourseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FilteredListOfCourseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IFilteredListOfCourseDto extends IFilteredQuery {
+    items: CourseDto[];
+    totalPages: number;
+    totalCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+}
+
+export abstract class BaseResponseOfCourseId implements IBaseResponseOfCourseId {
+    /** A CourseId identifier */
+    id!: string;
+
+    constructor(data?: IBaseResponseOfCourseId) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): BaseResponseOfCourseId {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseResponseOfCourseId' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface IBaseResponseOfCourseId {
+    /** A CourseId identifier */
+    id: string;
+}
+
+export class CourseDto extends BaseResponseOfCourseId implements ICourseDto {
+    startDate!: Date;
+    endDate!: Date;
+    semester!: SemesterDto;
+    internalIdentifier!: string;
+    name!: string;
+    description!: string;
+
+    constructor(data?: ICourseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.semester = _data["semester"] ? SemesterDto.fromJS(_data["semester"]) : <any>undefined;
+            this.internalIdentifier = _data["internalIdentifier"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+        }
+    }
+
+    static override fromJS(data: any): CourseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CourseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["semester"] = this.semester ? this.semester.toJSON() : <any>undefined;
+        data["internalIdentifier"] = this.internalIdentifier;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICourseDto extends IBaseResponseOfCourseId {
+    startDate: Date;
+    endDate: Date;
+    semester: SemesterDto;
+    internalIdentifier: string;
+    name: string;
+    description: string;
+}
+
+export abstract class BaseResponseOfSemesterId implements IBaseResponseOfSemesterId {
+    /** A SemesterId identifier */
+    id!: string;
+
+    constructor(data?: IBaseResponseOfSemesterId) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): BaseResponseOfSemesterId {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseResponseOfSemesterId' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface IBaseResponseOfSemesterId {
+    /** A SemesterId identifier */
+    id: string;
+}
+
+export class SemesterDto extends BaseResponseOfSemesterId implements ISemesterDto {
+    season!: Season;
+    year!: number;
+    startDate!: Date;
+    endDate!: Date;
+
+    constructor(data?: ISemesterDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.season = _data["season"];
+            this.year = _data["year"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): SemesterDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SemesterDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["season"] = this.season;
+        data["year"] = this.year;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ISemesterDto extends IBaseResponseOfSemesterId {
+    season: Season;
+    year: number;
+    startDate: Date;
+    endDate: Date;
+}
+
+export enum Season {
+    None = 0,
+    Winter = 1,
+    Spring = 2,
+    Summer = 3,
+    Fall = 4,
+}
+
+export class EnrollCourseCommand implements IEnrollCourseCommand {
+    token!: string;
+    /** A CourseId identifier */
+    courseId!: string;
+    user!: ClaimsPrincipal;
+
+    constructor(data?: IEnrollCourseCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.token = _data["token"];
+            this.courseId = _data["courseId"];
+            this.user = _data["user"] ? ClaimsPrincipal.fromJS(_data["user"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): EnrollCourseCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new EnrollCourseCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["token"] = this.token;
+        data["courseId"] = this.courseId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IEnrollCourseCommand {
+    token: string;
+    /** A CourseId identifier */
+    courseId: string;
+    user: ClaimsPrincipal;
+}
+
+export class ClaimsPrincipal implements IClaimsPrincipal {
+    claims!: Claim[];
+    customSerializationData!: string | undefined;
+    identities!: ClaimsIdentity[];
+    identity!: IIdentity | undefined;
+
+    constructor(data?: IClaimsPrincipal) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["claims"])) {
+                this.claims = [] as any;
+                for (let item of _data["claims"])
+                    this.claims!.push(Claim.fromJS(item));
+            }
+            this.customSerializationData = _data["customSerializationData"];
+            if (Array.isArray(_data["identities"])) {
+                this.identities = [] as any;
+                for (let item of _data["identities"])
+                    this.identities!.push(ClaimsIdentity.fromJS(item));
+            }
+            this.identity = _data["identity"] ? IIdentity.fromJS(_data["identity"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ClaimsPrincipal {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClaimsPrincipal();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.claims)) {
+            data["claims"] = [];
+            for (let item of this.claims)
+                data["claims"].push(item.toJSON());
+        }
+        data["customSerializationData"] = this.customSerializationData;
+        if (Array.isArray(this.identities)) {
+            data["identities"] = [];
+            for (let item of this.identities)
+                data["identities"].push(item.toJSON());
+        }
+        data["identity"] = this.identity ? this.identity.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IClaimsPrincipal {
+    claims: Claim[];
+    customSerializationData: string | undefined;
+    identities: ClaimsIdentity[];
+    identity: IIdentity | undefined;
+}
+
+export class Claim implements IClaim {
+    customSerializationData!: string | undefined;
+    issuer!: string;
+    originalIssuer!: string;
+    properties!: { [key: string]: string; };
+    subject!: ClaimsIdentity | undefined;
+    type!: string;
+    value!: string;
+    valueType!: string;
+
+    constructor(data?: IClaim) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customSerializationData = _data["customSerializationData"];
+            this.issuer = _data["issuer"];
+            this.originalIssuer = _data["originalIssuer"];
+            if (_data["properties"]) {
+                this.properties = {} as any;
+                for (let key in _data["properties"]) {
+                    if (_data["properties"].hasOwnProperty(key))
+                        (<any>this.properties)![key] = _data["properties"][key];
+                }
+            }
+            this.subject = _data["subject"] ? ClaimsIdentity.fromJS(_data["subject"]) : <any>undefined;
+            this.type = _data["type"];
+            this.value = _data["value"];
+            this.valueType = _data["valueType"];
+        }
+    }
+
+    static fromJS(data: any): Claim {
+        data = typeof data === 'object' ? data : {};
+        let result = new Claim();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customSerializationData"] = this.customSerializationData;
+        data["issuer"] = this.issuer;
+        data["originalIssuer"] = this.originalIssuer;
+        if (this.properties) {
+            data["properties"] = {};
+            for (let key in this.properties) {
+                if (this.properties.hasOwnProperty(key))
+                    (<any>data["properties"])[key] = (<any>this.properties)[key];
+            }
+        }
+        data["subject"] = this.subject ? this.subject.toJSON() : <any>undefined;
+        data["type"] = this.type;
+        data["value"] = this.value;
+        data["valueType"] = this.valueType;
+        return data;
+    }
+}
+
+export interface IClaim {
+    customSerializationData: string | undefined;
+    issuer: string;
+    originalIssuer: string;
+    properties: { [key: string]: string; };
+    subject: ClaimsIdentity | undefined;
+    type: string;
+    value: string;
+    valueType: string;
+}
+
+export class ClaimsIdentity implements IClaimsIdentity {
+    authenticationType!: string | undefined;
+    isAuthenticated!: boolean;
+    actor!: ClaimsIdentity | undefined;
+    bootstrapContext!: any | undefined;
+    claims!: Claim[];
+    customSerializationData!: string | undefined;
+    externalClaims!: Claim[][];
+    label!: string | undefined;
+    name!: string | undefined;
+    nameClaimType!: string;
+    roleClaimType!: string;
+
+    constructor(data?: IClaimsIdentity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.authenticationType = _data["authenticationType"];
+            this.isAuthenticated = _data["isAuthenticated"];
+            this.actor = _data["actor"] ? ClaimsIdentity.fromJS(_data["actor"]) : <any>undefined;
+            this.bootstrapContext = _data["bootstrapContext"];
+            if (Array.isArray(_data["claims"])) {
+                this.claims = [] as any;
+                for (let item of _data["claims"])
+                    this.claims!.push(Claim.fromJS(item));
+            }
+            this.customSerializationData = _data["customSerializationData"];
+            if (Array.isArray(_data["externalClaims"])) {
+                this.externalClaims = [] as any;
+                for (let item of _data["externalClaims"])
+                    this.externalClaims!.push(item);
+            }
+            this.label = _data["label"];
+            this.name = _data["name"];
+            this.nameClaimType = _data["nameClaimType"];
+            this.roleClaimType = _data["roleClaimType"];
+        }
+    }
+
+    static fromJS(data: any): ClaimsIdentity {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClaimsIdentity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["authenticationType"] = this.authenticationType;
+        data["isAuthenticated"] = this.isAuthenticated;
+        data["actor"] = this.actor ? this.actor.toJSON() : <any>undefined;
+        data["bootstrapContext"] = this.bootstrapContext;
+        if (Array.isArray(this.claims)) {
+            data["claims"] = [];
+            for (let item of this.claims)
+                data["claims"].push(item.toJSON());
+        }
+        data["customSerializationData"] = this.customSerializationData;
+        if (Array.isArray(this.externalClaims)) {
+            data["externalClaims"] = [];
+            for (let item of this.externalClaims)
+                data["externalClaims"].push(item);
+        }
+        data["label"] = this.label;
+        data["name"] = this.name;
+        data["nameClaimType"] = this.nameClaimType;
+        data["roleClaimType"] = this.roleClaimType;
+        return data;
+    }
+}
+
+export interface IClaimsIdentity {
+    authenticationType: string | undefined;
+    isAuthenticated: boolean;
+    actor: ClaimsIdentity | undefined;
+    bootstrapContext: any | undefined;
+    claims: Claim[];
+    customSerializationData: string | undefined;
+    externalClaims: Claim[][];
+    label: string | undefined;
+    name: string | undefined;
+    nameClaimType: string;
+    roleClaimType: string;
+}
+
+export abstract class IIdentity implements IIIdentity {
+    name!: string | undefined;
+    authenticationType!: string | undefined;
+    isAuthenticated!: boolean;
+
+    constructor(data?: IIIdentity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.authenticationType = _data["authenticationType"];
+            this.isAuthenticated = _data["isAuthenticated"];
+        }
+    }
+
+    static fromJS(data: any): IIdentity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'IIdentity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["authenticationType"] = this.authenticationType;
+        data["isAuthenticated"] = this.isAuthenticated;
+        return data;
+    }
+}
+
+export interface IIIdentity {
+    name: string | undefined;
+    authenticationType: string | undefined;
+    isAuthenticated: boolean;
+}
+
+export class CreateCourseCommand implements ICreateCourseCommand {
+    name!: string;
+    description!: string;
+    startDate!: Date;
+    endDate!: Date;
+    internalIdentifier!: string;
+    semesterSeason!: Season;
+    semesterYear!: number;
+
+    constructor(data?: ICreateCourseCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.internalIdentifier = _data["internalIdentifier"];
+            this.semesterSeason = _data["semesterSeason"];
+            this.semesterYear = _data["semesterYear"];
+        }
+    }
+
+    static fromJS(data: any): CreateCourseCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateCourseCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["internalIdentifier"] = this.internalIdentifier;
+        data["semesterSeason"] = this.semesterSeason;
+        data["semesterYear"] = this.semesterYear;
+        return data;
+    }
+}
+
+export interface ICreateCourseCommand {
+    name: string;
+    description: string;
+    startDate: Date;
+    endDate: Date;
+    internalIdentifier: string;
+    semesterSeason: Season;
+    semesterYear: number;
 }
 
 export class FilteredListOfDestinationDto extends FilteredQuery implements IFilteredListOfDestinationDto {
@@ -3285,54 +4076,6 @@ export interface IUpdateTodoListCommand {
     /** A TodoListId identifier */
     id: string;
     title: string | undefined;
-}
-
-export class WeatherForecast implements IWeatherForecast {
-    date!: Date;
-    temperatureC!: number;
-    temperatureF!: number;
-    summary!: string | undefined;
-
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
-        }
-    }
-
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
-        return data;
-    }
-}
-
-export interface IWeatherForecast {
-    date: Date;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string | undefined;
 }
 
 export class SwaggerException extends Error {

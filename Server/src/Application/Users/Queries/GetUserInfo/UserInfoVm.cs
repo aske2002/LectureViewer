@@ -1,4 +1,5 @@
 using backend.Application.Common.Models;
+using backend.Contracts.Enums;
 
 namespace backend.Application.Users.Queries.GetUserInfo;
 
@@ -20,5 +21,6 @@ public record UserInfoDto
 public record UserInfoVm
 {
     public required UserInfoDto Info { get; init; }
-    public required List<string> Roles { get; init; } = new();
+    public required List<RoleDto> Roles { get; init; } = new();
+    public required List<PolicyDto> Policies { get; init; } = new();
 }

@@ -67,9 +67,27 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
         return new(entities, totalCount, pagination?.page, pagination?.pageSize);
     }
 
-    public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetByIdAsync(
+        TId id,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, 
+        CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync(id);
+        IQueryable<TEntity> query = _dbSet;
+
+        if (include != null)
+        {
+            query = include(query);
+        }
+
+        query = query.Where(e => e.Id.Equals(id));
+
+        if (filter != null)
+        {
+            query = filter(query);
+        }
+
+        return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<EntitiesResponse<TProject>> QueryAsync<TProject>((int page, int pageSize)? pagination = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null, Func<IQueryable<TEntity>, IQueryable<TProject>>? project = null, CancellationToken cancellationToken = default) where TProject : BaseResponse<TId>
@@ -105,8 +123,31 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
         await _context.SaveChangesAsync(cancellationToken);
     }
 
+    public virtual async Task RemoveAsync(TId id, CancellationToken cancellationToken = default)
+    {
+        var entity = await GetByIdAsync(id, cancellationToken:cancellationToken);
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
+        _dbSet.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<int> CountAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null, CancellationToken cancellationToken = default)
     {
         return await WithFilter(null, filter, orderBy, include).CountAsync(cancellationToken);
+    }
+
+    public Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    {
+        _dbSet.Update(entity);
+        return _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<bool> ExistsAsync(TId id, CancellationToken cancellationToken = default)
+    {
+        return _dbSet.AnyAsync(e => e.Id.Equals(id), cancellationToken);
     }
 }

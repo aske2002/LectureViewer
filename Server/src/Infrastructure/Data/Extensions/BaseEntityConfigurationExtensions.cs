@@ -1,9 +1,6 @@
-using backend.Domain.Common;
 using backend.Domain.Extensions;
-using backend.Domain.Interfaces;
 using backend.Infrastructure.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace backend.Infrastructure.Data.Extensions;
 public static class BaseEntityConfigurationExtensions

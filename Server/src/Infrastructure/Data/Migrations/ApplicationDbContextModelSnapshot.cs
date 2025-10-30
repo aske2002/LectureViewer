@@ -320,6 +320,7 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("EndDate")
@@ -336,12 +337,18 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("SemesterId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SemesterId");
 
                     b.ToTable("Courses");
                 });
@@ -411,6 +418,10 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
@@ -468,6 +479,7 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("EndDate")
@@ -479,11 +491,12 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -536,6 +549,35 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasDatabaseName("IX_Resources_EntityId");
 
                     b.ToTable("Resources");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Semester", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Season")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Semester");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TodoItem", b =>
@@ -745,6 +787,17 @@ namespace backend.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.Course", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Semester", "Semester")
+                        .WithMany("Courses")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Semester");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.CourseEnrollment", b =>
                 {
                     b.HasOne("backend.Domain.Entities.Course", "Course")
@@ -894,6 +947,11 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.Destination", b =>
                 {
                     b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Semester", b =>
+                {
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TodoList", b =>

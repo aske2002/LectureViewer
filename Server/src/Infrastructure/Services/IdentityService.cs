@@ -1,10 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using backend.Application.Common.Interfaces;
 using backend.Application.Common.Models;
+using backend.Domain.Constants;
+using backend.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
-namespace backend.Infrastructure.Identity;
+namespace backend.Infrastructure.Services;
 
 public class IdentityService : IIdentityService
 {
@@ -18,14 +21,13 @@ public class IdentityService : IIdentityService
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-            IUserStore<ApplicationUser> userStore,
+        IUserStore<ApplicationUser> userStore,
         IAuthorizationService authorizationService)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
         _userStore = userStore;
-
     }
 
     public async Task<string?> GetUserNameAsync(string userId)
@@ -103,5 +105,40 @@ public class IdentityService : IIdentityService
         var result = await _userManager.DeleteAsync(user);
 
         return result.ToApplicationResult();
+    }
+
+    public Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal)
+    {
+        return _userManager.GetUserAsync(principal);
+    }
+
+    public Task<ApplicationUser?> GetUserByIdAsync(string userId)
+    {
+        return _userManager.FindByIdAsync(userId);
+    }
+
+    public async Task<ICollection<string>> GetUserPoliciesAsync(ApplicationUser user)
+    {
+
+        var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+
+        var allPolicies = await Task.WhenAll(typeof(Policies).GetFields()
+            .Where(f => f.IsStatic && f.IsLiteral)
+            .Select(f => f.GetValue(null)?.ToString() ?? "")
+            .ToList()
+            .Select(async p =>
+            {
+                var result = await _authorizationService.AuthorizeAsync(principal, p);
+                return (Policy: p, IsAuthorized: result.Succeeded);
+            }))
+            .ContinueWith(t => t.Result.Where(r => r.IsAuthorized).Select(r => r.Policy).ToList());
+
+        return allPolicies;
+    }
+
+    public async Task<ICollection<string>> GetUserRolesAsync(ApplicationUser user)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+        return roles;
     }
 }

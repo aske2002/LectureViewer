@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,44 +11,48 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Upload, FileAudio, FileVideo, FileText } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Upload, FileAudio, FileVideo, FileText } from "lucide-react";
+import RequireAuthorization from "./require-authorization";
+import { RoleDto } from "@/api/web-api-client";
 
 export function UploadDialog() {
-  const [open, setOpen] = useState(false)
-  const [lectureName, setLectureName] = useState("")
-  const [files, setFiles] = useState<File[]>([])
+  const [open, setOpen] = useState(false);
+  const [lectureName, setLectureName] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // In a real app, this would upload files and process them
-    console.log("Uploading:", { lectureName, files })
-    setOpen(false)
-    setLectureName("")
-    setFiles([])
-  }
+    console.log("Uploading:", { lectureName, files });
+    setOpen(false);
+    setLectureName("");
+    setFiles([]);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files))
+      setFiles(Array.from(e.target.files));
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="gap-2">
-          <Upload className="h-4 w-4" />
-          Upload Lecture
-        </Button>
+        <RequireAuthorization
+          allowRoles={[RoleDto.Instructor, RoleDto.Administrator]}
+        >
+          <Button>Upload Lecture</Button>
+        </RequireAuthorization>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Upload New Lecture</DialogTitle>
           <DialogDescription>
-            Upload slides, audio, or video recordings. The system will transcribe and analyze the content.
+            Upload slides, audio, or video recordings. The system will
+            transcribe and analyze the content.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -76,21 +80,35 @@ export function UploadDialog() {
               />
               <label htmlFor="files" className="cursor-pointer">
                 <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                <p className="text-xs text-muted-foreground">Audio, video, slides (PDF, PPT)</p>
+                <p className="text-sm font-medium mb-1">
+                  Click to upload or drag and drop
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Audio, video, slides (PDF, PPT)
+                </p>
               </label>
             </div>
             {files.length > 0 && (
               <div className="mt-4 space-y-2">
                 {files.map((file, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm p-2 bg-muted rounded">
-                    {file.type.startsWith("audio/") && <FileAudio className="h-4 w-4" />}
-                    {file.type.startsWith("video/") && <FileVideo className="h-4 w-4" />}
-                    {!file.type.startsWith("audio/") && !file.type.startsWith("video/") && (
-                      <FileText className="h-4 w-4" />
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 text-sm p-2 bg-muted rounded"
+                  >
+                    {file.type.startsWith("audio/") && (
+                      <FileAudio className="h-4 w-4" />
                     )}
+                    {file.type.startsWith("video/") && (
+                      <FileVideo className="h-4 w-4" />
+                    )}
+                    {!file.type.startsWith("audio/") &&
+                      !file.type.startsWith("video/") && (
+                        <FileText className="h-4 w-4" />
+                      )}
                     <span className="flex-1 truncate">{file.name}</span>
-                    <span className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                    <span className="text-xs text-muted-foreground">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
                   </div>
                 ))}
               </div>
@@ -98,7 +116,11 @@ export function UploadDialog() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={!lectureName || files.length === 0}>
@@ -108,5 +130,5 @@ export function UploadDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

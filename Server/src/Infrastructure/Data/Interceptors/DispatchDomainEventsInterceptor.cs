@@ -1,6 +1,4 @@
-﻿using backend.Domain.Common;
-using backend.Domain.Identifiers;
-using backend.Infrastructure.Data.Extensions;
+﻿using backend.Infrastructure.Data.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

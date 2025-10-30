@@ -1,4 +1,6 @@
+import { PolicyDto } from "@/api/web-api-client";
 import { CourseCard } from "@/components/course-card";
+import RequireAuthorization from "@/components/require-authorization";
 import { Button } from "@/components/ui/button";
 import { mockCourses } from "@/lib/mock-data";
 import { createFileRoute } from "@tanstack/react-router";
@@ -25,10 +27,12 @@ function RouteComponent() {
                 </p>
               </div>
             </div>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Course
-            </Button>
+            <RequireAuthorization allowPolicies={[PolicyDto.CanCreateCourses]}>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Course
+              </Button>
+            </RequireAuthorization>
           </div>
         </div>
       </header>

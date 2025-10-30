@@ -1,5 +1,4 @@
 ﻿using backend.Application.Common.Interfaces;
-using backend.Domain.Common;
 using backend.Infrastructure.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

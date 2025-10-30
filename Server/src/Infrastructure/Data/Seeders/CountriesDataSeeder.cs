@@ -1,10 +1,5 @@
-using System.Net.Http.Json;
-using System.Net.Mime;
-using System.Reflection;
 using System.Text.Json.Serialization;
-using AutoMapper;
 using backend.Application.Common.Interfaces;
-using backend.Application.Countries.Queries.GetCountries;
 using backend.Domain.Entities;
 using backend.Domain.Enums;
 using HeyRed.Mime;

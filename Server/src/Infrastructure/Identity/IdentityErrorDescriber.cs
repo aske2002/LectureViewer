@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 

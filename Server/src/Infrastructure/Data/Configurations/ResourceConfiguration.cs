@@ -1,7 +1,6 @@
 namespace StrejsApi.Infrastructure.Databases.Trips.Configuration;
 
 using backend.Domain.Entities;
-using backend.Domain.Identifiers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 internal class ResourceConfiguration : IEntityTypeConfiguration<Resource>
