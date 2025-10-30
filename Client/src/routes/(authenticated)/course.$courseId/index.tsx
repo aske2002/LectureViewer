@@ -5,6 +5,8 @@ import { LectureCard } from "@/components/lecture-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Clock, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import RequireAuthorization from "@/components/shared/require-authorization";
+import { RoleDto } from "@/api/web-api-client";
 
 export const Route = createFileRoute("/(authenticated)/course/$courseId/")({
   component: RouteComponent,
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/(authenticated)/course/$courseId/")({
 
 function RouteComponent() {
   const { courseId } = Route.useParams();
-  const course = mockCourses.find((c) => c.id === courseId)
+  const course = mockCourses.find((c) => c.id === courseId);
 
   if (!course) {
     throw notFound();
@@ -32,7 +34,7 @@ function RouteComponent() {
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
               <div
-                className={`h-16 w-16 rounded-lg ${course.color} flex items-center justify-center flex-shrink-0`}
+                className={`h-16 w-16 rounded-lg ${course.color} flex items-center justify-center shrink-0`}
               >
                 <BookOpen className="h-8 w-8 text-white" />
               </div>
@@ -59,7 +61,11 @@ function RouteComponent() {
                 </div>
               </div>
             </div>
-            <UploadDialog />
+            <RequireAuthorization
+              allowRoles={[RoleDto.Instructor, RoleDto.Administrator]}
+            >
+              <UploadDialog />
+            </RequireAuthorization>
           </div>
         </div>
       </header>
@@ -75,7 +81,11 @@ function RouteComponent() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {course.lectures.map((lecture) => (
-            <LectureCard key={lecture.id} lecture={lecture} courseId={course.id} />
+            <LectureCard
+              key={lecture.id}
+              lecture={lecture}
+              courseId={course.id}
+            />
           ))}
         </div>
       </main>

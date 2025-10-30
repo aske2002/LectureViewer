@@ -3,9 +3,10 @@ import { Badge } from "@/components/ui/badge"
 import { BookOpen, Clock, User } from "lucide-react"
 import { Course } from "@/lib/types"
 import { Link } from "@tanstack/react-router"
+import { CourseDto } from "@/api/web-api-client"
 
 interface CourseCardProps {
-  course: Course
+  course: CourseDto
 }
 
 export function CourseCard({ course }: CourseCardProps) {
@@ -14,10 +15,11 @@ export function CourseCard({ course }: CourseCardProps) {
       <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
         <CardHeader>
           <div className="flex items-start justify-between mb-2">
-            <div className={`h-12 w-12 rounded-lg ${course.color} flex items-center justify-center`}>
+            {/* TODO: Implement course color */}
+            <div className={`h-12 w-12 rounded-lg flex items-center justify-center`}> 
               <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <Badge variant="secondary">{course.code}</Badge>
+            <Badge variant="secondary">{course.internalIdentifier}</Badge>
           </div>
           <CardTitle className="text-xl text-balance">{course.name}</CardTitle>
           <CardDescription className="text-pretty">{course.description}</CardDescription>
@@ -26,21 +28,21 @@ export function CourseCard({ course }: CourseCardProps) {
           <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              <span>{course.instructor}</span>
+              <span>ToBeCreated</span>
             </div>
             <div className="flex items-center gap-2">
               <BookOpen className="h-4 w-4" />
               <span>
-                {course.lectureCount} lecture{course.lectureCount !== 1 ? "s" : ""}
+                {"ToBeCreated"} lecture
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              <span>{course.totalDuration} total</span>
+              <span>{"ToBeCreated"} total</span>
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-border">
-            <Badge variant="outline">{course.semester}</Badge>
+            <Badge variant="outline">{course.semester.season} {course.semester.year}</Badge>
           </div>
         </CardContent>
       </Card>

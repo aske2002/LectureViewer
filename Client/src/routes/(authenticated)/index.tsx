@@ -1,6 +1,8 @@
+import { useCoursesApi } from "@/api/use-courses-api";
 import { PolicyDto } from "@/api/web-api-client";
 import { CourseCard } from "@/components/course-card";
-import RequireAuthorization from "@/components/require-authorization";
+import { CreateCourseDialog } from "@/components/create-course-dialog";
+import RequireAuthorization from "@/components/shared/require-authorization";
 import { Button } from "@/components/ui/button";
 import { mockCourses } from "@/lib/mock-data";
 import { createFileRoute } from "@tanstack/react-router";
@@ -11,6 +13,10 @@ export const Route = createFileRoute("/(authenticated)/")({
 });
 
 function RouteComponent() {
+  const {
+    courses: { isPending, data },
+  } = useCoursesApi();
+
   return (
     <>
       <header className="border-b border-border bg-card">
@@ -28,10 +34,7 @@ function RouteComponent() {
               </div>
             </div>
             <RequireAuthorization allowPolicies={[PolicyDto.CanCreateCourses]}>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Course
-              </Button>
+              <CreateCourseDialog />
             </RequireAuthorization>
           </div>
         </div>
@@ -47,7 +50,7 @@ function RouteComponent() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockCourses.map((course) => (
+          {data?.items.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>

@@ -28,7 +28,7 @@ public class IdentityDataSeeder : IDataSeeder
         }
 
         // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Administrator", LastName = "Administrator" };
+        var administrator = new ApplicationUser { UserName = "administrator@localhost.dk", Email = "administrator@localhost.dk", FirstName = "Administrator", LastName = "Administrator" };
 
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {

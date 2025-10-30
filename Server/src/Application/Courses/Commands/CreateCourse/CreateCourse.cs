@@ -25,14 +25,16 @@ public record CreateCourseCommand : IRequest<CourseId>
 public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, CourseId>
 {
     private readonly ICourseService _courseService;
-    public CreateCourseCommandHandler(ICourseService courseService)
+    private readonly IUserAccessor _userAccessor;
+    public CreateCourseCommandHandler(ICourseService courseService, IUserAccessor userAccessor)
     {
         _courseService = courseService;
+        _userAccessor = userAccessor;
     }
     public async Task<CourseId> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
     {
         var course = await _courseService.CreateCourseAsync(
-            owner: null!,
+            owner: _userAccessor.User.ToUser(),
             internalIdentifier: request.InternalIdentifier,
             name: request.Name,
             description: request.Description,

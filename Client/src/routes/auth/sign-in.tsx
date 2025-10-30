@@ -34,7 +34,7 @@ export const Route = createFileRoute("/auth/sign-in")({
 });
 
 const signInSchema = z.object({
-  email: z.string().email("Ugyldig email"),
+  email: z.string(),
   password: z.string().min(8, {
     message: "Koden er mindst 8 tegn",
   }),

@@ -1,0 +1,31 @@
+import { CoursesClient } from "./web-api-client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useApi from "./use-api";
+
+export function useCoursesApi() {
+  const { coursesClient } = useApi();
+
+  const queryClient = useQueryClient();
+
+  const courses = useMutation({
+    mutationKey: ["list-courses"],
+    mutationFn: async () => {
+      return coursesClient.listCourses();
+    },
+  });
+
+  const createCourse = useMutation({
+    mutationKey: ["create-course"],
+    mutationFn: async (data: Parameters<CoursesClient["createCourse"]>[0]) => {
+      return coursesClient.createCourse(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["list-courses"] });
+    }
+  });
+
+  return {
+    createCourse,
+    courses,
+  };
+}

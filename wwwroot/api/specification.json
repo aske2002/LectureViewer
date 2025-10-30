@@ -429,7 +429,7 @@
                   "description": "A CourseId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "ff93d03a-0b6f-48c5-a1b1-0f832fcb96ab"
+                  "example": "2fd2b39e-db98-4293-8f57-eb64676ce3fd"
                 }
               }
             }
@@ -465,7 +465,7 @@
                   "description": "A CourseEnrollmentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "b83f8de0-9c69-416e-a1be-67daefe995c7"
+                  "example": "44f9fd3c-58b2-4cfc-a068-697d8c4e4cbe"
                 }
               }
             }
@@ -489,7 +489,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "10138840-41dc-4688-a30c-8120907db488"
+              "example": "6a99dcd5-5604-4541-90bc-ed1277ae2119"
             },
             "x-position": 1
           }
@@ -584,7 +584,7 @@
                   "description": "A DestinationId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "677072ff-84e1-4352-b790-820df43509ae"
+                  "example": "257f06fc-ccb2-4297-97ee-bb7bf3fc5198"
                 }
               }
             }
@@ -673,7 +673,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "3a93be82-95e3-4dac-89d5-8546c760b981"
+              "example": "140e3ac0-da71-4476-bf74-573afe7ad78b"
             },
             "x-position": 1
           }
@@ -708,7 +708,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "eeabf207-e663-4c84-ae82-99c926d14d0d"
+              "example": "4cf4e319-c8ce-4c3e-9178-62b6a2436ac7"
             },
             "x-position": 1
           },
@@ -745,7 +745,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "56b41f4f-085d-4163-b5ec-2b5dd68306b8"
+              "example": "62c0a3b7-5c9e-481e-b59e-1bfd88c0c7ec"
             },
             "x-position": 1
           },
@@ -810,7 +810,7 @@
                   "description": "A TodoItemId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "2e5c08f1-55b3-4f73-a5f6-bf79cc7de113"
+                  "example": "25bc80be-4c96-4143-8a2e-c969ea5e4c33"
                 }
               }
             }
@@ -834,7 +834,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "2907d514-4aa6-42e3-a94a-4770e685cf68"
+              "example": "9f40847f-6e3a-49b4-a95e-2dcac9f6f8f3"
             },
             "x-position": 1
           }
@@ -900,7 +900,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "044828ea-a413-4840-ad2b-5e35ee6f180f"
+              "example": "4cd13a38-fda1-4fc2-b584-37d77b34d1d9"
             },
             "x-position": 1
           }
@@ -973,7 +973,7 @@
                   "description": "A TodoListId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "a535b67f-c270-4288-a840-66f25288eddd"
+                  "example": "4e5e21a7-d1ae-4968-81ba-4174d7002b18"
                 }
               }
             }
@@ -997,7 +997,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "caae122f-7993-40a1-a225-ed501f2bb935"
+              "example": "f94e1795-380b-42e0-b7dd-3d94360aa1e2"
             },
             "x-position": 1
           }
@@ -1038,7 +1038,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "f7bcfa7f-56c3-4215-8b8a-ebcec9d6c566"
+              "example": "9cd0b74b-9d69-4d63-aacc-fab2c4ea1680"
             },
             "x-position": 1
           }
@@ -1474,7 +1474,7 @@
             "description": "A SemesterId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "6feb9b22-7962-4dcb-a8ad-d990c9a2b7b3"
+            "example": "36b57be4-872a-425e-84fa-8c5884b40226"
           }
         }
       },
@@ -1488,7 +1488,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "b70259eb-a2bd-4a32-95de-90d838607cb2"
+            "example": "6f872133-b2b4-41a9-ad3b-3856c2a467d1"
           }
         }
       },
@@ -1524,7 +1524,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "a2e8265f-4b27-4fe2-9e46-66c811f7da12"
+            "example": "657905ea-bc48-49aa-954b-ede3a38df0cf"
           },
           "user": {
             "$ref": "#/components/schemas/ClaimsPrincipal"
@@ -1854,7 +1854,7 @@
             "description": "A ResourceId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "0a1d42a4-c854-4c9a-9ef6-14945a9aeba0"
+            "example": "68d17866-e4a6-4a84-98bf-c83314633a11"
           }
         }
       },
@@ -1868,7 +1868,7 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "941189b3-0d10-451b-835e-63b154acbdbe"
+            "example": "134ef803-c5ed-4ee0-a8e4-4b3ed2242b90"
           }
         }
       },
@@ -1882,7 +1882,7 @@
             "description": "A DestinationId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "c0a3c87a-6bde-432f-935f-9af183023d3d"
+            "example": "216c1663-2188-4f52-b17b-70496e775da3"
           }
         }
       },
@@ -1898,7 +1898,7 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "7d6d8362-ea75-45cb-80d3-859accbc6807"
+            "example": "e3010eb1-4458-42d5-8e37-99a33fc90115"
           },
           "description": {
             "type": "string",
@@ -2002,7 +2002,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "d9b7ce5a-305c-4c6c-b6ef-512a25d72688"
+            "example": "7b9c4f8d-3544-4a8c-b877-5ed3d700ad23"
           },
           "title": {
             "type": "string",
@@ -2019,7 +2019,7 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "cf07797b-baf0-44af-a75f-46a41a79715f"
+            "example": "3bb0069f-25c5-4e72-814a-3b6ea350fba5"
           },
           "title": {
             "type": "string",
@@ -2039,14 +2039,14 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "9f6572de-c064-451e-8ea2-a268b21a36c0"
+            "example": "196f7125-64d4-428d-9832-13135ee4cca2"
           },
           "listId": {
             "type": "string",
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "220a9c68-aa13-4b4c-8ccf-398fc569d55c"
+            "example": "0933aa7a-1fdf-4f24-98cc-c02777f5a89e"
           },
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
@@ -2177,7 +2177,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "98ab1f04-e0b8-43a2-b9a2-368ed5d6cc6f"
+            "example": "d32d69d7-e06d-49fc-b6c9-b61e7e965584"
           },
           "title": {
             "type": "string",

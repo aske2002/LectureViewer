@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, FileAudio, FileVideo, FileText } from "lucide-react";
-import RequireAuthorization from "./require-authorization";
+import RequireAuthorization from "./shared/require-authorization";
 import { RoleDto } from "@/api/web-api-client";
 
 export function UploadDialog() {
@@ -38,14 +38,14 @@ export function UploadDialog() {
     }
   };
 
+  console.log("Files selected:", files);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <RequireAuthorization
-          allowRoles={[RoleDto.Instructor, RoleDto.Administrator]}
-        >
-          <Button>Upload Lecture</Button>
-        </RequireAuthorization>
+                <Button
+          onClick={() => setOpen(true)}
+        >Upload Lecture</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
