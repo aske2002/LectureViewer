@@ -22,12 +22,12 @@ public class Courses : EndpointGroupBase
             .MapPost(CreateCourse);
     }
 
-    public async Task<Ok<CourseDto>> GetCourseById(ISender sender, CourseId courseId)
+    public async Task<Ok<CourseEntityDto>> GetCourseById(ISender sender, CourseId courseId)
     {
         var vm = await sender.Send(new GetCourseQuery(courseId));
         return TypedResults.Ok(vm);
     }
-    public async Task<Ok<FilteredList<CourseDto>>> ListCourses(ISender sender)
+    public async Task<Ok<FilteredList<CourseEntityDto>>> ListCourses(ISender sender)
     {
         var vm = await sender.Send(new ListCoursesWithPaginationQuery());
         return TypedResults.Ok(vm);

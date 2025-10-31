@@ -14,8 +14,9 @@ export const Route = createFileRoute("/(authenticated)/")({
 
 function RouteComponent() {
   const {
-    courses: { isPending, data },
+    courses: { isLoading, data },
   } = useCoursesApi();
+  console.log(data);
 
   return (
     <>

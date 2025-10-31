@@ -1,5 +1,5 @@
 import { CoursesClient } from "./web-api-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useApi from "./use-api";
 
 export function useCoursesApi() {
@@ -7,9 +7,9 @@ export function useCoursesApi() {
 
   const queryClient = useQueryClient();
 
-  const courses = useMutation({
-    mutationKey: ["list-courses"],
-    mutationFn: async () => {
+  const courses = useQuery({
+    queryKey: ["list-courses"],
+    queryFn: async () => {
       return coursesClient.listCourses();
     },
   });

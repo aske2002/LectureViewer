@@ -10,5 +10,8 @@ internal class CourseConfiguration : IEntityTypeConfiguration<Course>
         builder.HasMany(c => c.Lectures).WithOne(l => l.Course).HasForeignKey(r => r.CourseId);
         builder.HasMany(c => c.InviteLinks).WithOne(l => l.Course).HasForeignKey(i => i.CourseId);
         builder.HasOne(c => c.Semester).WithMany(s => s.Courses).HasForeignKey(c => c.SemesterId);
+        builder.HasMany(c => c.Instructors).WithMany(i => i.InstructedCourses);
+        builder
+            .OwnsOne(b => b.Colour);
     }
 }

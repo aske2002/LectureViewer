@@ -9,6 +9,7 @@ public class Course : BaseAuditableEntity<CourseId>
     public required string InternalIdentifier { get; init; }
     public required string Name { get; set; }
     public required string Description { get; set; }
+    public Colour Colour { get; set; } = Colour.Grey;
     public SemesterId SemesterId { get; init; } = SemesterId.Default();
     public Semester Semester { get; init; } = null!;
     public ICollection<Lecture> Lectures { get; init; } = new List<Lecture>();

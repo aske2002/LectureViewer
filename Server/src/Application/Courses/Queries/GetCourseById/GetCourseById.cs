@@ -6,9 +6,9 @@ using backend.Domain.Interfaces;
 namespace backend.Application.Courses.Queries.GetCourseById;
 
 [Authorize]
-public record GetCourseQuery(CourseId Id) : IRequest<CourseDto>;
+public record GetCourseQuery(CourseId Id) : IRequest<CourseEntityDto>;
 
-public class GetCourseQueryHandler : IRequestHandler<GetCourseQuery, CourseDto>
+public class GetCourseQueryHandler : IRequestHandler<GetCourseQuery, CourseEntityDto>
 {
     private readonly IRepository<Course, CourseId> _repository;
     private readonly IMapper _mapper;
@@ -19,9 +19,9 @@ public class GetCourseQueryHandler : IRequestHandler<GetCourseQuery, CourseDto>
         _mapper = mapper;
     }
 
-    public async Task<CourseDto> Handle(GetCourseQuery request, CancellationToken cancellationToken)
+    public async Task<CourseEntityDto> Handle(GetCourseQuery request, CancellationToken cancellationToken)
     {
         var response = await _repository.GetByIdAsync(request.Id, cancellationToken: cancellationToken);
-        return _mapper.Map<CourseDto>(response);
+        return _mapper.Map<CourseEntityDto>(response);
     }
 }

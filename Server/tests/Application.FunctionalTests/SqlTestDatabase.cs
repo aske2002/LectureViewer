@@ -1,12 +1,13 @@
 ﻿using System.Data.Common;
-using strejs.Infrastructure.Data;
+using backend.Application.FunctionalTests;
+using backend.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Respawn;
 
-namespace strejs.Application.FunctionalTests;
+namespace backend.Application.FunctionalTests;
 
 public class SqlTestDatabase : ITestDatabase
 {

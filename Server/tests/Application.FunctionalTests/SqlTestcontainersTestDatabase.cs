@@ -1,12 +1,12 @@
 ﻿using System.Data.Common;
-using strejs.Infrastructure.Data;
+using backend.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Respawn;
 using Testcontainers.MsSql;
 
-namespace strejs.Application.FunctionalTests;
+namespace backend.Application.FunctionalTests;
 
 public class SqlTestcontainersTestDatabase : ITestDatabase
 {

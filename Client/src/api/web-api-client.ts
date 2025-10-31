@@ -633,10 +633,10 @@ export class UsersClient implements IUsersClient {
 }
 
 export interface ICoursesClient {
-    listCourses(): Promise<FilteredListOfCourseDto>;
+    listCourses(): Promise<FilteredListOfCourseEntityDto>;
     createCourse(command: CreateCourseCommand): Promise<string>;
     enrollInCourse(command: EnrollCourseCommand): Promise<string>;
-    getCourseById(courseId: string): Promise<CourseDto>;
+    getCourseById(courseId: string): Promise<CourseEntityDto>;
 }
 
 export class CoursesClient implements ICoursesClient {
@@ -652,7 +652,7 @@ export class CoursesClient implements ICoursesClient {
 
     }
 
-    listCourses( cancelToken?: CancelToken): Promise<FilteredListOfCourseDto> {
+    listCourses( cancelToken?: CancelToken): Promise<FilteredListOfCourseEntityDto> {
         let url_ = this.baseUrl + "/api/Courses";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -676,7 +676,7 @@ export class CoursesClient implements ICoursesClient {
         });
     }
 
-    protected processListCourses(response: AxiosResponse): Promise<FilteredListOfCourseDto> {
+    protected processListCourses(response: AxiosResponse): Promise<FilteredListOfCourseEntityDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -690,14 +690,14 @@ export class CoursesClient implements ICoursesClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = FilteredListOfCourseDto.fromJS(resultData200);
-            return Promise.resolve<FilteredListOfCourseDto>(result200);
+            result200 = FilteredListOfCourseEntityDto.fromJS(resultData200);
+            return Promise.resolve<FilteredListOfCourseEntityDto>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<FilteredListOfCourseDto>(null as any);
+        return Promise.resolve<FilteredListOfCourseEntityDto>(null as any);
     }
 
     createCourse(command: CreateCourseCommand, cancelToken?: CancelToken): Promise<string> {
@@ -806,7 +806,7 @@ export class CoursesClient implements ICoursesClient {
         return Promise.resolve<string>(null as any);
     }
 
-    getCourseById(courseId: string, cancelToken?: CancelToken): Promise<CourseDto> {
+    getCourseById(courseId: string, cancelToken?: CancelToken): Promise<CourseEntityDto> {
         let url_ = this.baseUrl + "/api/Courses/{courseId}";
         if (courseId === undefined || courseId === null)
             throw new Error("The parameter 'courseId' must be defined.");
@@ -833,7 +833,7 @@ export class CoursesClient implements ICoursesClient {
         });
     }
 
-    protected processGetCourseById(response: AxiosResponse): Promise<CourseDto> {
+    protected processGetCourseById(response: AxiosResponse): Promise<CourseEntityDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -847,14 +847,14 @@ export class CoursesClient implements ICoursesClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = CourseDto.fromJS(resultData200);
-            return Promise.resolve<CourseDto>(result200);
+            result200 = CourseEntityDto.fromJS(resultData200);
+            return Promise.resolve<CourseEntityDto>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<CourseDto>(null as any);
+        return Promise.resolve<CourseEntityDto>(null as any);
     }
 }
 
@@ -2515,14 +2515,14 @@ export interface IFilteredQuery {
     orderBy: string | undefined;
 }
 
-export class FilteredListOfCourseDto extends FilteredQuery implements IFilteredListOfCourseDto {
-    items!: CourseDto[];
+export class FilteredListOfCourseEntityDto extends FilteredQuery implements IFilteredListOfCourseEntityDto {
+    items!: CourseEntityDto[];
     totalPages!: number;
     totalCount!: number;
     hasPreviousPage!: boolean;
     hasNextPage!: boolean;
 
-    constructor(data?: IFilteredListOfCourseDto) {
+    constructor(data?: IFilteredListOfCourseEntityDto) {
         super(data);
     }
 
@@ -2532,7 +2532,7 @@ export class FilteredListOfCourseDto extends FilteredQuery implements IFilteredL
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(CourseDto.fromJS(item));
+                    this.items!.push(CourseEntityDto.fromJS(item));
             }
             this.totalPages = _data["totalPages"];
             this.totalCount = _data["totalCount"];
@@ -2541,9 +2541,9 @@ export class FilteredListOfCourseDto extends FilteredQuery implements IFilteredL
         }
     }
 
-    static override fromJS(data: any): FilteredListOfCourseDto {
+    static override fromJS(data: any): FilteredListOfCourseEntityDto {
         data = typeof data === 'object' ? data : {};
-        let result = new FilteredListOfCourseDto();
+        let result = new FilteredListOfCourseEntityDto();
         result.init(data);
         return result;
     }
@@ -2564,8 +2564,8 @@ export class FilteredListOfCourseDto extends FilteredQuery implements IFilteredL
     }
 }
 
-export interface IFilteredListOfCourseDto extends IFilteredQuery {
-    items: CourseDto[];
+export interface IFilteredListOfCourseEntityDto extends IFilteredQuery {
+    items: CourseEntityDto[];
     totalPages: number;
     totalCount: number;
     hasPreviousPage: boolean;
@@ -2608,15 +2608,17 @@ export interface IBaseResponseOfCourseId {
     id: string;
 }
 
-export class CourseDto extends BaseResponseOfCourseId implements ICourseDto {
+export class CourseEntityDto extends BaseResponseOfCourseId implements ICourseEntityDto {
     startDate!: Date;
     endDate!: Date;
     semester!: SemesterDto;
+    colour!: Colour;
     internalIdentifier!: string;
     name!: string;
     description!: string;
+    instructors!: PublicUser[];
 
-    constructor(data?: ICourseDto) {
+    constructor(data?: ICourseEntityDto) {
         super(data);
     }
 
@@ -2626,15 +2628,21 @@ export class CourseDto extends BaseResponseOfCourseId implements ICourseDto {
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
             this.semester = _data["semester"] ? SemesterDto.fromJS(_data["semester"]) : <any>undefined;
+            this.colour = _data["colour"] ? Colour.fromJS(_data["colour"]) : <any>undefined;
             this.internalIdentifier = _data["internalIdentifier"];
             this.name = _data["name"];
             this.description = _data["description"];
+            if (Array.isArray(_data["instructors"])) {
+                this.instructors = [] as any;
+                for (let item of _data["instructors"])
+                    this.instructors!.push(PublicUser.fromJS(item));
+            }
         }
     }
 
-    static override fromJS(data: any): CourseDto {
+    static override fromJS(data: any): CourseEntityDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CourseDto();
+        let result = new CourseEntityDto();
         result.init(data);
         return result;
     }
@@ -2644,21 +2652,29 @@ export class CourseDto extends BaseResponseOfCourseId implements ICourseDto {
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
         data["semester"] = this.semester ? this.semester.toJSON() : <any>undefined;
+        data["colour"] = this.colour ? this.colour.toJSON() : <any>undefined;
         data["internalIdentifier"] = this.internalIdentifier;
         data["name"] = this.name;
         data["description"] = this.description;
+        if (Array.isArray(this.instructors)) {
+            data["instructors"] = [];
+            for (let item of this.instructors)
+                data["instructors"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface ICourseDto extends IBaseResponseOfCourseId {
+export interface ICourseEntityDto extends IBaseResponseOfCourseId {
     startDate: Date;
     endDate: Date;
     semester: SemesterDto;
+    colour: Colour;
     internalIdentifier: string;
     name: string;
     description: string;
+    instructors: PublicUser[];
 }
 
 export abstract class BaseResponseOfSemesterId implements IBaseResponseOfSemesterId {
@@ -2748,6 +2764,115 @@ export enum Season {
     Spring = 2,
     Summer = 3,
     Fall = 4,
+}
+
+export abstract class ValueObject implements IValueObject {
+
+    constructor(data?: IValueObject) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): ValueObject {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'ValueObject' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IValueObject {
+}
+
+export class Colour extends ValueObject implements IColour {
+    code!: string;
+
+    constructor(data?: IColour) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.code = _data["code"];
+        }
+    }
+
+    static override fromJS(data: any): Colour {
+        data = typeof data === 'object' ? data : {};
+        let result = new Colour();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IColour extends IValueObject {
+    code: string;
+}
+
+export class PublicUser implements IPublicUser {
+    id!: string;
+    userName!: string | undefined;
+    firstName!: string;
+    lastName!: string;
+
+    constructor(data?: IPublicUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+        }
+    }
+
+    static fromJS(data: any): PublicUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new PublicUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        return data;
+    }
+}
+
+export interface IPublicUser {
+    id: string;
+    userName: string | undefined;
+    firstName: string;
+    lastName: string;
 }
 
 export class EnrollCourseCommand implements IEnrollCourseCommand {

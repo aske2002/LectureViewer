@@ -34,7 +34,7 @@ public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, C
     public async Task<CourseId> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
     {
         var course = await _courseService.CreateCourseAsync(
-            owner: _userAccessor.User.ToUser(),
+            owner: await _userAccessor.GetCurrentUserAsync(),
             internalIdentifier: request.InternalIdentifier,
             name: request.Name,
             description: request.Description,
