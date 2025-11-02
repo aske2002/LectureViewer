@@ -9,11 +9,10 @@ public class Course : BaseAuditableEntity<CourseId>
     public required string InternalIdentifier { get; init; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public Colour Colour { get; set; } = Colour.Grey;
     public SemesterId SemesterId { get; init; } = SemesterId.Default();
     public Semester Semester { get; init; } = null!;
-    public ICollection<Lecture> Lectures { get; init; } = new List<Lecture>();
-    public ICollection<ApplicationUser> Instructors { get; init; } = new List<ApplicationUser>();
-    public ICollection<CourseEnrollment> Enrollments { get; init; } = new List<CourseEnrollment>();
-    public ICollection<CourseInviteLink> InviteLinks { get; init; } = new List<CourseInviteLink>();
+    public IList<Lecture> Lectures { get; private set; } = new List<Lecture>();
+    public IList<CourseInstructor> Instructors { get; private set; } = new List<CourseInstructor>();
+    public IList<CourseEnrollment> Enrollments { get; private set; } = new List<CourseEnrollment>();
+    public IList<CourseInviteLink> InviteLinks { get; private set; } = new List<CourseInviteLink>();
 }

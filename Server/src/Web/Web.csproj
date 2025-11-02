@@ -32,6 +32,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MiniProfiler.EntityFrameworkCore" />
     <PackageReference Include="NSwag.AspNetCore" />
     <PackageReference Include="NSwag.CodeGeneration.TypeScript" />
     <PackageReference Include="NSwag.MSBuild">
@@ -42,9 +43,7 @@
   </ItemGroup>
 
   <Target Name="StartViteDevServer" BeforeTargets="DebugRun">
-    <Exec WorkingDirectory="$(SpaRoot)"
-      Command="yarn start"
-      Condition=" '$(Configuration)' == 'Debug' " />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="yarn start" Condition=" '$(Configuration)' == 'Debug' " />
   </Target>
 
   <ItemGroup>
@@ -54,16 +53,13 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build"
-    Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
     </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'"
-      Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-    <Message Importance="high"
-      Text="Restoring dependencies using 'yarn'. This may take several minutes..." />
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'yarn'. This may take several minutes..." />
     <Exec WorkingDirectory="$(SpaRoot)" Command="yarn install" />
   </Target>
 
@@ -73,13 +69,8 @@
   </PropertyGroup>
 
 
-  <Target Name="NSwag" AfterTargets="PostBuildEvent"
-    Condition=" '$(Configuration)' == 'Debug' And '$(SkipNSwag)' != 'True'">
-    <Exec ConsoleToMSBuild="true"
-      ContinueOnError="true"
-      WorkingDirectory="$(ProjectDir)"
-      EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-      Command="$(NSwagExe_Net90) run config.nswag /variables:Configuration=$(Configuration)">
+  <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' And '$(SkipNSwag)' != 'True'">
+    <Exec ConsoleToMSBuild="true" ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net90) run config.nswag /variables:Configuration=$(Configuration)">
       <Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
       <Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
     </Exec>
@@ -90,20 +81,15 @@
     <Message Text="$(NSwagOutput)" Importance="high" />
 
     <!-- Optional: Log line by line -->
-    <WriteLinesToFile
-      File="nswag-output.log"
-      Lines="$(NSwagOutput)"
-      Overwrite="true" />
+    <WriteLinesToFile File="nswag-output.log" Lines="$(NSwagOutput)" Overwrite="true" />
     <Message Text="NSwag output written to nswag-output.log" Importance="high" />
 
-    <Error Text="NSwag failed. See nswag-output.log for details."
-      Condition="'$(NSwagExitCode)' != '0'" />
+    <Error Text="NSwag failed. See nswag-output.log for details." Condition="'$(NSwagExitCode)' != '0'" />
 
   </Target>
 
   <Target Name="BuildWithoutNSwag">
-    <MSBuild Projects="$(MSBuildProjectFile)" Targets="Build"
-      Configuration="Debug" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="Build" Configuration="Debug" />
   </Target>
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
@@ -114,8 +100,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')"
-        Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>

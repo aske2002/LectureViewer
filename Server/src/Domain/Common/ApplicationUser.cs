@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 public class ApplicationUser : IdentityUser
@@ -11,6 +12,6 @@ public class ApplicationUser : IdentityUser
     [MaxLength(100)]
     public string LastName { get; set; } = string.Empty;
 
-    public ICollection<CourseEnrollment> Enrollments { get; init; } = new List<CourseEnrollment>();
-    public ICollection<Course> InstructedCourses { get; init; } = new List<Course>();
+    public IList<CourseEnrollment> Enrollments { get; init; } = new List<CourseEnrollment>();
+    public IList<CourseInstructor> Courses { get; init; } = new List<CourseInstructor>();
 }

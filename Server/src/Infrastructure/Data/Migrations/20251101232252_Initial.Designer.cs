@@ -12,8 +12,8 @@ using backend.Infrastructure.Data;
 namespace backend.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251030230611_ColourForCourse")]
-    partial class ColourForCourse
+    [Migration("20251101232252_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,9 +36,6 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
-
-                    b.Property<Guid?>("CourseId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -91,8 +88,6 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -392,6 +387,40 @@ namespace backend.Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CourseEnrollments");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.CourseInstructor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("InstructorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.ToTable("CourseInstructors");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.CourseInviteLink", b =>
@@ -732,13 +761,6 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("TripDescriptions");
                 });
 
-            modelBuilder.Entity("ApplicationUser", b =>
-                {
-                    b.HasOne("backend.Domain.Entities.Course", null)
-                        .WithMany("Instructors")
-                        .HasForeignKey("CourseId");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -798,26 +820,6 @@ namespace backend.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("backend.Domain.ValueObjects.Colour", "Colour", b1 =>
-                        {
-                            b1.Property<Guid>("CourseId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Code")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("CourseId");
-
-                            b1.ToTable("Courses");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CourseId");
-                        });
-
-                    b.Navigation("Colour")
-                        .IsRequired();
-
                     b.Navigation("Semester");
                 });
 
@@ -842,6 +844,25 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("InviteLink");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.CourseInstructor", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Course", "Course")
+                        .WithMany("Instructors")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ApplicationUser", "Instructor")
+                        .WithMany("Courses")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Instructor");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.CourseInviteLink", b =>
@@ -943,6 +964,8 @@ namespace backend.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ApplicationUser", b =>
                 {
+                    b.Navigation("Courses");
+
                     b.Navigation("Enrollments");
                 });
 

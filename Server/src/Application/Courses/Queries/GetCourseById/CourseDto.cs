@@ -1,4 +1,5 @@
-﻿using backend.Application.Common.Models;
+﻿using AutoMapper;
+using backend.Application.Common.Models;
 using backend.Application.Countries.Queries.GetCountries;
 using backend.Application.Semesters.Queries.GetSemesterById;
 using backend.Domain.Entities;
@@ -22,7 +23,7 @@ public record CourseEntityDto : BaseResponse<CourseId>
         public Mapping()
         {
             CreateMap<Course, CourseEntityDto>()
-            .ForMember(dest => dest.Instructors, opt => opt.MapFrom(src => src.Instructors));
+            .ForMember(dest => dest.Instructors, opt => opt.MapFrom(src => src.Instructors.Select(ci => ci.Instructor)));
         }
     }
 }

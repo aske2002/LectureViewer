@@ -395,7 +395,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FilteredListOfCourseEntityDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CourseListDto"
+                  }
                 }
               }
             }
@@ -429,7 +432,7 @@
                   "description": "A CourseId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "ff870e94-4009-4b7d-ba8f-d87281146e6b"
+                  "example": "c36a7042-babd-451a-a169-cbadb6a0ee52"
                 }
               }
             }
@@ -465,7 +468,7 @@
                   "description": "A CourseEnrollmentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "0cc1dcdd-581f-479c-ba1b-f959e4f265c6"
+                  "example": "c929f360-14c1-4b89-9bed-e490400154dc"
                 }
               }
             }
@@ -489,7 +492,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "98fe19c6-59a0-430d-afea-82c33c2f3aab"
+              "example": "92f62d24-81d9-41cd-912a-a4fdda34c021"
             },
             "x-position": 1
           }
@@ -584,7 +587,7 @@
                   "description": "A DestinationId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "588ed82e-62bf-4003-934a-acf035c4c326"
+                  "example": "24664bc5-51e5-4ab8-a5d8-4078263d5c8f"
                 }
               }
             }
@@ -673,7 +676,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "1af8a860-4cc2-4fd0-9444-e025167b4f0b"
+              "example": "c4181e36-e9ba-45b9-84b2-21a49d78dc80"
             },
             "x-position": 1
           }
@@ -708,7 +711,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "b1efb265-626f-4953-81af-df90e8c36231"
+              "example": "c843f614-7aa4-4150-9c44-fbe6c7bb1555"
             },
             "x-position": 1
           },
@@ -745,7 +748,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "4a68375a-80c2-41b1-ad10-34f14605801f"
+              "example": "1c0d831e-6413-48f3-9081-ec68479919bd"
             },
             "x-position": 1
           },
@@ -810,7 +813,7 @@
                   "description": "A TodoItemId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "361415e3-d0bd-4fcd-99b6-d8581f705f06"
+                  "example": "a7389e15-eee7-497a-a6e6-4bcf997eb759"
                 }
               }
             }
@@ -834,7 +837,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "e8ec1e74-9e5a-4d3f-a64f-125590d4836f"
+              "example": "e38b7af3-69d3-47c0-b62d-644d6de86c3a"
             },
             "x-position": 1
           }
@@ -900,7 +903,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "bfade41c-e601-413b-b4e5-7c6c4c0ed687"
+              "example": "b5897de1-3b1c-433b-84e3-c37aea4dab8a"
             },
             "x-position": 1
           }
@@ -973,7 +976,7 @@
                   "description": "A TodoListId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "71650013-8774-497c-ae3d-e32b0d403fe8"
+                  "example": "69ecb515-435e-4455-863f-232cd94a383d"
                 }
               }
             }
@@ -997,7 +1000,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "6c5b3acb-2a0d-4b9e-a430-28eac76afb04"
+              "example": "3ef8c887-2d74-45f3-a15b-57316c30f022"
             },
             "x-position": 1
           }
@@ -1038,7 +1041,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "ea39bde6-d130-48a0-bc0f-9fd873a33f4c"
+              "example": "811f9aa6-f8df-4045-ac95-16dc14b66065"
             },
             "x-position": 1
           }
@@ -1352,40 +1355,7 @@
           "CanDeleteCourses"
         ]
       },
-      "FilteredListOfCourseEntityDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/FilteredQuery"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "items": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/CourseEntityDto"
-                }
-              },
-              "totalPages": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "totalCount": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "hasPreviousPage": {
-                "type": "boolean"
-              },
-              "hasNextPage": {
-                "type": "boolean"
-              }
-            }
-          }
-        ]
-      },
-      "CourseEntityDto": {
+      "CourseListDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseResponseOfCourseId"
@@ -1402,12 +1372,6 @@
                 "type": "string",
                 "format": "date-time"
               },
-              "semester": {
-                "$ref": "#/components/schemas/SemesterDto"
-              },
-              "colour": {
-                "$ref": "#/components/schemas/Colour"
-              },
               "internalIdentifier": {
                 "type": "string"
               },
@@ -1416,6 +1380,9 @@
               },
               "description": {
                 "type": "string"
+              },
+              "semester": {
+                "$ref": "#/components/schemas/SemesterDto"
               },
               "instructors": {
                 "type": "array",
@@ -1483,30 +1450,9 @@
             "description": "A SemesterId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "eaaf87bb-e1b5-4c74-875b-71d4a1710bfa"
+            "example": "2f6fe4fc-06ac-401f-aecd-111854d82e32"
           }
         }
-      },
-      "Colour": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ValueObject"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "code": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "ValueObject": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
       },
       "PublicUser": {
         "type": "object",
@@ -1537,27 +1483,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "e6083e94-f626-40cb-8e91-68573934c909"
-          }
-        }
-      },
-      "FilteredQuery": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "orderBy": {
-            "type": "string",
-            "nullable": true
+            "example": "184c4f97-4c60-48be-8738-4b2e3aad527d"
           }
         }
       },
@@ -1573,7 +1499,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "4e356627-3df7-40d0-9e6e-f1cd05ec8a1d"
+            "example": "17e646f7-4f92-4a26-9951-6b88e5031895"
           },
           "user": {
             "$ref": "#/components/schemas/ClaimsPrincipal"
@@ -1726,6 +1652,69 @@
             "type": "boolean"
           }
         }
+      },
+      "CourseEntityDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseResponseOfCourseId"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "startDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "semester": {
+                "$ref": "#/components/schemas/SemesterDto"
+              },
+              "colour": {
+                "$ref": "#/components/schemas/Colour"
+              },
+              "internalIdentifier": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "instructors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PublicUser"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Colour": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValueObject"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ValueObject": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
       },
       "CreateCourseCommand": {
         "type": "object",
@@ -1903,7 +1892,7 @@
             "description": "A ResourceId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "f58e42a6-28a1-49a6-9c39-20035674ddcb"
+            "example": "0ea56526-50fa-4779-9ba9-6f5ef7b5d82c"
           }
         }
       },
@@ -1917,7 +1906,7 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "b6f483ae-2a94-436c-bfec-e31d030b26fd"
+            "example": "4393a890-1ab0-4692-b2fe-060b8fd2d93f"
           }
         }
       },
@@ -1931,7 +1920,27 @@
             "description": "A DestinationId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "98786868-a04e-47ab-9084-e274107138ca"
+            "example": "cdeec83d-171e-42e5-9e06-85c26e2d1425"
+          }
+        }
+      },
+      "FilteredQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "orderBy": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -1947,7 +1956,7 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "dcf9e16a-041c-4990-9aac-61e190476d76"
+            "example": "210d52d1-ea55-426f-83ea-3217a68f640d"
           },
           "description": {
             "type": "string",
@@ -2051,7 +2060,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "b33f90f7-156d-4913-98f4-fe9077aa2e07"
+            "example": "bf069060-d5d3-4db2-8ce8-599fe11461bf"
           },
           "title": {
             "type": "string",
@@ -2068,7 +2077,7 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "300fa941-6f3e-4870-b3cc-52db0fd69b0e"
+            "example": "5c9928c8-0db0-4eac-af01-c9aa0e76ba4b"
           },
           "title": {
             "type": "string",
@@ -2088,14 +2097,14 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "4a1471bf-881d-4d45-acc6-9afbb0927351"
+            "example": "9ba6e4d6-bb5e-44f7-9ee3-8fefc8275cc4"
           },
           "listId": {
             "type": "string",
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "bfca3c40-febc-402a-95c5-7d36cfb8e47c"
+            "example": "15f7f07c-cd18-48eb-b005-19509d1b57c1"
           },
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
@@ -2226,7 +2235,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "2b90de93-8461-4498-ab68-261d496cebcc"
+            "example": "7a04114b-1940-47fb-9907-3b231b0b6e4f"
           },
           "title": {
             "type": "string",

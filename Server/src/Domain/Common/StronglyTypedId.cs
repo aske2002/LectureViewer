@@ -21,7 +21,7 @@ public abstract class StronglyTypedId<T> : IStronglyTypedId where T : StronglyTy
     public static T Default()
     {
         var factory = StronglyTypedIdHelper.GetFactory(typeof(T));
-        return (T)factory(Guid.Empty);
+        return (T)factory(default);
     }
 
     public static bool TryParse(string? value, IFormatProvider? provider, out T id)

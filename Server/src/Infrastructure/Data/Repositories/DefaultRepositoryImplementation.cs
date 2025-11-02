@@ -35,7 +35,7 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
 
     private IQueryable<TEntity> WithFilter((int page, int pageSize)? pagination = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null, CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> query = _dbSet.AsNoTracking().AsSplitQuery();
+        IQueryable<TEntity> query = _dbSet;
 
         if (include != null)
         {
@@ -94,7 +94,7 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
     {
         var entittyQuery = WithFilter(pagination, filter, orderBy, include);
         var totalCount = await CountAsync(filter, orderBy, include, cancellationToken);
-
+        var allEntities = await entittyQuery.ToListAsync(cancellationToken);
         if (project != null)
         {
             var entities = await project(entittyQuery).ToListAsync(cancellationToken);

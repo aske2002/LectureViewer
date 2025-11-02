@@ -5,7 +5,7 @@
 namespace backend.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class PoliciesAdded : Migration
+    public partial class Fmm : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

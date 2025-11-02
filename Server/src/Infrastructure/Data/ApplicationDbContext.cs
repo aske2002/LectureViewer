@@ -8,6 +8,7 @@ using backend.Infrastructure.Data.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using StrejsApi.Infrastructure.Databases.Trips.Configuration;
 
 namespace backend.Infrastructure.Data;
 
@@ -26,7 +27,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<TripDescription> TripDescriptions => Set<TripDescription>();
     public DbSet<ClassYear> ClassYears => Set<ClassYear>();
     public DbSet<Lecture> Lectures => Set<Lecture>();
-    public DbSet<Course> Courses => Set<Course>();  
+    public DbSet<Course> Courses => Set<Course>();
+    public DbSet<CourseInstructor> CourseInstructors => Set<CourseInstructor>();
     public DbSet<CourseEnrollment> CourseEnrollments => Set<CourseEnrollment>();
     public DbSet<CourseInviteLink> CourseInviteLinks => Set<CourseInviteLink>();
 
@@ -35,6 +37,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     {
         base.OnModelCreating(builder);
         builder.ConfigureBaseEntity();
+        builder.Entity<ApplicationUser>(entity =>
+        {
+            entity.HasMany(u => u.Courses).WithOne(c => c.Instructor).HasForeignKey(c => c.InstructorId);
+        });
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         AddStronglyTypedIdConversions(builder);
     }

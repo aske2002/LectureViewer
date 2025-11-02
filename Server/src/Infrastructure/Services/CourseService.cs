@@ -49,12 +49,18 @@ public class CourseService : ICourseService
             throw new CourseNotFoundException(courseId);
         }
 
-        if (course.Instructors.Contains(user))
+        if (course.Instructors.Any(i => i.InstructorId == user.Id))
         {
             throw new InstructorAlreadyPresentException(user, courseId);
         }
 
-        course.Instructors.Add(user);
+        course.Instructors.Add(new CourseInstructor
+        {
+            CourseId = courseId,
+            Course = course,
+            InstructorId = user.Id,
+            Instructor = user
+        });
         await _courseRepository.UpdateAsync(course);
     }
 
@@ -160,10 +166,16 @@ public class CourseService : ICourseService
         {
             Name = name,
             Description = description,
-            Instructors = new List<ApplicationUser> { owner },
             SemesterId = existingSemesterId,
             InternalIdentifier = internalIdentifier
         };
+        course.Instructors.Add(new CourseInstructor
+        {
+            Course = course,
+            CourseId = course.Id,
+            Instructor = owner,
+            InstructorId = owner.Id
+        });
 
         await _courseRepository.AddAsync(course);
         return course;
@@ -240,7 +252,7 @@ public class CourseService : ICourseService
         return lecture;
     }
 
-    public async Task<ICollection<ApplicationUser>> ListCourseInstructorsAsync(CourseId courseId)
+    public async Task<ICollection<CourseInstructor>> ListCourseInstructorsAsync(CourseId courseId)
     {
         var course = await _courseRepository.GetByIdAsync(courseId, include: c => c.Include(c => c.Instructors));
         if (course == null)
@@ -266,7 +278,7 @@ public class CourseService : ICourseService
             throw new CourseNotFoundException(courseId);
         }
 
-        var instructor = course.Instructors.FirstOrDefault(i => i.Id == user.Id);
+        var instructor = course.Instructors.FirstOrDefault(i => i.InstructorId == user.Id);
         if (instructor == null)
         {
             throw new UserNotFoundException(user.Id);

@@ -26,7 +26,7 @@ public interface ICourseService
     // Instructor management
     Task AddInstructorToCourseAsync(ApplicationUser user, CourseId courseId);
     Task RemoveInstructorFromCourseAsync(ApplicationUser user, CourseId courseId);
-    Task<ICollection<ApplicationUser>> ListCourseInstructorsAsync(CourseId courseId);
+    Task<ICollection<CourseInstructor>> ListCourseInstructorsAsync(CourseId courseId);
 
     // Lecture management
     Task<ICollection<Lecture>> GetCourseLecturesAsync(CourseId courseId);

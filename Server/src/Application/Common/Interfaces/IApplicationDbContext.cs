@@ -23,6 +23,7 @@ public interface IApplicationDbContext
     DbSet<ClassYear> ClassYears { get; }
     DbSet<Lecture> Lectures { get; }
     DbSet<Course> Courses { get; }
+    DbSet<CourseInstructor> CourseInstructors { get; }
     DbSet<CourseEnrollment> CourseEnrollments { get; }
     DbSet<CourseInviteLink> CourseInviteLinks { get; }
     DbSet<TEntity> Set<TEntity>() where TEntity : class;

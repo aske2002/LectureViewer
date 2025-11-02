@@ -27,7 +27,7 @@ public class Courses : EndpointGroupBase
         var vm = await sender.Send(new GetCourseQuery(courseId));
         return TypedResults.Ok(vm);
     }
-    public async Task<Ok<FilteredList<CourseEntityDto>>> ListCourses(ISender sender)
+    public async Task<Ok<List<CourseListDto>>> ListCourses(ISender sender)
     {
         var vm = await sender.Send(new ListCoursesWithPaginationQuery());
         return TypedResults.Ok(vm);

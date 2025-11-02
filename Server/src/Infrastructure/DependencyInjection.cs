@@ -42,9 +42,10 @@ public static class DependencyInjection
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-            options.UseNpgsql(connectionString);
+            options.AddInterceptors(new EfCommandInterceptor());
+            options.UseNpgsql(connectionString).EnableSensitiveDataLogging();
+            options.LogTo(Console.WriteLine, LogLevel.Information);
         });
-
         builder.Services.ConfigureDataSeeders();
 
         builder.Services.AddLogging(options =>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 using Azure.Identity;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Helpers;
@@ -19,6 +20,7 @@ public static class DependencyInjection
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
             options.SerializerOptions.Converters.Add(new StronglyTypedIdJsonConverterFactory());
+            options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();

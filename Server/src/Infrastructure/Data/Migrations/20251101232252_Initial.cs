@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -61,7 +62,6 @@ namespace backend.Infrastructure.Data.Migrations
                     EndDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -80,7 +80,6 @@ namespace backend.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     IsoCode = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -102,7 +101,6 @@ namespace backend.Infrastructure.Data.Migrations
                     MimeType = table.Column<string>(type: "text", nullable: false),
                     Size = table.Column<int>(type: "integer", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: true),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -114,13 +112,29 @@ namespace backend.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Semester",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Season = table.Column<int>(type: "integer", nullable: false),
+                    Year = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Semester", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TodoLists",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Colour_Code = table.Column<string>(type: "text", nullable: false),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -245,7 +259,6 @@ namespace backend.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     CountryId = table.Column<Guid>(type: "uuid", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -263,6 +276,33 @@ namespace backend.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Courses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    InternalIdentifier = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    SemesterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Courses_Semester_SemesterId",
+                        column: x => x.SemesterId,
+                        principalTable: "Semester",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TodoItems",
                 columns: table => new
                 {
@@ -273,7 +313,6 @@ namespace backend.Infrastructure.Data.Migrations
                     Priority = table.Column<int>(type: "integer", nullable: false),
                     Reminder = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Done = table.Column<bool>(type: "boolean", nullable: false),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -300,7 +339,6 @@ namespace backend.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     StartDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     EndDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -324,6 +362,86 @@ namespace backend.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CourseInstructors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    InstructorId = table.Column<string>(type: "text", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseInstructors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseInstructors_AspNetUsers_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseInstructors_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseInviteLinks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExpirationDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseInviteLinks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseInviteLinks_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Lectures",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lectures", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Lectures_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TripDescriptions",
                 columns: table => new
                 {
@@ -331,7 +449,6 @@ namespace backend.Infrastructure.Data.Migrations
                     TripId = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: true),
                     Content = table.Column<string>(type: "text", nullable: true),
-                    _id = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -344,6 +461,40 @@ namespace backend.Infrastructure.Data.Migrations
                         name: "FK_TripDescriptions_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseEnrollments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    InviteLinkId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseEnrollments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseEnrollments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CourseEnrollments_CourseInviteLinks_InviteLinkId",
+                        column: x => x.InviteLinkId,
+                        principalTable: "CourseInviteLinks",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CourseEnrollments_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -386,25 +537,45 @@ namespace backend.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassYear_Id",
-                table: "ClassYears",
-                column: "_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Countries_IsoCode",
                 table: "Countries",
                 column: "IsoCode",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Country_Id",
-                table: "Countries",
-                column: "_id");
+                name: "IX_CourseEnrollments_CourseId",
+                table: "CourseEnrollments",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Destination_Id",
-                table: "Destinations",
-                column: "_id");
+                name: "IX_CourseEnrollments_InviteLinkId",
+                table: "CourseEnrollments",
+                column: "InviteLinkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseEnrollments_UserId",
+                table: "CourseEnrollments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseInstructors_CourseId",
+                table: "CourseInstructors",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseInstructors_InstructorId",
+                table: "CourseInstructors",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseInviteLinks_CourseId",
+                table: "CourseInviteLinks",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_SemesterId",
+                table: "Courses",
+                column: "SemesterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Destinations_CountryId",
@@ -412,9 +583,9 @@ namespace backend.Infrastructure.Data.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Resource_Id",
-                table: "Resources",
-                column: "_id");
+                name: "IX_Lectures_CourseId",
+                table: "Lectures",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Resources_EntityId",
@@ -422,34 +593,14 @@ namespace backend.Infrastructure.Data.Migrations
                 column: "EntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TodoItem_Id",
-                table: "TodoItems",
-                column: "_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TodoItems_ListId",
                 table: "TodoItems",
                 column: "ListId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TodoList_Id",
-                table: "TodoLists",
-                column: "_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TripDescription_Id",
-                table: "TripDescriptions",
-                column: "_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TripDescriptions_TripId",
                 table: "TripDescriptions",
                 column: "TripId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Trip_Id",
-                table: "Trips",
-                column: "_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Trips_ClassYearId",
@@ -481,6 +632,15 @@ namespace backend.Infrastructure.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CourseEnrollments");
+
+            migrationBuilder.DropTable(
+                name: "CourseInstructors");
+
+            migrationBuilder.DropTable(
+                name: "Lectures");
+
+            migrationBuilder.DropTable(
                 name: "Resources");
 
             migrationBuilder.DropTable(
@@ -493,6 +653,9 @@ namespace backend.Infrastructure.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "CourseInviteLinks");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
@@ -502,10 +665,16 @@ namespace backend.Infrastructure.Data.Migrations
                 name: "Trips");
 
             migrationBuilder.DropTable(
+                name: "Courses");
+
+            migrationBuilder.DropTable(
                 name: "ClassYears");
 
             migrationBuilder.DropTable(
                 name: "Destinations");
+
+            migrationBuilder.DropTable(
+                name: "Semester");
 
             migrationBuilder.DropTable(
                 name: "Countries");
