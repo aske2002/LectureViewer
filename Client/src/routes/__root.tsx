@@ -3,7 +3,8 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
+import appStyle from "../styles.css?url";
+import loaderStyle from "../style/loader.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -28,7 +29,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     links: [
       {
         rel: "stylesheet",
-        href: appCss,
+        href: appStyle,
+      },
+      {
+        rel: "stylesheet",
+        href: loaderStyle,
       },
     ],
   }),

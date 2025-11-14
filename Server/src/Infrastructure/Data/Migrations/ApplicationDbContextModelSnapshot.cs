@@ -96,6 +96,21 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("FlashcardChoiceMultipleChoiceFlashcardAnswer", b =>
+                {
+                    b.Property<Guid>("AnswersForMultipleChoicecardsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SelectedChoicesId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AnswersForMultipleChoicecardsId", "SelectedChoicesId");
+
+                    b.HasIndex("SelectedChoicesId");
+
+                    b.ToTable("FlashcardChoiceMultipleChoiceFlashcardAnswer");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -348,6 +363,42 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.CourseCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LectureId");
+
+                    b.ToTable("CourseCategories");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.CourseEnrollment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -492,6 +543,227 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("Destinations");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ArtifactFromJobId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ContentCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("FlashcardType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtifactFromJobId");
+
+                    b.HasIndex("ContentCategoryId");
+
+                    b.HasIndex("LectureId");
+
+                    b.ToTable("Flashcards");
+
+                    b.HasDiscriminator<int>("FlashcardType");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CourseEnrollmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("FlashcardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("FlashcardType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseEnrollmentId");
+
+                    b.HasIndex("FlashcardId");
+
+                    b.ToTable("FlashCardChoiceAnswerOptions");
+
+                    b.HasDiscriminator<int>("FlashcardType");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardChoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CorrectAnswerForMultipleChoicecardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CorrectAnswerForSingleChoicecardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("MultipleChoicecardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SingleChoicecardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CorrectAnswerForMultipleChoicecardId");
+
+                    b.HasIndex("CorrectAnswerForSingleChoicecardId")
+                        .IsUnique();
+
+                    b.HasIndex("MultipleChoicecardId");
+
+                    b.HasIndex("SingleChoicecardId");
+
+                    b.ToTable("FlashCardChoiceAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardPair", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("FlashcardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("KeyChoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ValueChoiceId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlashcardId");
+
+                    b.HasIndex("KeyChoiceId")
+                        .IsUnique();
+
+                    b.HasIndex("ValueChoiceId")
+                        .IsUnique();
+
+                    b.ToTable("FlashCardPairAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardPairAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("FlashcardAnswerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SelectedKeyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SelectedValueId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlashcardAnswerId");
+
+                    b.HasIndex("SelectedKeyId");
+
+                    b.HasIndex("SelectedValueId");
+
+                    b.ToTable("FlashcardPairAnswer");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Lecture", b =>
                 {
                     b.Property<Guid>("Id")
@@ -534,7 +806,101 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("Lectures");
                 });
 
-            modelBuilder.Entity("backend.Domain.Entities.Resource", b =>
+            modelBuilder.Entity("backend.Domain.Entities.LectureContent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsMainContent")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LectureId");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("LectureContents");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscript", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ArtifactFromJobId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TranscriptText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtifactFromJobId");
+
+                    b.HasIndex("LectureId");
+
+                    b.HasIndex("SourceId")
+                        .IsUnique();
+
+                    b.ToTable("LectureTranscripts");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptKeyword", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -546,8 +912,238 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("EntityId")
+                    b.Property<string>("Keyword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureTranscriptId")
                         .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LectureTranscriptId");
+
+                    b.ToTable("LectureTranscriptKeywords");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptKeywordOccurrence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureTranscriptKeywordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("OccurrenceTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("SurroundingText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LectureTranscriptKeywordId");
+
+                    b.ToTable("LectureTranscriptKeywordOccurrences");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptTimestamp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LectureTranscriptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("Timestamp")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LectureTranscriptId");
+
+                    b.ToTable("LectureTranscriptTimestamps");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("JobType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("MaxRetries")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ParentJobId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentJobId");
+
+                    b.ToTable("MediaProcessingJobs");
+
+                    b.HasDiscriminator<string>("JobType");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJobAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId");
+
+                    b.ToTable("MediaProcessingJobAttempts");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJobLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AttemptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LoggedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProgressPercentage")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttemptId");
+
+                    b.ToTable("MediaProcessingJobLogs");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Resource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -566,6 +1162,9 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<int?>("Order")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("ParentResourceId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("ResourceType")
                         .HasColumnType("integer");
 
@@ -574,8 +1173,7 @@ namespace backend.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EntityId")
-                        .HasDatabaseName("IX_Resources_EntityId");
+                    b.HasIndex("ParentResourceId");
 
                     b.ToTable("Resources");
                 });
@@ -758,6 +1356,206 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("TripDescriptions");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.FreeTextFlashCard", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.Flashcard");
+
+                    b.HasDiscriminator().HasValue(3);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcard", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.Flashcard");
+
+                    b.HasDiscriminator().HasValue(2);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MultipleChoiceFlashCard", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.Flashcard");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.SingleChoiceFlashCard", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.Flashcard");
+
+                    b.HasDiscriminator().HasValue(0);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TrueFalseFlashCard", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.Flashcard");
+
+                    b.Property<bool>("CorrectAnswer")
+                        .HasColumnType("boolean");
+
+                    b.HasDiscriminator().HasValue(4);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FreeTextFlashcardAnswer", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.FlashcardAnswer");
+
+                    b.Property<string>("AnswerText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue(3);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcardAnswer", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.FlashcardAnswer");
+
+                    b.HasDiscriminator().HasValue(2);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MultipleChoiceFlashcardAnswer", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.FlashcardAnswer");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.SingleChoiceFlashcardAnswer", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.FlashcardAnswer");
+
+                    b.Property<Guid>("SelectedChoiceId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("SelectedChoiceId");
+
+                    b.HasDiscriminator().HasValue(0);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TrueFalseFlashcardAnswer", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.FlashcardAnswer");
+
+                    b.Property<bool>("AnswerBool")
+                        .HasColumnType("boolean");
+
+                    b.HasDiscriminator().HasValue(4);
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureRelatedMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
+
+                    b.Property<Guid>("LectureContentId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("LectureContentId");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaConversionMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
+
+                    b.Property<Guid>("InputResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("OutputResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetFormat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasIndex("InputResourceId");
+
+                    b.HasIndex("OutputResourceId");
+
+                    b.HasDiscriminator().HasValue("MediaConversion");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.OfficeConversionMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
+
+                    b.Property<Guid>("InputResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("OutputResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetFormat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasIndex("InputResourceId");
+
+                    b.HasIndex("OutputResourceId");
+
+                    b.ToTable("MediaProcessingJobs", t =>
+                        {
+                            t.Property("InputResourceId")
+                                .HasColumnName("OfficeConversionMediaProcessingJob_InputResourceId");
+
+                            t.Property("OutputResourceId")
+                                .HasColumnName("OfficeConversionMediaProcessingJob_OutputResourceId");
+
+                            t.Property("TargetFormat")
+                                .HasColumnName("OfficeConversionMediaProcessingJob_TargetFormat");
+                        });
+
+                    b.HasDiscriminator().HasValue("OfficeConversion");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.CategoryClassificationMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.LectureRelatedMediaProcessingJob");
+
+                    b.HasDiscriminator().HasValue("CategoryClassification");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardGenerationMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.LectureRelatedMediaProcessingJob");
+
+                    b.HasDiscriminator().HasValue("FlashcardGeneration");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.LectureRelatedMediaProcessingJob");
+
+                    b.HasDiscriminator().HasValue("KeywordExtraction");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.ThumbnailExtractionMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.LectureRelatedMediaProcessingJob");
+
+                    b.HasDiscriminator().HasValue("ThumbnailExtraction");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TranscriptionMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.LectureRelatedMediaProcessingJob");
+
+                    b.HasDiscriminator().HasValue("Transcription");
+                });
+
+            modelBuilder.Entity("FlashcardChoiceMultipleChoiceFlashcardAnswer", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MultipleChoiceFlashcardAnswer", null)
+                        .WithMany()
+                        .HasForeignKey("AnswersForMultipleChoicecardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.FlashcardChoice", null)
+                        .WithMany()
+                        .HasForeignKey("SelectedChoicesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_FlashcardChoiceMultipleChoiceFlashcardAnswer_FlashCardChoi~1");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -817,7 +1615,37 @@ namespace backend.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("backend.Domain.ValueObjects.Colour", "Colour", b1 =>
+                        {
+                            b1.Property<Guid>("CourseId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Code")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("CourseId");
+
+                            b1.ToTable("Courses");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CourseId");
+                        });
+
+                    b.Navigation("Colour");
+
                     b.Navigation("Semester");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.CourseCategory", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Lecture", "Lecture")
+                        .WithMany()
+                        .HasForeignKey("LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lecture");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.CourseEnrollment", b =>
@@ -833,7 +1661,7 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasForeignKey("InviteLinkId");
 
                     b.HasOne("ApplicationUser", "User")
-                        .WithMany("Enrollments")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Course");
@@ -852,7 +1680,7 @@ namespace backend.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("ApplicationUser", "Instructor")
-                        .WithMany("Courses")
+                        .WithMany()
                         .HasForeignKey("InstructorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -884,6 +1712,131 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MediaProcessingJob", "ArtifactFromJob")
+                        .WithMany()
+                        .HasForeignKey("ArtifactFromJobId");
+
+                    b.HasOne("backend.Domain.Entities.CourseCategory", "ContentCategory")
+                        .WithMany("Flashcards")
+                        .HasForeignKey("ContentCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Lecture", "Lecture")
+                        .WithMany("Flashcards")
+                        .HasForeignKey("LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ArtifactFromJob");
+
+                    b.Navigation("ContentCategory");
+
+                    b.Navigation("Lecture");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardAnswer", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.CourseEnrollment", "CourseEnrollment")
+                        .WithMany("FlashcardAnswers")
+                        .HasForeignKey("CourseEnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Flashcard", "Flashcard")
+                        .WithMany("Answers")
+                        .HasForeignKey("FlashcardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseEnrollment");
+
+                    b.Navigation("Flashcard");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardChoice", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MultipleChoiceFlashCard", "CorrectAnswerForMultipleChoicecard")
+                        .WithMany("CorrectAnswers")
+                        .HasForeignKey("CorrectAnswerForMultipleChoicecardId");
+
+                    b.HasOne("backend.Domain.Entities.SingleChoiceFlashCard", "CorrectAnswerForSingleChoicecard")
+                        .WithOne("CorrectAnswer")
+                        .HasForeignKey("backend.Domain.Entities.FlashcardChoice", "CorrectAnswerForSingleChoicecardId");
+
+                    b.HasOne("backend.Domain.Entities.MultipleChoiceFlashCard", "MultipleChoicecard")
+                        .WithMany("Choices")
+                        .HasForeignKey("MultipleChoicecardId");
+
+                    b.HasOne("backend.Domain.Entities.SingleChoiceFlashCard", "SingleChoiceCard")
+                        .WithMany("Choices")
+                        .HasForeignKey("SingleChoicecardId");
+
+                    b.Navigation("CorrectAnswerForMultipleChoicecard");
+
+                    b.Navigation("CorrectAnswerForSingleChoicecard");
+
+                    b.Navigation("MultipleChoicecard");
+
+                    b.Navigation("SingleChoiceCard");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardPair", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MatchingFlashcard", "Flashcard")
+                        .WithMany("Pairs")
+                        .HasForeignKey("FlashcardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.FlashcardChoice", "KeyChoice")
+                        .WithOne("KeyForFlashcardPair")
+                        .HasForeignKey("backend.Domain.Entities.FlashcardPair", "KeyChoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.FlashcardChoice", "ValueChoice")
+                        .WithOne("ValueForFlashcardPair")
+                        .HasForeignKey("backend.Domain.Entities.FlashcardPair", "ValueChoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Flashcard");
+
+                    b.Navigation("KeyChoice");
+
+                    b.Navigation("ValueChoice");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardPairAnswer", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MatchingFlashcardAnswer", "FlashcardAnswer")
+                        .WithMany("PairAnswers")
+                        .HasForeignKey("FlashcardAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.FlashcardChoice", "SelectedKey")
+                        .WithMany("AnswerKeyForFlashcardPairs")
+                        .HasForeignKey("SelectedKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.FlashcardChoice", "SelectedValue")
+                        .WithMany("AnswerValueForFlashcardPairs")
+                        .HasForeignKey("SelectedValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FlashcardAnswer");
+
+                    b.Navigation("SelectedKey");
+
+                    b.Navigation("SelectedValue");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Lecture", b =>
                 {
                     b.HasOne("backend.Domain.Entities.Course", "Course")
@@ -893,6 +1846,124 @@ namespace backend.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureContent", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Lecture", "Lecture")
+                        .WithMany("Contents")
+                        .HasForeignKey("LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lecture");
+
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscript", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MediaProcessingJob", "ArtifactFromJob")
+                        .WithMany()
+                        .HasForeignKey("ArtifactFromJobId");
+
+                    b.HasOne("backend.Domain.Entities.Lecture", "Lecture")
+                        .WithMany("Transcripts")
+                        .HasForeignKey("LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.LectureContent", "Source")
+                        .WithOne("Transcript")
+                        .HasForeignKey("backend.Domain.Entities.LectureTranscript", "SourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ArtifactFromJob");
+
+                    b.Navigation("Lecture");
+
+                    b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptKeyword", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.LectureTranscript", "LectureTranscript")
+                        .WithMany("Keywords")
+                        .HasForeignKey("LectureTranscriptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LectureTranscript");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptKeywordOccurrence", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.LectureTranscriptKeyword", "LectureTranscriptKeyword")
+                        .WithMany("Occurrences")
+                        .HasForeignKey("LectureTranscriptKeywordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LectureTranscriptKeyword");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptTimestamp", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.LectureTranscript", "LectureTranscript")
+                        .WithMany("Timestamps")
+                        .HasForeignKey("LectureTranscriptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LectureTranscript");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MediaProcessingJob", "ParentJob")
+                        .WithMany("DependentJobs")
+                        .HasForeignKey("ParentJobId");
+
+                    b.Navigation("ParentJob");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJobAttempt", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MediaProcessingJob", "Job")
+                        .WithMany("Attempts")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJobLog", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.MediaProcessingJobAttempt", "Attempt")
+                        .WithMany("Logs")
+                        .HasForeignKey("AttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attempt");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Resource", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Resource", "ParentResource")
+                        .WithMany("AssociatedResources")
+                        .HasForeignKey("ParentResourceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentResource");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TodoItem", b =>
@@ -959,11 +2030,61 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Trip");
                 });
 
-            modelBuilder.Entity("ApplicationUser", b =>
+            modelBuilder.Entity("backend.Domain.Entities.SingleChoiceFlashcardAnswer", b =>
                 {
-                    b.Navigation("Courses");
+                    b.HasOne("backend.Domain.Entities.FlashcardChoice", "SelectedChoice")
+                        .WithMany("AnswerForSinglecards")
+                        .HasForeignKey("SelectedChoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Enrollments");
+                    b.Navigation("SelectedChoice");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureRelatedMediaProcessingJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.LectureContent", "LectureContent")
+                        .WithMany("ProcessingJobs")
+                        .HasForeignKey("LectureContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LectureContent");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaConversionMediaProcessingJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Resource", "InputResource")
+                        .WithMany()
+                        .HasForeignKey("InputResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Resource", "OutputResource")
+                        .WithMany()
+                        .HasForeignKey("OutputResourceId");
+
+                    b.Navigation("InputResource");
+
+                    b.Navigation("OutputResource");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.OfficeConversionMediaProcessingJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Resource", "InputResource")
+                        .WithMany()
+                        .HasForeignKey("InputResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Resource", "OutputResource")
+                        .WithMany()
+                        .HasForeignKey("OutputResourceId")
+                        .HasConstraintName("FK_MediaProcessingJobs_Resources_OfficeConversionMediaProcess~1");
+
+                    b.Navigation("InputResource");
+
+                    b.Navigation("OutputResource");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.ClassYear", b =>
@@ -987,9 +2108,82 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Lectures");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.CourseCategory", b =>
+                {
+                    b.Navigation("Flashcards");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.CourseEnrollment", b =>
+                {
+                    b.Navigation("FlashcardAnswers");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Destination", b =>
                 {
                     b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.FlashcardChoice", b =>
+                {
+                    b.Navigation("AnswerForSinglecards");
+
+                    b.Navigation("AnswerKeyForFlashcardPairs");
+
+                    b.Navigation("AnswerValueForFlashcardPairs");
+
+                    b.Navigation("KeyForFlashcardPair");
+
+                    b.Navigation("ValueForFlashcardPair");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Lecture", b =>
+                {
+                    b.Navigation("Contents");
+
+                    b.Navigation("Flashcards");
+
+                    b.Navigation("Transcripts");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureContent", b =>
+                {
+                    b.Navigation("ProcessingJobs");
+
+                    b.Navigation("Transcript");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscript", b =>
+                {
+                    b.Navigation("Keywords");
+
+                    b.Navigation("Timestamps");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.LectureTranscriptKeyword", b =>
+                {
+                    b.Navigation("Occurrences");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJob", b =>
+                {
+                    b.Navigation("Attempts");
+
+                    b.Navigation("DependentJobs");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MediaProcessingJobAttempt", b =>
+                {
+                    b.Navigation("Logs");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Resource", b =>
+                {
+                    b.Navigation("AssociatedResources");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.Semester", b =>
@@ -1005,6 +2199,31 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.Trip", b =>
                 {
                     b.Navigation("DescriptionParts");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcard", b =>
+                {
+                    b.Navigation("Pairs");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MultipleChoiceFlashCard", b =>
+                {
+                    b.Navigation("Choices");
+
+                    b.Navigation("CorrectAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.SingleChoiceFlashCard", b =>
+                {
+                    b.Navigation("Choices");
+
+                    b.Navigation("CorrectAnswer")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcardAnswer", b =>
+                {
+                    b.Navigation("PairAnswers");
                 });
 #pragma warning restore 612, 618
         }

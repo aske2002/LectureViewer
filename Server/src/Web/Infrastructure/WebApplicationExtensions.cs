@@ -10,6 +10,7 @@ public static class WebApplicationExtensions
 
         return app
             .MapGroup($"/api/{groupName}")
+            .DisableAntiforgery()
             .WithGroupName(groupName)
             .WithTags(groupName);
     }

@@ -2,8 +2,8 @@ namespace backend.Domain.Enums;
 
 public enum ResourceType
 {
-    GalleryImage,
-    MainImage,
+    Media,
     Flag,
     Empty,
+    Document
 }

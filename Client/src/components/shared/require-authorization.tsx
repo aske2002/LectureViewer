@@ -1,4 +1,4 @@
-import usePolicyRoles from "@/hooks/use-authorization";
+import usePolicyRoles from "@/hooks/use-policy-roles";
 
 type RequirePolicyRoleProps = Parameters<typeof usePolicyRoles>[0] & {
   children: React.ReactNode;

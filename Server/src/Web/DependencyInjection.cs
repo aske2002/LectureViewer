@@ -7,6 +7,7 @@ using backend.Domain.Identifiers;
 using backend.Infrastructure.Data;
 using backend.Infrastructure.Data.Resources;
 using backend.Web.Services;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using NJsonSchema.Generation;
 
@@ -27,7 +28,6 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IUser, CurrentUser>();
 
-        builder.Services.AddScoped<IUserAccessor, UserAccessor>();
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddHealthChecks()
             .AddDbContextCheck<ApplicationDbContext>();

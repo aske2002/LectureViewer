@@ -19,45 +19,20 @@ public record ListCoursesWithPaginationQuery : IRequest<List<CourseListDto>>
 
 public class ListCoursesWithPaginationQueryHandler : IRequestHandler<ListCoursesWithPaginationQuery, List<CourseListDto>>
 {
-    private readonly IRepository<Course, CourseId> _repository;
+    private readonly ICourseService _courseService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public ListCoursesWithPaginationQueryHandler(IRepository<Course, CourseId> repository, IApplicationDbContext context, IMapper mapper)
+    public ListCoursesWithPaginationQueryHandler(ICourseService courseService, IApplicationDbContext context, IMapper mapper)
     {
-        _repository = repository;
+        _courseService = courseService;
         _context = context;
         _mapper = mapper;
     }
 
     public async Task<List<CourseListDto>> Handle(ListCoursesWithPaginationQuery request, CancellationToken cancellationToken)
     {
-        // First check if there are any course instructors in the database
-        var instructorCount = await _context.CourseInstructors.CountAsync(cancellationToken);
-        var courseCount = await _context.Courses.CountAsync(cancellationToken);
-        
-        var courses = await _context.Courses
-                .Include(c => c.Semester)
-                .Include(c => c.Instructors)
-                    .ThenInclude(ci => ci.Instructor)
-                .AsSplitQuery()
-                .ToListAsync(cancellationToken);
-
-        // Debug: Check raw data
-        var debugInfo = courses.Select(c => new { 
-            CourseName = c.Name, 
-            InstructorCount = c.Instructors?.Count ?? 0,
-            InstructorNames = c.Instructors?.Select(ci => $"{ci.Instructor?.FirstName} {ci.Instructor?.LastName}").ToList() ?? new List<string>()
-        }).ToList();
-
-        var result = _mapper.Map<List<CourseListDto>>(courses);
-        
-        // Debug: Check mapped data
-        var mappedDebugInfo = result.Select(c => new { 
-            CourseName = c.Name, 
-            InstructorCount = c.Instructors?.Count ?? 0 
-        }).ToList();
-
-        return result;
+        var courses = await _courseService.ListCoursesAsync();
+        return _mapper.Map<List<CourseListDto>>(courses);
     }
 }

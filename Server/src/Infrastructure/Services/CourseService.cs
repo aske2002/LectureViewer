@@ -1,44 +1,50 @@
-using System.Security.Claims;
+using AutoMapper;
 using backend.Application.Common.Exceptions;
 using backend.Application.Common.Interfaces;
-using backend.Application.Common.Models;
+using backend.Application.Lectures.Queries.GetLectureById;
 using backend.Domain.Constants;
 using backend.Domain.Entities;
 using backend.Domain.Enums;
 using backend.Domain.Identifiers;
 using backend.Domain.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using static backend.Domain.Constants.CoursePermissions;
 
 namespace backend.Infrastructure.Services;
 
 public class CourseService : ICourseService
 {
-    private readonly IIdentityService _identityService;
     private readonly IResourceService _resourceService;
     private readonly IRepository<Course, CourseId> _courseRepository;
     private readonly IRepository<CourseEnrollment, CourseEnrollmentId> _enrollmentRepository;
     private readonly IRepository<CourseInviteLink, CourseInviteLinkId> _inviteLinkRepository;
     private readonly IRepository<Lecture, LectureId> _lectureRepository;
     private readonly IRepository<Semester, SemesterId> _semesterRepository;
+    private readonly IApplicationDbContext _context;
+    private readonly IUserAccessor _userAccessor;
+    private readonly IMapper _mapper;
 
     public CourseService(
-        IIdentityService identityService,
         IResourceService resourceService,
         IRepository<Course, CourseId> courseRepository,
         IRepository<CourseEnrollment, CourseEnrollmentId> enrollmentRepository,
         IRepository<CourseInviteLink, CourseInviteLinkId> inviteLinkRepository,
         IRepository<Lecture, LectureId> lectureRepository,
-        IRepository<Semester, SemesterId> semesterRepository)
+        IRepository<Semester, SemesterId> semesterRepository,
+        IUserAccessor userAccessor,
+        IMapper mapper,
+        IApplicationDbContext context)
     {
-        _identityService = identityService;
         _resourceService = resourceService;
         _courseRepository = courseRepository;
         _enrollmentRepository = enrollmentRepository;
         _inviteLinkRepository = inviteLinkRepository;
         _lectureRepository = lectureRepository;
         _semesterRepository = semesterRepository;
+        _userAccessor = userAccessor;
+        _context = context;
+        _mapper = mapper;
     }
 
     public async Task AddInstructorToCourseAsync(ApplicationUser user, CourseId courseId)
@@ -57,10 +63,10 @@ public class CourseService : ICourseService
         course.Instructors.Add(new CourseInstructor
         {
             CourseId = courseId,
-            Course = course,
             InstructorId = user.Id,
             Instructor = user
         });
+
         await _courseRepository.UpdateAsync(course);
     }
 
@@ -77,9 +83,9 @@ public class CourseService : ICourseService
             CourseId = courseId,
             Title = title,
             Description = content,
-            Course = course,
             StartDate = startDate,
-            EndDate = endDate
+            EndDate = endDate,
+            Course = course
         };
 
         await _lectureRepository.AddAsync(lecture);
@@ -171,7 +177,6 @@ public class CourseService : ICourseService
         };
         course.Instructors.Add(new CourseInstructor
         {
-            Course = course,
             CourseId = course.Id,
             Instructor = owner,
             InstructorId = owner.Id
@@ -183,11 +188,18 @@ public class CourseService : ICourseService
 
     public async Task<Course> GetCourseDetailsAsync(CourseId courseId)
     {
-        var course = await _courseRepository.GetByIdAsync(courseId);
+        var course = await _courseRepository.Query()
+                    .Include(c => c.Semester)
+                    .Include(c => c.Instructors)
+                        .ThenInclude(ci => ci.Instructor)
+                    .Include(c => c.Lectures)
+                    .FirstOrDefaultAsync(c => c.Id == courseId);
+
         if (course == null)
         {
             throw new CourseNotFoundException(courseId);
         }
+
         return course;
     }
 
@@ -235,21 +247,66 @@ public class CourseService : ICourseService
             .ToListAsync();
     }
 
+    public async Task<IFormFile> GetLectureContentStreamAsync(CourseId courseId, LectureId lectureId, LectureContentId lectureContentId, ResourceId resourceId, CancellationToken cancellationToken = default)
+    {
+        var lecture = await GetLectureDetailsAsync(courseId, lectureId);
+        var content = lecture.Contents.FirstOrDefault(c => c.Id == lectureContentId);
+
+        if (content == null)
+        {
+            throw new LectureContentNotFoundException(lectureContentId);
+        }
+
+        if (content.ResourceId != resourceId && content.Resource.AssociatedResources.All(r => r.Id != resourceId))
+        {
+            throw new ResourceNotFoundException(resourceId);
+        }
+
+        var resourceContent = await _resourceService.GetResourceContentByIdAsync(resourceId, cancellationToken);
+        return resourceContent;
+    }
+
+    public async Task<LectureContent> GetLectureContentDetailsAsync(CourseId courseId, LectureId lectureId, LectureContentId lectureContentId)
+    {
+        var lecture = await GetLectureDetailsAsync(courseId, lectureId);
+        var content = lecture.Contents.FirstOrDefault(c => c.Id == lectureContentId);
+
+        if (content == null)
+        {
+            throw new LectureContentNotFoundException(lectureContentId);
+        }
+
+        return content;
+    }
+
     public async Task<Lecture> GetLectureDetailsAsync(CourseId courseId, LectureId lectureId)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
+
         if (course == null)
         {
             throw new CourseNotFoundException(courseId);
         }
 
-        var lecture = await _lectureRepository.GetByIdAsync(lectureId);
-        if (lecture == null || lecture.CourseId != courseId)
+        var lecture = await _lectureRepository.GetByIdAsync(lectureId, include: l => l.Include(l => l.Course).Include(l => l.Contents).ThenInclude(c => c.Resource).ThenInclude(r => r.AssociatedResources));
+        if (lecture == null || lecture.CourseId.Value != courseId.Value)
         {
             throw new LectureNotFoundException(lectureId);
         }
 
         return lecture;
+    }
+
+    public async Task<ICollection<Course>> ListCoursesAsync()
+    {
+        var courses = await _context.Courses
+            .Include(c => c.Semester)
+            .Include(c => c.Lectures)
+            .Include(c => c.Instructors)
+                .ThenInclude(ci => ci.Instructor)
+            .ToListAsync();
+
+        return courses;
     }
 
     public async Task<ICollection<CourseInstructor>> ListCourseInstructorsAsync(CourseId courseId)
@@ -351,7 +408,7 @@ public class CourseService : ICourseService
         return lecture;
     }
 
-    public async Task<Resource> UploadLectureMaterialAsync(CourseId courseId, LectureId lectureId, string fileName, ResourceType resourceType, int size, byte[] bytes, string? mimeType = null, int? order = null, CancellationToken cancellationToken = default)
+    public async Task<LectureContent> UploadLectureMaterialAsync(CourseId courseId, LectureId lectureId, IFormFile file, LectureContentType contentType, string name, string? description, bool isMainContent = false, CancellationToken cancellationToken = default)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course == null)
@@ -360,15 +417,49 @@ public class CourseService : ICourseService
         }
 
         var lecture = await _lectureRepository.GetByIdAsync(lectureId);
-        if (lecture == null || lecture.CourseId != courseId)
+        if (lecture == null || lecture.CourseId.Value != courseId.Value)
         {
             throw new LectureNotFoundException(lectureId);
         }
 
-        return await _resourceService.CreateResourceAsync(lectureId.Value, fileName, resourceType, size, bytes, mimeType, order, cancellationToken);
+        var resource = await _resourceService.CreateResourceAsync(file, ResourceType.Media, cancellationToken: cancellationToken);
+        var content = new LectureContent
+        {
+            LectureId = lectureId,
+            Lecture = lecture,
+            ResourceId = resource.Id,
+            Resource = resource,
+            ContentType = contentType,
+            Name = name,
+            IsMainContent = isMainContent,
+            Description = description
+        };
 
-
+        await _context.LectureContents.AddAsync(content, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return content;
     }
 
-    // Implement course-related methods here
+    public async Task<ICollection<CoursePermissionType>> GetUserCoursePermissionsAsync(CourseId courseId)
+    {
+        var course = await GetCourseDetailsAsync(courseId);
+        var user = await _userAccessor.GetCurrentUserAsync();
+        var permissions = new List<CoursePermissionType>();
+
+
+        if (course.Instructors.Any(i => i.InstructorId == user.Id))
+        {
+            permissions.Add(CoursePermissionType.CreateLectures);
+            permissions.Add(CoursePermissionType.UploadMedia);
+            permissions.Add(CoursePermissionType.Delete);
+            permissions.Add(CoursePermissionType.Edit);
+            permissions.Add(CoursePermissionType.View);
+        }
+        else if (course.Enrollments.Any(e => e.User.Id == user.Id))
+        {
+            permissions.Add(CoursePermissionType.View);
+        }
+
+        return permissions;
+    }
 }

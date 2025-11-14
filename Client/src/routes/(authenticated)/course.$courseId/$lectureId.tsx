@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { mockLectures } from "@/lib/mock-data";
-import { LectureHeader } from "@/components/lecture-header";
-import { MediaPlayer } from "@/components/media-player";
-import { LectureTabs } from "@/components/lecture-tabs"; // Added tabs component
+import { LectureHeader } from "@/components/lectures/lecture-header";
+import { MediaPlayer } from "@/components/shared/media-player";
+import { LectureTabs } from "@/components/lectures/lecture-tabs"; // Added tabs component
+import { useLectureApi } from "@/api/use-lecture-api";
+import { FullScreenLoader } from "@/components/shared/loader";
 
 export const Route = createFileRoute(
   "/(authenticated)/course/$courseId/$lectureId"
@@ -10,23 +12,22 @@ export const Route = createFileRoute(
 
 function App() {
   const { lectureId, courseId } = Route.useParams();
-  const lecture = mockLectures.find((l) => l.id === lectureId);
+  const {
+    lecture: { data: lecture, isLoading },
+  } = useLectureApi(courseId, lectureId);
 
-  if (!lecture) {
-    return (
-      <div className="container mx-auto px-4 py-8">Lecture not found.</div>
-    );
+  if (isLoading || !lecture) {
+    return <FullScreenLoader descriptionText="Loading lecture" />;
   }
 
   return (
     <>
-      <LectureHeader lecture={lecture} courseId={courseId}/>
-
+      <LectureHeader lecture={lecture} courseId={courseId} />
       <div className="container mx-auto px-4 py-8">
-        {lecture.mediaType && <MediaPlayer lecture={lecture} />}
+        <MediaPlayer lecture={lecture} />
 
         <div className="mt-8">
-          <LectureTabs lecture={lecture} />
+          <LectureTabs lecture={lecture} courseId={courseId} />
         </div>
       </div>
     </>

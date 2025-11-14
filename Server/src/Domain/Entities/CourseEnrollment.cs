@@ -9,4 +9,5 @@ public class CourseEnrollment : BaseAuditableEntity<CourseEnrollmentId>
     public required CourseId CourseId { get; init; } = CourseId.Default();
     public required Course Course { get; init; } = null!;
     public required ApplicationUser User { get; init; }
+    public IList<FlashcardAnswer> FlashcardAnswers { get; init; } = new List<FlashcardAnswer>();
 }

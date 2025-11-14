@@ -1,6 +1,6 @@
 using backend.Domain.Extensions;
 using backend.Infrastructure.Data;
-using StackExchange.Profiling.Storage;
+using Microsoft.AspNetCore.Http.Features;
 
 
 EntityTypeExtensions.Initialize();
@@ -10,25 +10,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddKeyVaultIfConfigured();
 builder.AddApplicationServices();
 
-builder.Services.AddMiniProfiler(options =>
-{
-    options.RouteBasePath = "/profiler";          // URL where you can view results
-    if (options.Storage is MemoryCacheStorage storage)
-    {
-        storage.CacheDuration = TimeSpan.FromMinutes(60);
-    }
-    // 👇 Optional: limit to last 100 requests in memory
-    options.ResultsAuthorize = _ => true;   // allow anyone to view results
-    options.ResultsListAuthorize = _ => true;
-
-    options.TrackConnectionOpenClose = true;      // show EF connection timings
-}).AddEntityFramework();
 builder.AddInfrastructureServices();
 builder.AddWebServices();
 
-var app = builder.Build();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = 536870912; // 512 MB
+    options.MultipartBodyLengthLimit = 1024L * 1024 * 1024 * 5; // 5 GB
+    options.MultipartHeadersLengthLimit = 1024 * 1024 * 1024; // 1 GB
+});
 
-app.UseMiniProfiler();
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1024L * 1024 * 1024 * 5; // 5 GB
+});
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -70,6 +67,7 @@ app.UseCors(options =>
     options.AllowAnyMethod();
     options.AllowAnyOrigin();
 });
+
 
 app.MapEndpoints();
 

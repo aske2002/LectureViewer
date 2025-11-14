@@ -7,7 +7,9 @@ internal class ResourceConfiguration : IEntityTypeConfiguration<Resource>
 {
     public void Configure(EntityTypeBuilder<Resource> builder)
     {
-        builder.HasIndex(e => e.EntityId)
-            .HasDatabaseName("IX_Resources_EntityId");
+        builder.HasOne(r => r.ParentResource)
+            .WithMany(r => r.AssociatedResources)
+            .HasForeignKey(r => r.ParentResourceId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

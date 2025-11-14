@@ -1,5 +1,5 @@
-﻿using backend.Application.Common.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using backend.Application.Common.Models;
 
 namespace backend.Application.Common.Interfaces;
 

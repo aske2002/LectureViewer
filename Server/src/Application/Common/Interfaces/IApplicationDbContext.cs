@@ -22,6 +22,7 @@ public interface IApplicationDbContext
     DbSet<TripDescription> TripDescriptions { get; }
     DbSet<ClassYear> ClassYears { get; }
     DbSet<Lecture> Lectures { get; }
+    DbSet<LectureContent> LectureContents { get; }
     DbSet<Course> Courses { get; }
     DbSet<CourseInstructor> CourseInstructors { get; }
     DbSet<CourseEnrollment> CourseEnrollments { get; }

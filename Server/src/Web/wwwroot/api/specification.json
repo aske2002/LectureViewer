@@ -432,7 +432,7 @@
                   "description": "A CourseId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "c36a7042-babd-451a-a169-cbadb6a0ee52"
+                  "example": "a6340a5f-1880-4ece-8823-e441eccb9da7"
                 }
               }
             }
@@ -468,7 +468,7 @@
                   "description": "A CourseEnrollmentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "c929f360-14c1-4b89-9bed-e490400154dc"
+                  "example": "e05b4de1-5107-4299-8e6b-e923f39e10e1"
                 }
               }
             }
@@ -492,7 +492,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "92f62d24-81d9-41cd-912a-a4fdda34c021"
+              "example": "b884ca78-d010-4f6c-9793-9665499cbbee"
             },
             "x-position": 1
           }
@@ -503,7 +503,93 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CourseEntityDto"
+                  "$ref": "#/components/schemas/CourseDetailsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Courses/{courseId}/permissions": {
+      "get": {
+        "tags": [
+          "Courses"
+        ],
+        "operationId": "GetCoursePermissions",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A CourseId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "fd1e7af8-738b-4bbf-9bf6-9c65c8e3e614"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoursePermissionsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Courses/{courseId}/lectures": {
+      "post": {
+        "tags": [
+          "Courses"
+        ],
+        "operationId": "AddLectureToCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A CourseId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "c21973b2-17b6-41bc-b935-6476067fd52a"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLectureCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "A LectureId identifier",
+                  "format": "uuid",
+                  "nullable": false,
+                  "example": "24dc7a72-1d94-4f56-8368-42952e11f857"
                 }
               }
             }
@@ -587,7 +673,7 @@
                   "description": "A DestinationId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "24664bc5-51e5-4ab8-a5d8-4078263d5c8f"
+                  "example": "306d8cd5-b3e9-4e1a-b0a2-bbfe2ae86eee"
                 }
               }
             }
@@ -611,6 +697,224 @@
                   "items": {
                     "$ref": "#/components/schemas/CountryDto"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Lectures/{courseId}/{lectureId}": {
+      "get": {
+        "tags": [
+          "Lectures"
+        ],
+        "operationId": "GetLectureDetails",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A CourseId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "b8707f57-14b9-455e-a376-4e0483ed6c4f"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "lectureId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A LectureId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "98919b85-1c60-4065-b6c6-f020bf8fae1f"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LectureDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Lectures/{courseId}/{lectureId}/contents/{lectureContentId}/{resourceId}": {
+      "get": {
+        "tags": [
+          "Lectures"
+        ],
+        "operationId": "GetLectureContent",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A CourseId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "3894b1e1-19bf-41fa-8023-74c19f24f940"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "lectureId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A LectureId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "6a0df448-702f-49b3-a792-9c16d77994db"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "lectureContentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A LectureContentId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "4b5442b4-9b8a-4421-a1d1-bb6a206dbb14"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "resourceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A ResourceId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "4e26f9a2-a72e-4b68-a10a-1687fb45dff4"
+            },
+            "x-position": 4
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Lectures/{courseId}/{lectureId}/media": {
+      "post": {
+        "tags": [
+          "Lectures"
+        ],
+        "operationId": "UploadLectureMedia",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A CourseId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "23550dba-3846-4f12-949d-7bc5b7dc6bb2"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "lectureId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "A LectureId identifier",
+              "format": "uuid",
+              "nullable": false,
+              "example": "6a52e6b6-a550-4205-925e-dcf0985bd5ac"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "isMainContent",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "x-position": 5
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "A LectureContentId identifier",
+                  "format": "uuid",
+                  "nullable": false,
+                  "example": "f5fdd16c-b917-406e-adf5-94e3c142f6b7"
                 }
               }
             }
@@ -676,7 +980,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "c4181e36-e9ba-45b9-84b2-21a49d78dc80"
+              "example": "e7defcd1-8512-4b41-85b7-db3bf3f4f2b7"
             },
             "x-position": 1
           }
@@ -711,7 +1015,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "c843f614-7aa4-4150-9c44-fbe6c7bb1555"
+              "example": "b00133aa-1bd3-4b13-8d19-ec1b5bcdb4ff"
             },
             "x-position": 1
           },
@@ -748,7 +1052,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "1c0d831e-6413-48f3-9081-ec68479919bd"
+              "example": "722a0d32-26a9-47e9-830d-8ee152da8f51"
             },
             "x-position": 1
           },
@@ -813,7 +1117,7 @@
                   "description": "A TodoItemId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "a7389e15-eee7-497a-a6e6-4bcf997eb759"
+                  "example": "183ab675-0358-4b51-a402-df99950e899c"
                 }
               }
             }
@@ -837,7 +1141,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "e38b7af3-69d3-47c0-b62d-644d6de86c3a"
+              "example": "bbd7c0e5-72b4-498f-9ccf-20930dd6c633"
             },
             "x-position": 1
           }
@@ -903,7 +1207,7 @@
               "description": "A TodoItemId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "b5897de1-3b1c-433b-84e3-c37aea4dab8a"
+              "example": "239f0f8d-de13-4a7d-bb3d-0584d61d843c"
             },
             "x-position": 1
           }
@@ -976,7 +1280,7 @@
                   "description": "A TodoListId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "69ecb515-435e-4455-863f-232cd94a383d"
+                  "example": "1d4a7266-c8ef-42e4-949a-3e90176491e0"
                 }
               }
             }
@@ -1000,7 +1304,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "3ef8c887-2d74-45f3-a15b-57316c30f022"
+              "example": "75f33c20-88c4-44d1-bc6f-baa1808f18cf"
             },
             "x-position": 1
           }
@@ -1041,7 +1345,7 @@
               "description": "A TodoListId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "811f9aa6-f8df-4045-ac95-16dc14b66065"
+              "example": "b535b595-053b-4428-81a1-e9fac0eb537d"
             },
             "x-position": 1
           }
@@ -1345,14 +1649,10 @@
         "type": "string",
         "description": "",
         "x-enumNames": [
-          "CanCreateCourses",
-          "CanEditCourses",
-          "CanDeleteCourses"
+          "CanCreateCourses"
         ],
         "enum": [
-          "CanCreateCourses",
-          "CanEditCourses",
-          "CanDeleteCourses"
+          "CanCreateCourses"
         ]
       },
       "CourseListDto": {
@@ -1384,11 +1684,18 @@
               "semester": {
                 "$ref": "#/components/schemas/SemesterDto"
               },
+              "colour": {
+                "$ref": "#/components/schemas/Colour"
+              },
               "instructors": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/PublicUser"
                 }
+              },
+              "lecturesCount": {
+                "type": "integer",
+                "format": "int32"
               }
             }
           }
@@ -1450,9 +1757,30 @@
             "description": "A SemesterId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "2f6fe4fc-06ac-401f-aecd-111854d82e32"
+            "example": "498177d1-d2c7-4d52-9894-0058b4f25927"
           }
         }
+      },
+      "Colour": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValueObject"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ValueObject": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
       },
       "PublicUser": {
         "type": "object",
@@ -1483,7 +1811,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "184c4f97-4c60-48be-8738-4b2e3aad527d"
+            "example": "ee4be44b-b695-43a5-a5bb-1670cb411ec1"
           }
         }
       },
@@ -1499,7 +1827,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "17e646f7-4f92-4a26-9951-6b88e5031895"
+            "example": "8550730d-465a-4a74-9d03-ff1251c12cdf"
           },
           "user": {
             "$ref": "#/components/schemas/ClaimsPrincipal"
@@ -1653,7 +1981,7 @@
           }
         }
       },
-      "CourseEntityDto": {
+      "CourseDetailsDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseResponseOfCourseId"
@@ -1685,6 +2013,12 @@
               "description": {
                 "type": "string"
               },
+              "lectures": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/LectureSimpleDto"
+                }
+              },
               "instructors": {
                 "type": "array",
                 "items": {
@@ -1695,26 +2029,76 @@
           }
         ]
       },
-      "Colour": {
+      "LectureSimpleDto": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/ValueObject"
+            "$ref": "#/components/schemas/BaseResponseOfLectureId"
           },
           {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "code": {
+              "startDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string"
               }
             }
           }
         ]
       },
-      "ValueObject": {
+      "BaseResponseOfLectureId": {
         "type": "object",
         "x-abstract": true,
-        "additionalProperties": false
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A LectureId identifier",
+            "format": "uuid",
+            "nullable": false,
+            "example": "0ea5dc8e-2540-42d3-b4c1-58dc9fea3961"
+          }
+        }
+      },
+      "CoursePermissionsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoursePermissionType"
+            }
+          }
+        }
+      },
+      "CoursePermissionType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "UploadMedia",
+          "Delete",
+          "CreateLectures",
+          "Edit",
+          "View"
+        ],
+        "enum": [
+          "UploadMedia",
+          "Delete",
+          "CreateLectures",
+          "Edit",
+          "View"
+        ]
       },
       "CreateCourseCommand": {
         "type": "object",
@@ -1743,6 +2127,33 @@
           "semesterYear": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "CreateLectureCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string",
+            "description": "A CourseId identifier",
+            "format": "uuid",
+            "nullable": false,
+            "example": "12f7fc23-1ac0-4f10-a6ae-c66ced22b4aa"
           }
         }
       },
@@ -1844,6 +2255,12 @@
               "resourceType": {
                 "$ref": "#/components/schemas/ResourceType"
               },
+              "associatedResources": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResourceResponse"
+                }
+              },
               "fileName": {
                 "type": "string"
               },
@@ -1870,10 +2287,10 @@
         "type": "integer",
         "description": "",
         "x-enumNames": [
-          "GalleryImage",
-          "MainImage",
+          "Media",
           "Flag",
-          "Empty"
+          "Empty",
+          "Document"
         ],
         "enum": [
           0,
@@ -1892,7 +2309,7 @@
             "description": "A ResourceId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "0ea56526-50fa-4779-9ba9-6f5ef7b5d82c"
+            "example": "359157f4-67ac-439d-8665-1d9c160f7988"
           }
         }
       },
@@ -1906,7 +2323,7 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "4393a890-1ab0-4692-b2fe-060b8fd2d93f"
+            "example": "343bf799-f4c8-475a-81a5-a744a0867bd7"
           }
         }
       },
@@ -1920,7 +2337,7 @@
             "description": "A DestinationId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "cdeec83d-171e-42e5-9e06-85c26e2d1425"
+            "example": "7488b73a-07a5-4f6b-940a-7126380705d8"
           }
         }
       },
@@ -1956,11 +2373,124 @@
             "description": "A CountryId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "210d52d1-ea55-426f-83ea-3217a68f640d"
+            "example": "b10ca49d-1854-4a91-bf1f-18f425983a30"
           },
           "description": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "LectureDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseResponseOfLectureId"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "startDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "contents": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/LectureContentDto"
+                }
+              },
+              "primaryContent": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/LectureContentDto"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "LectureContentDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseResponseOfLectureContentId"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "resourceId": {
+                "type": "string",
+                "description": "A ResourceId identifier",
+                "format": "uuid",
+                "nullable": false,
+                "example": "d2bde9bb-850f-49cd-b207-00244514d3d3"
+              },
+              "contentType": {
+                "$ref": "#/components/schemas/LectureContentType"
+              },
+              "resource": {
+                "$ref": "#/components/schemas/ResourceResponse"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "isMainContent": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "LectureContentType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Video",
+          "Audio",
+          "Slides",
+          "Document",
+          "Other"
+        ],
+        "enum": [
+          "Video",
+          "Audio",
+          "Slides",
+          "Document",
+          "Other"
+        ]
+      },
+      "BaseResponseOfLectureContentId": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A LectureContentId identifier",
+            "format": "uuid",
+            "nullable": false,
+            "example": "7dd06c42-9444-46bf-a638-0430e78cd70f"
           }
         }
       },
@@ -2060,7 +2590,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "bf069060-d5d3-4db2-8ce8-599fe11461bf"
+            "example": "5b2de1b2-9dfb-459d-88c9-273c782ff6de"
           },
           "title": {
             "type": "string",
@@ -2077,7 +2607,7 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "5c9928c8-0db0-4eac-af01-c9aa0e76ba4b"
+            "example": "fc1d3f9e-f4b4-4d72-96b9-8bc736a9c75c"
           },
           "title": {
             "type": "string",
@@ -2097,14 +2627,14 @@
             "description": "A TodoItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "9ba6e4d6-bb5e-44f7-9ee3-8fefc8275cc4"
+            "example": "5589b976-6eab-4157-8874-0f46cab34af7"
           },
           "listId": {
             "type": "string",
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "15f7f07c-cd18-48eb-b005-19509d1b57c1"
+            "example": "7cda1ac4-e9fc-4a19-887b-034cc8ce5e27"
           },
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
@@ -2235,7 +2765,7 @@
             "description": "A TodoListId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "7a04114b-1940-47fb-9907-3b231b0b6e4f"
+            "example": "05876591-b844-471a-a68d-16bc48c9105f"
           },
           "title": {
             "type": "string",

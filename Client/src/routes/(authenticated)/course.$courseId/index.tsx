@@ -1,12 +1,14 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { mockCourses } from "@/lib/mock-data";
-import { UploadDialog } from "@/components/upload-dialog";
-import { LectureCard } from "@/components/lecture-card";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { LectureCard } from "@/components/lectures/lecture-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Clock, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import RequireAuthorization from "@/components/shared/require-authorization";
-import { RoleDto } from "@/api/web-api-client";
+import { CoursePermissionType, RoleDto, Season } from "@/api/web-api-client";
+import { useCourseApi } from "@/api/use-course-api";
+import { FullScreenLoader } from "@/components/shared/loader";
+import useCourseColor from "@/hooks/use-course-color";
+import { CreateLectureDialog } from "@/components/lectures/create-lecture-dialog";
 
 export const Route = createFileRoute("/(authenticated)/course/$courseId/")({
   component: RouteComponent,
@@ -14,10 +16,16 @@ export const Route = createFileRoute("/(authenticated)/course/$courseId/")({
 
 function RouteComponent() {
   const { courseId } = Route.useParams();
-  const course = mockCourses.find((c) => c.id === courseId);
 
-  if (!course) {
-    throw notFound();
+  const {
+    course: { data: course, isLoading },
+    coursePermissions: { data: coursePermissions },
+  } = useCourseApi(courseId);
+
+  const courseColor = useCourseColor(course);
+
+  if (isLoading || !course) {
+    return <FullScreenLoader descriptionText="Loading course" />;
   }
 
   return (
@@ -34,7 +42,8 @@ function RouteComponent() {
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
               <div
-                className={`h-16 w-16 rounded-lg ${course.color} flex items-center justify-center shrink-0`}
+                style={{ backgroundColor: courseColor.toHex() }}
+                className={`h-16 w-16 rounded-lg flex items-center justify-center shrink-0`}
               >
                 <BookOpen className="h-8 w-8 text-white" />
               </div>
@@ -43,29 +52,33 @@ function RouteComponent() {
                   <h1 className="text-3xl font-bold text-balance">
                     {course.name}
                   </h1>
-                  <Badge variant="secondary">{course.code}</Badge>
+                  <Badge variant="secondary">{course.internalIdentifier}</Badge>
                 </div>
                 <p className="text-muted-foreground mb-3 text-pretty">
                   {course.description}
                 </p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center  gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
-                    <span>{course.instructor}</span>
+                    <span>
+                      {course.instructors
+                        .map((i) => `${i.firstName} ${i.lastName}`)
+                        .join(", ")}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    <span>{course.totalDuration} total</span>
+                    <span>{course.lectures.length} total lectures</span>
                   </div>
-                  <Badge variant="outline">{course.semester}</Badge>
+                  <Badge variant="outline">
+                    {Season[course.semester.season]}
+                  </Badge>
                 </div>
               </div>
             </div>
-            <RequireAuthorization
-              allowRoles={[RoleDto.Instructor, RoleDto.Administrator]}
-            >
-              <UploadDialog />
-            </RequireAuthorization>
+            {coursePermissions?.permissions.includes(
+              CoursePermissionType.CreateLectures
+            ) && <CreateLectureDialog course={course} />}
           </div>
         </div>
       </header>

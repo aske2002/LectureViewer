@@ -1,10 +1,7 @@
-using backend.Application.Common.Models;
-using backend.Application.Countries.Queries.GetCountries;
 using backend.Application.Courses.Commands.CreateCourse;
+using backend.Application.Courses.Commands.CreateLecture;
 using backend.Application.Courses.Queries.GetCourseById;
 using backend.Application.Courses.Queries.ListCourses;
-using backend.Application.Destinations.Commands.CreateDestination;
-using backend.Application.Destinations.Queries.GetDestinations;
 using backend.Domain.Identifiers;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -19,10 +16,12 @@ public class Courses : EndpointGroupBase
             .MapGet(ListCourses)
             .MapPost(EnrollInCourse, "/enroll")
             .MapGet(GetCourseById, "/{courseId}")
-            .MapPost(CreateCourse);
+            .MapGet(GetCoursePermissions, "/{courseId}/permissions")
+            .MapPost(CreateCourse)
+            .MapPost(AddLectureToCourse, "/{courseId}/lectures");
     }
 
-    public async Task<Ok<CourseEntityDto>> GetCourseById(ISender sender, CourseId courseId)
+    public async Task<Ok<CourseDetailsDto>> GetCourseById(ISender sender, CourseId courseId)
     {
         var vm = await sender.Send(new GetCourseQuery(courseId));
         return TypedResults.Ok(vm);
@@ -42,6 +41,18 @@ public class Courses : EndpointGroupBase
     public async Task<Ok<CourseId>> CreateCourse(ISender sender, CreateCourseCommand command)
     {
         var vm = await sender.Send(command);
+        return TypedResults.Ok(vm);
+    }
+
+    public async Task<Ok<LectureId>> AddLectureToCourse(ISender sender, CourseId courseId, CreateLectureCommand command)
+    {
+        var vm = await sender.Send(command);
+        return TypedResults.Ok(vm);
+    }
+
+    public async Task<Ok<CoursePermissionsDto>> GetCoursePermissions(ISender sender, CourseId courseId)
+    {
+        var vm = await sender.Send(new GetCoursePermissionsQuery(courseId));
         return TypedResults.Ok(vm);
     }
 }

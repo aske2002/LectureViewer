@@ -1,14 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Linq.Expressions;
-using System.Reflection;
-using backend.Application.Common.Interfaces;
+﻿using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
-using backend.Domain.Helpers;
 using backend.Infrastructure.Data.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using StrejsApi.Infrastructure.Databases.Trips.Configuration;
 
 namespace backend.Infrastructure.Data;
 
@@ -26,81 +20,42 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Trip> Trips => Set<Trip>();
     public DbSet<TripDescription> TripDescriptions => Set<TripDescription>();
     public DbSet<ClassYear> ClassYears => Set<ClassYear>();
-    public DbSet<Lecture> Lectures => Set<Lecture>();
+
+    // Course related DbSets
     public DbSet<Course> Courses => Set<Course>();
+    public DbSet<CourseCategory> CourseCategories => Set<CourseCategory>();
     public DbSet<CourseInstructor> CourseInstructors => Set<CourseInstructor>();
     public DbSet<CourseEnrollment> CourseEnrollments => Set<CourseEnrollment>();
     public DbSet<CourseInviteLink> CourseInviteLinks => Set<CourseInviteLink>();
 
+    // Job related DbSets
+    public DbSet<MediaProcessingJob> MediaProcessingJobs => Set<MediaProcessingJob>();
+    public DbSet<TranscriptionMediaProcessingJob> TranscriptionMediaProcessingJobs => Set<TranscriptionMediaProcessingJob>();
+    public DbSet<FlashcardGenerationMediaProcessingJob> FlashcardGenerationMediaProcessingJobs => Set<FlashcardGenerationMediaProcessingJob>();
+    public DbSet<ThumbnailExtractionMediaProcessingJob> ThumbnailExtractionMediaProcessingJobs => Set<ThumbnailExtractionMediaProcessingJob>();
+    public DbSet<OfficeConversionMediaProcessingJob> OfficeConversionMediaProcessingJobs => Set<OfficeConversionMediaProcessingJob>();
+    public DbSet<MediaConversionMediaProcessingJob> MediaConversionMediaProcessingJobs => Set<MediaConversionMediaProcessingJob>();
+    public DbSet<KeywordExtractionMediaProcessingJob> KeywordExtractionMediaProcessingJobs => Set<KeywordExtractionMediaProcessingJob>();
+    public DbSet<CategoryClassificationMediaProcessingJob> CategoryClassificationMediaProcessingJobs => Set<CategoryClassificationMediaProcessingJob>();
+    public DbSet<MediaProcessingJobAttempt> MediaProcessingJobAttempts => Set<MediaProcessingJobAttempt>();
+    public DbSet<MediaProcessingJobLog> MediaProcessingJobLogs => Set<MediaProcessingJobLog>();
 
+    // Lecture related DbSets
+    public DbSet<Lecture> Lectures => Set<Lecture>();
+    public DbSet<LectureContent> LectureContents => Set<LectureContent>();
+    public DbSet<LectureTranscript> LectureTranscripts => Set<LectureTranscript>();
+    public DbSet<LectureTranscriptTimestamp> LectureTranscriptTimestamps => Set<LectureTranscriptTimestamp>();
+    public DbSet<LectureTranscriptKeyword> LectureTranscriptKeywords => Set<LectureTranscriptKeyword>();
+    public DbSet<LectureTranscriptKeywordOccurrence> LectureTranscriptKeywordOccurrences => Set<LectureTranscriptKeywordOccurrence>();  
+    
+    // Flashcard related DbSets
+    public DbSet<Flashcard> Flashcards => Set<Flashcard>();
+    public DbSet<FlashcardChoice> FlashCardChoiceAnswers => Set<FlashcardChoice>();
+    public DbSet<FlashcardPair> FlashCardPairAnswers => Set<FlashcardPair>();
+    public DbSet<FlashcardAnswer> FlashCardChoiceAnswerOptions => Set<FlashcardAnswer>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ConfigureBaseEntity();
-        builder.Entity<ApplicationUser>(entity =>
-        {
-            entity.HasMany(u => u.Courses).WithOne(c => c.Instructor).HasForeignKey(c => c.InstructorId);
-        });
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        AddStronglyTypedIdConversions(builder);
-    }
-
-    private static void AddStronglyTypedIdConversions(ModelBuilder modelBuilder)
-    {
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            foreach (var property in entityType.GetProperties())
-            {
-                if (StronglyTypedIdHelper.IsStronglyTypedId(property.ClrType))
-                {
-                    var converter = StronglyTypedIdConverters.GetOrAdd(
-                        property.ClrType,
-                        _ => CreateStronglyTypedIdConverter(property.ClrType));
-                    property.SetValueConverter(converter);
-                }
-            }
-        }
-    }
-
-    private static readonly ConcurrentDictionary<Type, ValueConverter> StronglyTypedIdConverters = new();
-
-    private static ValueConverter CreateStronglyTypedIdConverter(
-        Type stronglyTypedIdType)
-    {
-        // id => id.Value
-        var toProviderFuncType = typeof(Func<,>)
-            .MakeGenericType(stronglyTypedIdType, typeof(Guid));
-        var stronglyTypedIdParam = Expression.Parameter(stronglyTypedIdType, "Id");
-        var toProviderExpression = Expression.Lambda(
-            toProviderFuncType,
-            Expression.Property(stronglyTypedIdParam, "Value"),
-            stronglyTypedIdParam);
-
-        // value => new ProductId(value)
-        var fromProviderFuncType = typeof(Func<,>)
-            .MakeGenericType(typeof(Guid), stronglyTypedIdType);
-        var valueParam = Expression.Parameter(typeof(Guid), "value");
-        var ctor = stronglyTypedIdType.GetConstructor(new[] { typeof(Guid) }) ??
-            throw new InvalidOperationException(
-                $"The type {stronglyTypedIdType} does not have a constructor that takes a Guid.");
-        var fromProviderExpression = Expression.Lambda(
-            fromProviderFuncType,
-            Expression.New(ctor, valueParam),
-            valueParam);
-
-        var converterType = typeof(ValueConverter<,>)
-            .MakeGenericType(stronglyTypedIdType, typeof(Guid));
-
-        if (Activator.CreateInstance(
-            converterType,
-            toProviderExpression,
-            fromProviderExpression,
-            null) is ValueConverter converter)
-        {
-            return converter;
-        }
-
-        throw new InvalidOperationException(
-            $"The type {converterType} could not be created.");
+        builder.ConfigureEntities();
     }
 }

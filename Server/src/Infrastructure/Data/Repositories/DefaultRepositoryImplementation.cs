@@ -94,7 +94,6 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
     {
         var entittyQuery = WithFilter(pagination, filter, orderBy, include);
         var totalCount = await CountAsync(filter, orderBy, include, cancellationToken);
-        var allEntities = await entittyQuery.ToListAsync(cancellationToken);
         if (project != null)
         {
             var entities = await project(entittyQuery).ToListAsync(cancellationToken);
@@ -102,7 +101,7 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
         }
         else
         {
-            var entities = await MappingExtensions.MapResourcesAsync<TProject, TEntity, TId>(_context, _mapper, entittyQuery);
+            var entities = await entittyQuery.ProjectToListAsync<TProject>(_mapper.ConfigurationProvider);
             return new(entities, totalCount, pagination?.page, pagination?.pageSize);
         }
     }

@@ -29,10 +29,8 @@ public class CreateResourceCommandHandler : IRequestHandler<CreateResourceComman
     public async Task<ResourceId> Handle(CreateResourceCommand request, CancellationToken cancellationToken)
     {
         var resource = await _resourceService.CreateResourceAsync(
-            request.EntityId,
             request.FileName,
             request.ResourceType,
-            request.Size,
             request.Bytes,
             request.MimeType,
             request.Order,

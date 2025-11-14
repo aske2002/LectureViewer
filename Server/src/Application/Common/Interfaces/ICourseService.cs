@@ -1,6 +1,8 @@
 using backend.Domain.Entities;
 using backend.Domain.Enums;
 using backend.Domain.Identifiers;
+using Microsoft.AspNetCore.Http;
+using static backend.Domain.Constants.CoursePermissions;
 
 namespace backend.Application.Common.Interfaces;
 
@@ -12,6 +14,8 @@ public interface ICourseService
     Task<ICollection<CourseEnrollment>> GetCourseEnrollmentsAsync(CourseId courseId);
 
     // Course management
+    Task<ICollection<CoursePermissionType>> GetUserCoursePermissionsAsync(CourseId courseId);
+    Task<ICollection<Course>> ListCoursesAsync();
     Task<Course> GetCourseDetailsAsync(CourseId courseId);
     Task<Course> CreateCourseAsync(ApplicationUser owner, string internalIdentifier, string name, string description, Season semesterSeason, int semesterYear);
     Task<Course> UpdateCourseAsync(CourseId courseId, string name, string description);
@@ -30,9 +34,11 @@ public interface ICourseService
 
     // Lecture management
     Task<ICollection<Lecture>> GetCourseLecturesAsync(CourseId courseId);
+    Task<LectureContent> GetLectureContentDetailsAsync(CourseId courseId, LectureId lectureId, LectureContentId lectureContentId);
     Task<Lecture> GetLectureDetailsAsync(CourseId courseId, LectureId lectureId);
-    Task<Resource> UploadLectureMaterialAsync(CourseId courseId, LectureId lectureId, string fileName, ResourceType resourceType, int size, byte[] bytes, string? mimeType = null, int? order = null, CancellationToken cancellationToken = default);
-    Task<Lecture> CreateLectureAsync(CourseId courseId, string title, string content, DateTimeOffset startDate, DateTimeOffset endDate);
+    Task<LectureContent> UploadLectureMaterialAsync(CourseId courseId, LectureId lectureId, IFormFile file, LectureContentType contentType, string name, string? description, bool isMainContent = false, CancellationToken cancellationToken = default);
+    Task<Lecture> CreateLectureAsync(CourseId courseId, string title, string description, DateTimeOffset startDate, DateTimeOffset endDate);
+    Task<IFormFile> GetLectureContentStreamAsync(CourseId courseId, LectureId lectureId, LectureContentId lectureContentId, ResourceId resourceId, CancellationToken cancellationToken = default);
     Task<Lecture> UpdateLectureAsync(CourseId courseId, LectureId lectureId, string title, string content);
     Task DeleteLectureAsync(CourseId courseId, LectureId lectureId);
 

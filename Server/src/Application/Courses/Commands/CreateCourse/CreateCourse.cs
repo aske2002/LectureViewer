@@ -1,4 +1,5 @@
-﻿using backend.Application.Common.Interfaces;
+﻿using backend.Application.Common.Exceptions;
+using backend.Application.Common.Interfaces;
 using backend.Application.Common.Security;
 using backend.Application.Semesters.Queries.GetSemesterById;
 using backend.Domain.Common;
@@ -33,8 +34,14 @@ public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, C
     }
     public async Task<CourseId> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
     {
+        var user = await _userAccessor.GetCurrentUserAsync();
+        if (user == null)
+        {
+            throw new ForbiddenAccessException();
+        }
+
         var course = await _courseService.CreateCourseAsync(
-            owner: await _userAccessor.GetCurrentUserAsync(),
+            owner: user,
             internalIdentifier: request.InternalIdentifier,
             name: request.Name,
             description: request.Description,

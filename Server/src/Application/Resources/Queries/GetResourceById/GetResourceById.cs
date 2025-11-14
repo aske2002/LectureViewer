@@ -18,7 +18,7 @@ public class GetResourceByIdQueryHandler : IRequestHandler<GetResourceByIdQuery,
         _mapper = mapper;
     }
 
-    public async Task<Resources.Queries.GetResourceById.ResourceResponse> Handle(GetResourceByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ResourceResponse> Handle(GetResourceByIdQuery request, CancellationToken cancellationToken)
     {
         var resource = await _resourceService.GetResourceByIdAsync(
             request.ResourceId,

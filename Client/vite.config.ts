@@ -40,7 +40,7 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
   }
 }
 
-console.error(parseInt(env.DEV_SERVER_PORT || "51089"))
+console.error(parseInt(env.DEV_SERVER_PORT || "51089"));
 const target = env.ASPNETCORE_HTTPS_PORT
   ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
   : env.ASPNETCORE_URLS

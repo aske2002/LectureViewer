@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using backend.Application.Common.Exceptions;
 using backend.Application.Common.Interfaces;
 using backend.Application.Common.Models;
 using backend.Domain.Constants;
@@ -16,8 +17,6 @@ public class IdentityService : IIdentityService
     private readonly IAuthorizationService _authorizationService;
     private readonly IUserStore<ApplicationUser> _userStore;
     private readonly EmailAddressAttribute _emailAddressAttribute = new();
-
-
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,

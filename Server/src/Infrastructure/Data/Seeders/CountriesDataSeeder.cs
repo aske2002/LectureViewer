@@ -81,10 +81,8 @@ public class CountriesDataSeeder : IDataSeeder
             var mimeType = MimeTypesMap.GetMimeType(flagFileName);
 
             var resource = await _resourceService.CreateResourceAsync(
-                country.Id.Value,
                 flagFileName,
                 ResourceType.Flag,
-                countryResponse.flagBytes.Length,
                 countryResponse.flagBytes,
                 mimeType ?? "image/png",
                 null,

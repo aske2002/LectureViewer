@@ -1,9 +1,8 @@
 import { useCoursesApi } from "@/api/use-courses-api";
 import { PolicyDto } from "@/api/web-api-client";
-import { CourseCard } from "@/components/course-card";
-import { CreateCourseDialog } from "@/components/create-course-dialog";
+import { CourseCard } from "@/components/courses/course-card";
+import { CreateCourseDialog } from "@/components/courses/create-course-dialog";
 import RequireAuthorization from "@/components/shared/require-authorization";
-import { Button } from "@/components/ui/button";
 import { mockCourses } from "@/lib/mock-data";
 import { createFileRoute } from "@tanstack/react-router";
 import { BookOpen, Plus } from "lucide-react";
@@ -16,7 +15,6 @@ function RouteComponent() {
   const {
     courses: { isLoading, data },
   } = useCoursesApi();
-  console.log(data);
 
   return (
     <>
