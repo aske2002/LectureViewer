@@ -61,7 +61,8 @@ const config = defineConfig({
     viteReact(),
   ],
   server: {
-    port: parseInt(env.DEV_SERVER_PORT || "51089"),
+    host: "localhost",
+    port: parseInt(env.DEV_SERVER_PORT || "5173"),
     https: {
       key: fs.readFileSync(keyFilePath),
       cert: fs.readFileSync(certFilePath),

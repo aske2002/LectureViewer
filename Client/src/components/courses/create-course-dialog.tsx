@@ -19,10 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import {
-  CreateCourseCommand,
-  Season,
-} from "@/api/web-api-client";
+import { CreateCourseCommand, Season } from "@/api/web-api-client";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +34,8 @@ import {
 import { getEnumEntries } from "@/lib/getEnumValues";
 import { LoadingButton } from "../shared/loading-button";
 import { useCoursesApi } from "@/api/use-courses-api";
+import MarkdownInput from "../shared/markdown/markdown-input";
+import { MilkdownProvider } from "@milkdown/react";
 
 const formDataSchema = z.object({
   name: z.string().min(1, "Course name is required"),
@@ -50,7 +49,9 @@ const formDataSchema = z.object({
 
 export function CreateCourseDialog() {
   const [open, setOpen] = useState(false);
-  const { createCourse: {mutateAsync:createCourse, isPending: isCreating}  } = useCoursesApi();
+  const {
+    createCourse: { mutateAsync: createCourse, isPending: isCreating },
+  } = useCoursesApi();
 
   const form = useForm<z.infer<typeof formDataSchema>>({
     resolver: zodResolver(formDataSchema),
@@ -93,7 +94,7 @@ export function CreateCourseDialog() {
           Add Course
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Create New Course</DialogTitle>
           <DialogDescription>
@@ -140,15 +141,15 @@ export function CreateCourseDialog() {
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="overflow-hidden flex flex-col">
                 <FormLabel htmlFor={field.name}>Description</FormLabel>
                 <FormControl>
-                  <Textarea
-                    id={field.name}
-                    placeholder="Brief description of the course content and objectives"
-                    {...field}
-                    rows={3}
-                  />
+                  <MilkdownProvider>
+                    <MarkdownInput
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </MilkdownProvider>
                 </FormControl>
                 <FormMessage />
               </FormItem>
