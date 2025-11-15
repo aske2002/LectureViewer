@@ -30,7 +30,9 @@ public class MediaJobService : IMediaJobService
         var job = await _db.MediaProcessingJobs
             .Where(j =>
                 j.Attempts.Count(a => a.Status == JobStatus.Failed) < j.MaxRetries &&
-                !j.Attempts.Any(a => a.Status == JobStatus.Completed)
+                !j.Attempts.Any(a => a.Status == JobStatus.Completed) &&
+                (j.ParentJob == null || j.ParentJob.Attempts.Any(pa => pa.Status == JobStatus.Completed)) &&
+                !j.Failed
             )
             .Include(j => j.Attempts)
                 .ThenInclude(a => a.Logs)
@@ -73,16 +75,37 @@ public class MediaJobService : IMediaJobService
 
         attempt.Status = JobStatus.Completed;
         attempt.CompletedAt = DateTimeOffset.UtcNow;
-        
+
         await _db.SaveChangesAsync(token);
         _logger.LogInformation("Job {JobId} marked as completed.", attempt.JobId);
+    }
+
+    public async Task MarkJobFailedAsync(MediaProcessingJobId jobId, string errorMessage, CancellationToken token = default)
+    {
+        var job = await _db.MediaProcessingJobs
+            .Include(j => j.Attempts)
+            .Include(j => j.DependentJobs)
+            .FirstOrDefaultAsync(j => j.Id == jobId, cancellationToken: token);
+
+        if (job is null)
+            return;
+
+        foreach (var dependenJob in job.DependentJobs)
+        {
+            await MarkJobFailedAsync(dependenJob.Id, "Parent job failed.", token);
+        }
+
+        await _db.SaveChangesAsync(token);
+        _logger.LogWarning("Job {JobId} failed: {Error}", jobId, errorMessage);
     }
 
     public async Task MarkAttemptFailedAsync(MediaProcessingJobAttemptId jobId, string errorMessage, CancellationToken token = default)
     {
         var attempt = await _db.MediaProcessingJobAttempts
             .Include(a => a.Job)
+                .ThenInclude(a => a.DependentJobs)
             .FirstOrDefaultAsync(a => a.Id == jobId, cancellationToken: token);
+
         if (attempt is null)
             return;
 
@@ -91,6 +114,13 @@ public class MediaJobService : IMediaJobService
         attempt.CompletedAt = DateTimeOffset.UtcNow;
 
         await _db.SaveChangesAsync(token);
+
+        if (attempt.Job.Attempts.Count(a => a.Status == JobStatus.Failed) >= attempt.Job.MaxRetries)
+        {
+            _logger.LogWarning("Job {JobId} has reached maximum retry attempts and is marked as failed.", attempt.JobId);
+            await MarkJobFailedAsync(attempt.JobId, "Maximum retry attempts reached.", token);
+        }
+
         _logger.LogWarning("Job {JobId} failed: {Error}", attempt.JobId, errorMessage);
     }
 }

@@ -11,6 +11,8 @@ public interface IMediaProcessingJob
     DateTimeOffset? CompletedAt { get; set; }
     IList<MediaProcessingJobAttempt> Attempts { get; }
     IList<MediaProcessingJob> DependentJobs { get; }
+    MediaProcessingJob? ParentJob { get; set; }
+    MediaProcessingJobId? ParentJobId { get; set; }
     int MaxRetries { get; set; }
     string? ErrorMessage { get; set; }
 }
@@ -26,6 +28,7 @@ public abstract class MediaProcessingJob : BaseAuditableEntity<MediaProcessingJo
     public MediaJobType JobType { get; set; }
     public int MaxRetries { get; set; } = 3;
     public string? ErrorMessage { get; set; }
+    public bool Failed{ get; set; } = false;
     public JobStatus Status => Attempts.Where(a => a.Status == JobStatus.InProgress).Any()
         ? JobStatus.InProgress
         : Attempts.Where(a => a.Status == JobStatus.Failed).Count() >= MaxRetries
