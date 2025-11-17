@@ -1,0 +1,27 @@
+{
+  "name": "transcription-server",
+  "private": true,
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "license": "MIT",
+  "scripts": {
+    "watch": "tsc --watch --p ./tsconfig.json",
+    "package-cpu": "docker build -t whisper-service:cpu -f Dockerfile.cpu .",
+    "package-gpu": "docker build -t whisper-service:gpu -f Dockerfile.gpu .",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@types/node": "^24.0.4",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "typescript": "^5.9.3",
+    "uuid": "^13.0.0",
+    "zod": "^4.1.12"
+  },
+  "description": "Local openai whisper transcription server",
+  "devDependencies": {
+    "@types/express": "^5",
+    "@types/multer": "^2"
+  }
+}

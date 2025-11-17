@@ -1,0 +1,45 @@
+FROM ubuntu:22.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /app
+
+
+RUN apt-get update && apt-get install -y \
+    curl git ffmpeg build-essential cmake ninja-build \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g yarn \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g yarn
+
+RUN git clone https://github.com/ggerganov/whisper.cpp && \
+    cd whisper.cpp && \
+    cmake -B build -DGGML_CUDA=OFF && \
+    cmake --build build -j && \
+    cp build/bin/whisper-cli /app/whisper && \
+    cp build/lib/*.so* /app/
+
+COPY package.json yarn.lock* ./
+RUN yarn install
+
+COPY . .
+RUN yarn build
+
+
+FROM ubuntu:22.04
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y \
+    ffmpeg curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/whisper ./whisper
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/models ./models
+
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
