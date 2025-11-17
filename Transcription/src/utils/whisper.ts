@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { WhisperSchema } from "../types/whisperSchema";
 import z from "zod";
 import { randomUUID } from "crypto";
+import axios from "axios";
 
 export enum WhisperLanguage {
   Auto = "auto",
@@ -144,7 +145,7 @@ export const WhisperModelsSchema = z.enum(WhisperModel);
 export const WhisperLanguagesSchema = z.enum(WhisperLanguage);
 
 export class WhisperProcess {
-  public readonly id = randomUUID();
+  public readonly id = randomUUID().replace(/-/g, "");
   private stdoutBuffer: string[] = [];
   private stderrBuffer: string[] = [];
 
@@ -153,8 +154,17 @@ export class WhisperProcess {
   private readonly child: ChildProcessWithoutNullStreams;
 
   private readonly inputFilePath: string;
+
   private get tmpPath(): string {
     return path.join(os.tmpdir(), "whisper-transcriptions", this.id);
+  }
+
+  private get outPathNoExtension(): string {
+    return path.join(this.tmpPath, "output");
+  }
+
+  private get outPath(): string {
+    return `${this.outPathNoExtension}.json`;
   }
 
   private static get whisperBinary() {
@@ -162,10 +172,8 @@ export class WhisperProcess {
 
     // Possible locations
     const paths = [
-      path.join(appRoot, "whisper-gpu"),
-      path.join(appRoot, "whisper"),
-      "/app/whisper-gpu",
-      "/app/whisper",
+      path.join(appRoot, "/whisper/whisper-cli"),
+      "/app/whisper/whisper-cli",
     ];
 
     for (const p of paths) {
@@ -178,21 +186,15 @@ export class WhisperProcess {
   }
 
   private handleSuccess = async () => {
-    const outputPath = path.join(
-      this.tmpPath,
-      `${path.basename(
-        this.inputFilePath,
-        path.extname(this.inputFilePath)
-      )}.json`
-    );
-
     const outputContent = await fs.promises
-      .readFile(outputPath, "utf8")
+      .readFile(this.outPath, "utf8")
       .catch(() => null);
 
     if (!outputContent) {
       this.status = WhisperProcessStatus.Error;
-      this.stderrBuffer.push(`Transcription output not found at ${outputPath}`);
+      this.stderrBuffer.push(
+        `Transcription output not found at ${this.outPath}`
+      );
       return;
     }
 
@@ -208,15 +210,13 @@ export class WhisperProcess {
     this.result = result.data;
   };
 
-  public constructor(
+  private constructor(
     inputFilePath: string,
+    model: string,
     options: {
+      fileName?: string;
       verbose?: boolean;
-      device?: "cpu" | "cuda" | "mps";
       temperature?: number;
-      fp16?: boolean;
-      model?: WhisperModel;
-      wordTimestamps?: boolean;
       language?: WhisperLanguage;
       stdout?: (data: string) => void;
       stderr?: (data: string) => void;
@@ -226,29 +226,26 @@ export class WhisperProcess {
       fs.mkdirSync(this.tmpPath, { recursive: true });
     }
 
-    this.inputFilePath = path.join(this.tmpPath, path.basename(inputFilePath));
+    this.inputFilePath = path.join(
+      this.tmpPath,
+      options.fileName || path.basename(inputFilePath)
+    );
     fs.copyFileSync(inputFilePath, this.inputFilePath);
 
-    const model = options.model || WhisperModel.LargeV3;
-    const fp16 = options.fp16 !== undefined ? options.fp16 : false;
     const temperature = options.temperature || 0.0;
 
     const args = [
-      `"${this.inputFilePath}"`,
       ...(options.language ? ["--language", options.language] : []),
-      ...(options.device ? ["--device", options.device] : []),
       ...(options.verbose ? ["--verbose", "True"] : []),
-      ...(options.wordTimestamps ? ["--word_timestamps", "True"] : []),
+      "--print-progress",
       "--temperature",
       temperature.toFixed(0).toString(),
-      "--fp16",
-      fp16 ? "True" : "False",
       "--model",
       model,
-      "--output_dir",
-      `"${this.tmpPath}"`,
-      "--output_format",
-      "json",
+      "--output-file",
+      `${this.outPathNoExtension}`,
+      "--output-json-full",
+      `${this.inputFilePath}`,
     ];
 
     this.child = spawn(WhisperProcess.whisperBinary, args, {
@@ -259,16 +256,21 @@ export class WhisperProcess {
       },
     });
 
+    console.log(this.child.spawnargs.join(" "));
+
     this.child.on("error", (err) => {
+      console.error("Whisper process error:", err);
       this.status = WhisperProcessStatus.Error;
       this.stderrBuffer.push(err.toString());
     });
 
     this.child.stdout.on("data", (data) => {
+      console.log(data.toString());
       this.stdoutBuffer.push(data.toString());
     });
 
     this.child.stderr.on("data", (data) => {
+      console.error(data.toString());
       this.stderrBuffer.push(data.toString());
     });
 
@@ -279,6 +281,22 @@ export class WhisperProcess {
         this.status = WhisperProcessStatus.Error;
       }
     });
+  }
+
+  public static async run( 
+    inputFilePath: string,
+    options: {
+      fileName?: string;
+      verbose?: boolean;
+      temperature?: number;
+      model?: WhisperModel;
+      language?: WhisperLanguage;
+      stdout?: (data: string) => void;
+      stderr?: (data: string) => void;
+    } = {}
+  ) {
+    const model = await Whisper.getModel(options.model || WhisperModel.LargeV3);
+    return new WhisperProcess(inputFilePath, model, options);
   }
 
   public get process(): ChildProcessWithoutNullStreams {
@@ -312,6 +330,8 @@ export class WhisperProcess {
 }
 
 export class Whisper {
+  private static readonly modelsDir = path.join("/app", "models");
+
   private static readonly runningProcesses: Map<string, WhisperProcess> =
     new Map();
 
@@ -323,21 +343,61 @@ export class Whisper {
     return Object.values(WhisperLanguage);
   }
 
-  static startTranscription(
+  public static async getModel(model: WhisperModel): Promise<string> {
+    const installedModels = this.listInstalledModels();
+    console.log("Installed models:", installedModels);
+    if (!installedModels.includes(model)) {
+      await this.installModel(model);
+    }
+    return path.join(this.modelsDir, `${model}.bin`);
+  }
+
+  private static listInstalledModels(): WhisperModel[] {
+    const modelFiles = fs.existsSync(this.modelsDir)
+      ? fs
+          .readdirSync(this.modelsDir, { withFileTypes: true })
+          .map((dirent) => dirent.name)
+      : [];
+
+    return modelFiles.filter((files) =>
+      Object.values(WhisperModel).includes(files.replace(".bin", "") as WhisperModel)
+    ) as WhisperModel[];
+  }
+
+  private static async installModel(model: WhisperModel): Promise<void> {
+    // No-op for now, as models are expected to be pre-installed in the Docker image
+    const response = await axios.get(
+      `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-${model}.bin`,
+      {
+        responseType: "stream",
+      }
+    );
+    const modelPath = path.join(this.modelsDir, `${model}.bin`);
+    response.data.pipe(fs.createWriteStream(modelPath));
+
+    return new Promise((resolve, reject) => {
+      response.data.on("end", () => {
+        resolve();
+      });
+      response.data.on("error", (err: any) => {
+        reject(err);
+      });
+    });
+  }
+
+  static async startTranscription(
     filePath: string,
     options: {
+      fileName?: string;
       verbose?: boolean;
-      device?: "cpu" | "cuda" | "mps";
       temperature?: number;
-      fp16?: boolean;
       model?: WhisperModel;
-      wordTimestamps?: boolean;
       language?: WhisperLanguage;
       stdout?: (data: string) => void;
       stderr?: (data: string) => void;
     } = {}
   ) {
-    const process = new WhisperProcess(filePath, options);
+    const process = await WhisperProcess.run(filePath, options);
     this.runningProcesses.set(process.id, process);
     return process.id;
   }

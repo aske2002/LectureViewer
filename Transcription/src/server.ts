@@ -25,7 +25,8 @@ app.post("/transcriptions", upload.single("file"), async (req, res) => {
       ? WhisperLanguagesSchema.parse(req.query.language)
       : undefined;
 
-    const id = Whisper.startTranscription(req.file.path, {
+    const id = await Whisper.startTranscription(req.file.path, {
+      fileName: req.file.originalname,
       model,
       language,
     });

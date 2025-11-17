@@ -3,20 +3,25 @@ FROM nvidia/cuda:12.4.1-devel-ubuntu22.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
+
 RUN apt-get update && apt-get install -y \
     curl git ffmpeg build-essential cmake ninja-build \
- && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
- && apt-get install -y nodejs \
- && npm install -g yarn \
- && rm -rf /var/lib/apt/lists/*
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g yarn \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g yarn
 
 RUN git clone https://github.com/ggerganov/whisper.cpp && \
     cd whisper.cpp && \
-    cmake -B build -DGGML_CUDA=ON && \
+    cmake -B build -DGGML_CUDA=ON \
+        -DGGML_CUDA_ARCH_LIST="70;75;80;86" \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build -j && \
-    cp build/bin/whisper-cli /app/whisper-gpu
+    mkdir -p /app/whisper && \
+    cp build/bin/* /app/whisper/
 
 COPY package.json yarn.lock* ./
 RUN yarn install
@@ -25,15 +30,19 @@ COPY . .
 RUN yarn build
 
 
-
 FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
 WORKDIR /app
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    ffmpeg curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/whisper-gpu ./whisper
+COPY --from=builder /app/whisper ./whisper
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/models ./models
+
+EXPOSE 3000
 
 CMD ["node", "dist/server.js"]
