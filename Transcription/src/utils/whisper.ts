@@ -2,7 +2,7 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import * as os from "os";
 import path from "path";
 import * as fs from "fs";
-import { WhisperSchema } from "../types/whisperSchema";
+import { WhisperOutputSchema, type WhisperOutput } from "../types/whisperSchema";
 import z from "zod";
 import { randomUUID } from "crypto";
 import axios from "axios";
@@ -129,7 +129,7 @@ enum WhisperProcessStatus {
 
 type WhisperProcessResult =
   | {
-      data: WhisperSchema;
+      data: WhisperOutput;
       status: WhisperProcessStatus.Success;
     }
   | {
@@ -149,7 +149,7 @@ export class WhisperProcess {
   private stdoutBuffer: string[] = [];
   private stderrBuffer: string[] = [];
 
-  private result: WhisperSchema | null = null;
+  private result: WhisperOutput | null = null;
   private status: WhisperProcessStatus = WhisperProcessStatus.Running;
   private readonly child: ChildProcessWithoutNullStreams;
 
@@ -198,7 +198,7 @@ export class WhisperProcess {
       return;
     }
 
-    const result = WhisperSchema.safeParse(JSON.parse(outputContent));
+    const result = WhisperOutputSchema.safeParse(JSON.parse(outputContent));
 
     if (!result.success) {
       this.status = WhisperProcessStatus.Error;
@@ -345,7 +345,7 @@ export class Whisper {
 
   public static async getModel(model: WhisperModel): Promise<string> {
     const installedModels = this.listInstalledModels();
-    console.log("Installed models:", installedModels);
+    console.log(`Requested model: ${model}, found installed models:`, installedModels);
     if (!installedModels.includes(model)) {
       await this.installModel(model);
     }
@@ -356,16 +356,19 @@ export class Whisper {
     const modelFiles = fs.existsSync(this.modelsDir)
       ? fs
           .readdirSync(this.modelsDir, { withFileTypes: true })
-          .map((dirent) => dirent.name)
+          .map((dirent) => dirent.name.replace(".bin", ""))
       : [];
 
-    return modelFiles.filter((files) =>
-      Object.values(WhisperModel).includes(files.replace(".bin", "") as WhisperModel)
+    console.log("Model files in models directory:", modelFiles);
+
+    return modelFiles.filter((file) =>
+      Object.values(WhisperModel).includes(file as WhisperModel)
     ) as WhisperModel[];
   }
 
   private static async installModel(model: WhisperModel): Promise<void> {
     // No-op for now, as models are expected to be pre-installed in the Docker image
+    console.log(`Installing model: ${model}`);
     const response = await axios.get(
       `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-${model}.bin`,
       {
