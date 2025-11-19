@@ -27,10 +27,16 @@ public abstract class MediaJobHandlerBase<TJob> : IMediaJobHandler<TJob>
     protected async Task<ICollection<MediaProcessingJob>> ListAllPreviousJobsAsync(MediaProcessingJob job, CancellationToken token)
     {
         var jobs = new List<MediaProcessingJob>();
-        
+
         await DbContext.MediaProcessingJobs.Entry(job).Reference(j => j.ParentJob).LoadAsync(token);
+
         if (job.ParentJob is not null)
         {
+            if (job.ParentJob is MediaTranscodingMediaProcessingJob conversionJob)
+            {
+                await DbContext.MediaConversionMediaProcessingJobs.Entry(conversionJob).Reference(j => j.OutputResource).LoadAsync(token);
+            }
+
             jobs.Add(job.ParentJob);
             var parentJobs = await ListAllPreviousJobsAsync(job.ParentJob, token);
             jobs.AddRange(parentJobs);

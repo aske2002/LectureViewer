@@ -1021,6 +1021,9 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<bool>("Failed")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("JobType")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1171,9 +1174,14 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<int>("Size")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("ThumbnailResourceId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentResourceId");
+
+                    b.HasIndex("ThumbnailResourceId");
 
                     b.ToTable("Resources");
                 });
@@ -1451,7 +1459,7 @@ namespace backend.Infrastructure.Data.Migrations
                     b.HasIndex("LectureContentId");
                 });
 
-            modelBuilder.Entity("backend.Domain.Entities.MediaConversionMediaProcessingJob", b =>
+            modelBuilder.Entity("backend.Domain.Entities.MediaTranscodingMediaProcessingJob", b =>
                 {
                     b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
 
@@ -1461,15 +1469,24 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<Guid?>("OutputResourceId")
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("TargetBitrateKbps")
+                        .HasColumnType("integer");
+
                     b.Property<string>("TargetFormat")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("TargetHeight")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TargetWidth")
+                        .HasColumnType("integer");
 
                     b.HasIndex("InputResourceId");
 
                     b.HasIndex("OutputResourceId");
 
-                    b.HasDiscriminator().HasValue("MediaConversion");
+                    b.HasDiscriminator().HasValue("MediaTranscoding");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.OfficeConversionMediaProcessingJob", b =>
@@ -1529,6 +1546,23 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.ThumbnailExtractionMediaProcessingJob", b =>
                 {
                     b.HasBaseType("backend.Domain.Entities.LectureRelatedMediaProcessingJob");
+
+                    b.Property<int?>("Height")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("OutputResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("Width")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("OutputResourceId");
+
+                    b.ToTable("MediaProcessingJobs", t =>
+                        {
+                            t.Property("OutputResourceId")
+                                .HasColumnName("ThumbnailExtractionMediaProcessingJob_OutputResourceId");
+                        });
 
                     b.HasDiscriminator().HasValue("ThumbnailExtraction");
                 });
@@ -1963,7 +1997,14 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasForeignKey("ParentResourceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("backend.Domain.Entities.Resource", "ThumbnailResource")
+                        .WithMany()
+                        .HasForeignKey("ThumbnailResourceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("ParentResource");
+
+                    b.Navigation("ThumbnailResource");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TodoItem", b =>
@@ -2052,7 +2093,7 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("LectureContent");
                 });
 
-            modelBuilder.Entity("backend.Domain.Entities.MediaConversionMediaProcessingJob", b =>
+            modelBuilder.Entity("backend.Domain.Entities.MediaTranscodingMediaProcessingJob", b =>
                 {
                     b.HasOne("backend.Domain.Entities.Resource", "InputResource")
                         .WithMany()
@@ -2083,6 +2124,15 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasConstraintName("FK_MediaProcessingJobs_Resources_OfficeConversionMediaProcess~1");
 
                     b.Navigation("InputResource");
+
+                    b.Navigation("OutputResource");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.ThumbnailExtractionMediaProcessingJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Resource", "OutputResource")
+                        .WithMany()
+                        .HasForeignKey("OutputResourceId");
 
                     b.Navigation("OutputResource");
                 });

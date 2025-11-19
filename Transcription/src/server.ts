@@ -7,13 +7,20 @@ import {
 } from "./utils/whisper";
 
 const app = express();
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/"});
 
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 
 app.get("/models", (_, res) => res.json(Whisper.listModels()));
 
 app.get("/languages", (_, res) => res.json(Whisper.listLanguages()));
+
+app.delete("/transcriptions/:id", async (req, res) => {
+  const process = Whisper.get(req.params.id)
+  if (!process) return res.status(404).send("Transcription not found");
+  await process.cancel();
+  res.status(200).send("Transcription cancelled");
+});
 
 app.post("/transcriptions", upload.single("file"), async (req, res) => {
   try {
@@ -31,7 +38,7 @@ app.post("/transcriptions", upload.single("file"), async (req, res) => {
       language,
     });
 
-    res.status(200).json(id);
+    res.status(200).send(id);
   } catch (e: any) {
     res.status(500).send(e.toString());
   }
@@ -45,6 +52,20 @@ app.get("/transcriptions/:id", (req, res) => {
   const process = Whisper.get(req.params.id);
   if (!process) return res.status(404).send("Transcription not found");
   res.status(200).json(process.getStatus());
+});
+
+app.get("/transcriptions/:id/stream", async (req, res) => {
+  const process = Whisper.get(req.params.id);
+  if (!process) return res.status(404).send("Transcription not found");
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  // Immediate hello event
+  res.write(`data: ${JSON.stringify({ status: "connected" })}\n\n`);
+
+  process.streamStatus(res);
 });
 
 app.listen(3000, () => console.log("Whisper TS service running on :3000"));

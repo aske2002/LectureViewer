@@ -82,4 +82,11 @@ public class ResourceService : IResourceService
 
         return resource;
     }
+
+    public Task<Stream> GetResourceStreamByIdAsync(ResourceId resourceId, CancellationToken cancellationToken)
+    {
+        var stream = _resourceFileManager.GetResourceByIdAsync(resourceId)
+            .ContinueWith(t => (Stream)new MemoryStream(t.Result), cancellationToken);
+        return stream;
+    }
 }

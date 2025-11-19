@@ -20,7 +20,7 @@ internal class MediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaP
             .HasValue<FlashcardGenerationMediaProcessingJob>(MediaJobType.FlashcardGeneration)
             .HasValue<ThumbnailExtractionMediaProcessingJob>(MediaJobType.ThumbnailExtraction)
             .HasValue<OfficeConversionMediaProcessingJob>(MediaJobType.OfficeConversion)
-            .HasValue<MediaConversionMediaProcessingJob>(MediaJobType.MediaConversion)
+            .HasValue<MediaTranscodingMediaProcessingJob>(MediaJobType.MediaTranscoding)
             .HasValue<KeywordExtractionMediaProcessingJob>(MediaJobType.KeywordExtraction)
             .HasValue<CategoryClassificationMediaProcessingJob>(MediaJobType.CategoryClassification);
     }
@@ -45,9 +45,17 @@ internal class OfficeConversionMediaProcessingJobConfiguration : IEntityTypeConf
     }
 }
 
-internal class MediaConversionMediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaConversionMediaProcessingJob>
+internal class ThumbnailExtractionMediaProcessingJobConfiguration : IEntityTypeConfiguration<ThumbnailExtractionMediaProcessingJob>
 {
-    public void Configure(EntityTypeBuilder<MediaConversionMediaProcessingJob> builder)
+    public void Configure(EntityTypeBuilder<ThumbnailExtractionMediaProcessingJob> builder)
+    {
+        builder.HasOne(j => j.OutputResource).WithMany().HasForeignKey(j => j.OutputResourceId);
+    }
+}
+
+internal class MediaConversionMediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaTranscodingMediaProcessingJob>
+{
+    public void Configure(EntityTypeBuilder<MediaTranscodingMediaProcessingJob> builder)
     {
         builder.HasOne(j => j.InputResource).WithMany().HasForeignKey(j => j.InputResourceId);
         builder.HasOne(j => j.OutputResource).WithMany().HasForeignKey(j => j.OutputResourceId);

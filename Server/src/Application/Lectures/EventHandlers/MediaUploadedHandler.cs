@@ -23,30 +23,6 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
     {
         _backgroundTaskQueue.QueueBackgroundWorkItem(async (sp, token) =>
         {
-            var documentMimeTypes = new[] {
-                "application/msword",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "application/vnd.ms-powerpoint",
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "application/vnd.ms-excel",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            };
-
-            var videoMimeTypes = new[] {
-                "video/mp4",
-                "video/avi",
-                "video/mov",
-                "video/mpeg",
-                "video/quicktime"
-            };
-
-            var audioMimeTypes = new[] {
-                "audio/mpeg",
-                "audio/wav",
-                "audio/ogg",
-                "audio/flac"
-            };
-
             var jobService = sp.GetRequiredService<IMediaJobService>();
 
             // fetch lectureContent fresh if needed
@@ -62,7 +38,7 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
                     notification.LectureContentId, notification.LectureId, notification.CourseId);
                 return;
             }
-            else if (documentMimeTypes.Contains(lectureContent.Resource.MimeType))
+            else if (MimeTypeHelpers.IsDocumentMimeType(lectureContent.Resource.MimeType))
             {
                 // Create document processing job
                 var job = new OfficeConversionMediaProcessingJob
@@ -75,15 +51,15 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
 
                 await jobService.CreateJob(job, token);
             }
-            else if (videoMimeTypes.Contains(lectureContent.Resource.MimeType) ||
-                     audioMimeTypes.Contains(lectureContent.Resource.MimeType))
+            else if (MimeTypeHelpers.IsVideoMimeType(lectureContent.Resource.MimeType) ||
+                     MimeTypeHelpers.IsAudioMimeType(lectureContent.Resource.MimeType))
             {
-                var conversionJob = new MediaConversionMediaProcessingJob
+                var conversionJob = new MediaTranscodingMediaProcessingJob
                 {
                     InputResourceId = lectureContent.ResourceId,
                     InputResource = lectureContent.Resource,
                     TargetFormat = "mp3",
-                    JobType = MediaJobType.MediaConversion,
+                    JobType = MediaJobType.MediaTranscoding,
                 };
 
                 var thumbnailJob = new ThumbnailExtractionMediaProcessingJob

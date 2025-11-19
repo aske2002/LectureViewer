@@ -2,124 +2,22 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import * as os from "os";
 import path from "path";
 import * as fs from "fs";
-import { WhisperOutputSchema, type WhisperOutput } from "../types/whisperSchema";
+import {
+  WhisperLanguage,
+  WhisperModel,
+  WhisperOutputSchema,
+  type WhisperOutput,
+} from "../types/whisperSchema";
 import z from "zod";
 import { randomUUID } from "crypto";
 import axios from "axios";
+import { Response } from "express-serve-static-core";
+import { parseTimecodeToSeconds } from "./numbers";
 
-export enum WhisperLanguage {
-  Auto = "auto",
-  Afrikaans = "af",
-  Amharic = "am",
-  Arabic = "ar",
-  Assamese = "as",
-  Azerbaijani = "az",
-  Bashkir = "ba",
-  Belarusian = "be",
-  Bulgarian = "bg",
-  Bengali = "bn",
-  Tibetan = "bo",
-  Breton = "br",
-  Bosnian = "bs",
-  Catalan = "ca",
-  Czech = "cs",
-  Welsh = "cy",
-  Danish = "da",
-  German = "de",
-  Greek = "el",
-  English = "en",
-  Spanish = "es",
-  Estonian = "et",
-  Basque = "eu",
-  Persian = "fa",
-  Finnish = "fi",
-  Faroese = "fo",
-  French = "fr",
-  Galician = "gl",
-  Gujarati = "gu",
-  Hausa = "ha",
-  Hawaiian = "haw",
-  Hebrew = "he",
-  Hindi = "hi",
-  Croatian = "hr",
-  HaitianCreole = "ht",
-  Hungarian = "hu",
-  Armenian = "hy",
-  Indonesian = "id",
-  Icelandic = "is",
-  Italian = "it",
-  Japanese = "ja",
-  Javanese = "jw",
-  Georgian = "ka",
-  Kazakh = "kk",
-  Khmer = "km",
-  Kannada = "kn",
-  Korean = "ko",
-  Latin = "la",
-  Luxembourgish = "lb",
-  Lingala = "ln",
-  Lao = "lo",
-  Lithuanian = "lt",
-  Latvian = "lv",
-  Malagasy = "mg",
-  Maori = "mi",
-  Macedonian = "mk",
-  Malayalam = "ml",
-  Mongolian = "mn",
-  Marathi = "mr",
-  Malay = "ms",
-  Maltese = "mt",
-  Burmese = "my",
-  Nepali = "ne",
-  Dutch = "nl",
-  Nynorsk = "nn",
-  Norwegian = "no",
-  Occitan = "oc",
-  Punjabi = "pa",
-  Polish = "pl",
-  Pashto = "ps",
-  Portuguese = "pt",
-  Romanian = "ro",
-  Russian = "ru",
-  Sanskrit = "sa",
-  Sindhi = "sd",
-  Sinhala = "si",
-  Slovak = "sk",
-  Slovenian = "sl",
-  Shona = "sn",
-  Somali = "so",
-  Albanian = "sq",
-  Serbian = "sr",
-  Sundanese = "su",
-  Swedish = "sv",
-  Swahili = "sw",
-  Tamil = "ta",
-  Telugu = "te",
-  Tajik = "tg",
-  Thai = "th",
-  Turkmen = "tk",
-  Tagalog = "tl",
-  Turkish = "tr",
-  Tatar = "tt",
-  Ukrainian = "uk",
-  Urdu = "ur",
-  Uzbek = "uz",
-  Vietnamese = "vi",
-  Yiddish = "yi",
-  Yoruba = "yo",
-  Cantonese = "yue",
-  Chinese = "zh",
-}
-
-export enum WhisperModel {
-  Tiny = "tiny",
-  Base = "base",
-  Small = "small",
-  Medium = "medium",
-  Large = "large",
-  LargeV2 = "large-v2",
-  LargeV3 = "large-v3",
-}
+const progressRegex =
+  /whisper_print_progress_callback:\s+progress\s+=\s+(\d+)%/;
+const lineRegex =
+  /\[(\d{2}:\d{2}:\d{2}\.\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}\.\d{3})\]\s+(.*)/;
 
 enum WhisperProcessStatus {
   Running = "running",
@@ -127,31 +25,65 @@ enum WhisperProcessStatus {
   Success = "success",
 }
 
-type WhisperProcessResult =
+enum WhisperEventType {
+  Transcript = "transcript",
+  Progress = "progress",
+  Log = "log",
+  End = "end",
+}
+
+type WhisperProcessResult = { output: string[] } & (
   | {
       data: WhisperOutput;
       status: WhisperProcessStatus.Success;
     }
   | {
-      error: string;
+      errorMessage: string;
       status: WhisperProcessStatus.Error;
     }
   | {
-      stdout: string;
       status: WhisperProcessStatus.Running;
-    };
+    }
+);
 
 export const WhisperModelsSchema = z.enum(WhisperModel);
 export const WhisperLanguagesSchema = z.enum(WhisperLanguage);
+export type WhisperEvent = {
+  timeStamp: number;
+} & (
+  | {
+      type: WhisperEventType.Transcript;
+      from: number;
+      to: number;
+      text: string;
+    }
+  | { type: WhisperEventType.Progress; progress: number }
+  | { type: WhisperEventType.Log; message: string }
+  | { type: WhisperEventType.End }
+);
 
 export class WhisperProcess {
   public readonly id = randomUUID().replace(/-/g, "");
-  private stdoutBuffer: string[] = [];
-  private stderrBuffer: string[] = [];
+  private outputBuffer: { stream: "stderr" | "stdout"; message: string }[] = [];
+
+  private onOutput = (stream: "stderr" | "stdout", message: string) => {
+    this.outputBuffer.push({ stream, message });
+    this.listeners.forEach((l) => {
+      l({
+        type: WhisperEventType.Log,
+        message: message,
+        timeStamp: Date.now(),
+      });
+    });
+  };
 
   private result: WhisperOutput | null = null;
   private status: WhisperProcessStatus = WhisperProcessStatus.Running;
+  private errorMessage: string | null = null;
+
   private readonly child: ChildProcessWithoutNullStreams;
+
+  private listeners: Array<(data: WhisperEvent) => void> = [];
 
   private readonly inputFilePath: string;
 
@@ -165,6 +97,31 @@ export class WhisperProcess {
 
   private get outPath(): string {
     return `${this.outPathNoExtension}.json`;
+  }
+
+  public streamStatus(res: Response<any, Record<string, any>, number>) {
+    const listener = (event: WhisperEvent) => {
+      res.write(`data: ${JSON.stringify(event)}\n\n`);
+      if (event.type === "end") {
+        res.end();
+      }
+    };
+
+    this.listeners.push(listener);
+
+    res.on("close", () => {
+      this.listeners = this.listeners.filter((l) => l !== listener);
+    });
+
+    if (
+      this.status === WhisperProcessStatus.Error ||
+      this.status === WhisperProcessStatus.Success
+    ) {
+      listener({
+        type: WhisperEventType.End,
+        timeStamp: Date.now(),
+      });
+    }
   }
 
   private static get whisperBinary() {
@@ -185,24 +142,61 @@ export class WhisperProcess {
     throw new Error("❌ No whisper binary found in expected locations");
   }
 
+  public async cancel() {
+    if (this.status === WhisperProcessStatus.Running) {
+      return new Promise<void>((resolve) => {
+        this.child.on("exit", () => {
+          resolve();
+        });
+        this.child.kill("SIGTERM");
+      });
+    }
+  }
+
+  private finally = async () => {
+    this.listeners.forEach((listener) =>
+      listener({ type: WhisperEventType.End, timeStamp: Date.now() })
+    );
+    this.listeners = [];
+    fs.rmSync(this.tmpPath, { recursive: true, force: true });
+  };
+
+  private handleError = async ({
+    message,
+    code,
+  }: {
+    message?: string;
+    code?: number;
+  }) => {
+    this.status = WhisperProcessStatus.Error;
+    message =
+      message ||
+      this.errorMessage ||
+      this.outputBuffer.reverse().find((entry) => entry.stream === "stderr")
+        ?.message ||
+      `Whisper process exited with code ${code}`;
+    this.errorMessage = message;
+    await this.finally();
+  };
+
   private handleSuccess = async () => {
     const outputContent = await fs.promises
       .readFile(this.outPath, "utf8")
       .catch(() => null);
 
     if (!outputContent) {
-      this.status = WhisperProcessStatus.Error;
-      this.stderrBuffer.push(
-        `Transcription output not found at ${this.outPath}`
-      );
+      await this.handleError({
+        message: `Transcription output not found at ${this.outPath}`,
+      });
       return;
     }
 
     const result = WhisperOutputSchema.safeParse(JSON.parse(outputContent));
 
     if (!result.success) {
-      this.status = WhisperProcessStatus.Error;
-      this.stderrBuffer.push(`Failed to parse transcription output JSON`);
+      await this.handleError({
+        message: "Failed to parse transcription output JSON",
+      });
       return;
     }
 
@@ -238,6 +232,7 @@ export class WhisperProcess {
       ...(options.language ? ["--language", options.language] : []),
       ...(options.verbose ? ["--verbose", "True"] : []),
       "--print-progress",
+      "True",
       "--temperature",
       temperature.toFixed(0).toString(),
       "--model",
@@ -256,34 +251,71 @@ export class WhisperProcess {
       },
     });
 
-    console.log(this.child.spawnargs.join(" "));
-
     this.child.on("error", (err) => {
       console.error("Whisper process error:", err);
       this.status = WhisperProcessStatus.Error;
-      this.stderrBuffer.push(err.toString());
+      this.onOutput("stderr", err.toString());
     });
 
     this.child.stdout.on("data", (data) => {
       console.log(data.toString());
-      this.stdoutBuffer.push(data.toString());
+      const lines = String(data)
+        .split("\n")
+        .filter((line) => line.trim() !== "");
+      for (const line of lines) {
+        const match = lineRegex.exec(line);
+        if (match) {
+          const from = parseTimecodeToSeconds(match[1]);
+          const to = parseTimecodeToSeconds(match[2]);
+          const text = match[3];
+          this.listeners.forEach((listener) =>
+            listener({
+              type: WhisperEventType.Transcript,
+              from,
+              to,
+              text,
+              timeStamp: Date.now(),
+            })
+          );
+        }
+        this.onOutput("stdout", line);
+      }
     });
 
     this.child.stderr.on("data", (data) => {
-      console.error(data.toString());
-      this.stderrBuffer.push(data.toString());
+      const lines = String(data)
+        .split("\n")
+        .filter((line) => line.trim() !== "");
+      for (const line of lines) {
+        if (progressRegex.test(line)) {
+          const match = progressRegex.exec(line);
+          const progress = match ? parseFloat(match[1]) : 0;
+          this.listeners.forEach((listener) =>
+            listener({
+              type: WhisperEventType.Progress,
+              progress,
+              timeStamp: Date.now(),
+            })
+          );
+        }
+        this.onOutput("stderr", line);
+      }
     });
 
-    this.child.on("exit", (code) => {
-      if (code === 0) {
-        this.handleSuccess();
-      } else {
-        this.status = WhisperProcessStatus.Error;
+    this.child.on("exit", async (code) => {
+      try {
+        if (code === 0) {
+          await this.handleSuccess();
+        } else {
+          await this.handleError({ code: code || -1 });
+        }
+      } finally {
+        await this.finally();
       }
     });
   }
 
-  public static async run( 
+  public static async run(
     inputFilePath: string,
     options: {
       fileName?: string;
@@ -291,8 +323,6 @@ export class WhisperProcess {
       temperature?: number;
       model?: WhisperModel;
       language?: WhisperLanguage;
-      stdout?: (data: string) => void;
-      stderr?: (data: string) => void;
     } = {}
   ) {
     const model = await Whisper.getModel(options.model || WhisperModel.LargeV3);
@@ -310,20 +340,22 @@ export class WhisperProcess {
   public getStatus(): WhisperProcessResult {
     if (this.status === WhisperProcessStatus.Running) {
       return {
-        stdout: this.stdoutBuffer.join("\n"),
+        output: this.outputBuffer.map((o) => o.message),
         status: WhisperProcessStatus.Running,
       };
     }
 
     if (this.status === WhisperProcessStatus.Success && this.result) {
       return {
+        output: this.outputBuffer.map((o) => o.message),
         data: this.result,
         status: WhisperProcessStatus.Success,
       };
     }
 
     return {
-      error: this.stderrBuffer.join("\n"),
+      output: this.outputBuffer.map((o) => o.message),
+      errorMessage: this.errorMessage || "Unknown error",
       status: WhisperProcessStatus.Error,
     };
   }
@@ -345,7 +377,10 @@ export class Whisper {
 
   public static async getModel(model: WhisperModel): Promise<string> {
     const installedModels = this.listInstalledModels();
-    console.log(`Requested model: ${model}, found installed models:`, installedModels);
+    console.log(
+      `Requested model: ${model}, found installed models:`,
+      installedModels
+    );
     if (!installedModels.includes(model)) {
       await this.installModel(model);
     }
@@ -367,7 +402,6 @@ export class Whisper {
   }
 
   private static async installModel(model: WhisperModel): Promise<void> {
-    // No-op for now, as models are expected to be pre-installed in the Docker image
     console.log(`Installing model: ${model}`);
     const response = await axios.get(
       `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-${model}.bin`,

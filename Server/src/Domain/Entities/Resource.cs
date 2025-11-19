@@ -9,6 +9,8 @@ public class Resource : BaseAuditableEntity<ResourceId>
     public IList<Resource> AssociatedResources { get; private set; } = new List<Resource>();
     public ResourceId? ParentResourceId { get; set; }
     public Resource? ParentResource { get; set; }
+    public Resource? ThumbnailResource { get; set; }
+    public ResourceId? ThumbnailResourceId { get; set; }
     public required string FileName { get; init; }
     public required string MimeType { get; init; }
     public int Size { get; init; }

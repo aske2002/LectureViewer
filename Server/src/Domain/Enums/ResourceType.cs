@@ -5,5 +5,6 @@ public enum ResourceType
     Media,
     Flag,
     Empty,
-    Document
+    Document,
+    Thumbnail
 }

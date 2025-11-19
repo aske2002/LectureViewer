@@ -1,13 +1,23 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && \
-    apt-get install -y libreoffice python3 python3-pip && \
-    pip3 install fastapi uvicorn python-multipart && \
-    apt-get clean
-
-COPY app.py /app/app.py
+ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
-EXPOSE 8000
+RUN apt-get update && apt-get install -y \
+    libreoffice curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN npm install -g yarn
+
+COPY package.json yarn.lock* ./
+RUN yarn install
+
+# Copy source and build
+COPY . .
+RUN yarn build
+
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "curl", "-f", "http://localhost:3000/health" ]
+CMD ["node", "dist/server.js"]

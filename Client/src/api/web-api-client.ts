@@ -4105,6 +4105,7 @@ export enum ResourceType {
     Flag = 1,
     Empty = 2,
     Document = 3,
+    Thumbnail = 4,
 }
 
 export class CreateDestinationCommand implements ICreateDestinationCommand {

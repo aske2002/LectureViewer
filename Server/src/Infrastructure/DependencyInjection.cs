@@ -9,6 +9,8 @@ using backend.Infrastructure.Data.Resources;
 using backend.Infrastructure.Identity;
 using backend.Infrastructure.Identity.AuthorizationHandlers;
 using backend.Infrastructure.MediaProcessing;
+using backend.Infrastructure.MediaProcessing.Configurations;
+using backend.Infrastructure.MediaProcessing.Transcription;
 using backend.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -24,22 +27,26 @@ public static class DependencyInjection
 {
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
+        builder.AddMediaProcessing();
 
-        // Background services
-        builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-        builder.Services.AddHostedService<QueuedHostedService>();
-        builder.Services.AddHostedService<MediaJobWorker>();
-
-        builder.Services.AddScoped<IMediaJobService, MediaJobService>();
-        builder.Services.AddScoped<IMediaJobHandler<OfficeConversionMediaProcessingJob>, LibreOfficeConverterHandler>();
-
-
-
-        // LibreOffice settings
-        builder.Services.Configure<LibreOfficeSettings>(
-        builder.Configuration.GetSection("LibreOffice"));
-        builder.Services.AddHttpClient<LibreOfficeConverterHandler>();
-
+        // Settings
+        builder.Services.Configure<TranscodingConfiguration>(
+            builder.Configuration.GetSection("Transcoding"));
+        builder.Services.Configure<TranscriptionConfiguration>(
+            builder.Configuration.GetSection("Transcription"));
+            
+        builder.Services.AddHttpClient<IDocumentService, DocumentService>()
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var settings = sp.GetRequiredService<IOptions<DocumentConversionConfiguration>>().Value;
+                client.BaseAddress = new Uri(settings.BaseUrl);
+            });
+        builder.Services.AddHttpClient<IMediaService, MediaService>()
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var settings = sp.GetRequiredService<IOptions<TranscodingConfiguration>>().Value;
+                client.BaseAddress = new Uri(settings.BaseUrl);
+            });
 
         // Application services
         builder.Services.ConfigureRepositories();

@@ -3,44 +3,32 @@ using System.Net.Http.Headers;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
 using backend.Domain.Enums;
+using backend.Infrastructure.Data;
 using backend.Infrastructure.MediaProcessing;
+using backend.Infrastructure.MediaProcessing.Transcription;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaProcessingJob>
 {
+    private static readonly List<string> SupportedFormats = new List<string> { "audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/webm", "video/mp4", "video/mpeg", "audio/mp4", "audio/m4a", "audio/mpga" };
     public MediaJobType Type => MediaJobType.Transcription;
-    private readonly ILogger<LibreOfficeConverterHandler> _logger;
-    private readonly IResourceService _resourceService;
-    private readonly IApplicationDbContext _db;
-
-    private readonly HttpClient _httpClient;
-    private readonly string _baseUrl;
-
-
-    public TranscriptionJobHandler(ILogger<LibreOfficeConverterHandler> logger, IResourceService resourceService, IApplicationDbContext db, IOptions<LibreOfficeSettings> settings,
-        HttpClient httpClient)
+    private readonly ITranscriptionService _transcriptionService;
+    public TranscriptionJobHandler(ApplicationDbContext db, ITranscriptionService transcriptionService) : base(db)
     {
-        _baseUrl = settings.Value.BaseUrl.TrimEnd('/');
-        _httpClient = httpClient;
-        _logger = logger;
-        _resourceService = resourceService;
-        _db = db;
+        _transcriptionService = transcriptionService;
     }
 
     public async override Task HandleAsync(TranscriptionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
     {
         var previousJobs = await ListAllPreviousJobsAsync(job, token);
-        var conversionJob = previousJobs.OfType<MediaConversionMediaProcessingJob>().FirstOrDefault();
-
-        if (conversionJob is null)
+        var resource = previousJobs.OfType<MediaTranscodingMediaProcessingJob>().Select(pj => pj.OutputResource).FirstOrDefault(p => p != null && SupportedFormats.Contains(p.MimeType));
+        
+        if (resource == null)
         {
-            throw new InvalidOperationException("No conversion job found for transcription job.");
+            throw new Exception("No suitable converted media found for transcription.");
         }
 
-        if (conversionJob.OutputResourceId is null)
-        {
-            throw new InvalidOperationException("Conversion job has no output resource.");
-        }
+        var transcriptionText = await _transcriptionService.TranscribeAsync(resource, token);
     }
 }

@@ -4,7 +4,7 @@ public enum MediaJobType
     FlashcardGeneration,
     ThumbnailExtraction,
     OfficeConversion,
-    MediaConversion,
+    MediaTranscoding,
     CategoryClassification,
     KeywordExtraction
 }

@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
 using backend.Domain.Enums;
+using backend.Infrastructure.Data;
 using backend.Infrastructure.MediaProcessing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,21 +13,20 @@ public class LibreOfficeConverterHandler : MediaJobHandlerBase<OfficeConversionM
     public MediaJobType Type => MediaJobType.OfficeConversion;
     private readonly ILogger<LibreOfficeConverterHandler> _logger;
     private readonly IResourceService _resourceService;
-    private readonly IApplicationDbContext _db;
+    private readonly ApplicationDbContext _db;
 
     private readonly HttpClient _httpClient;
-    private readonly string _baseUrl;
 
-
-    public LibreOfficeConverterHandler(ILogger<LibreOfficeConverterHandler> logger, IResourceService resourceService, IApplicationDbContext db, IOptions<LibreOfficeSettings> settings,
-        HttpClient httpClient)
+    public LibreOfficeConverterHandler(ILogger<LibreOfficeConverterHandler> logger, IResourceService resourceService, ApplicationDbContext db,
+        HttpClient httpClient) : base(db)
     {
-        _baseUrl = settings.Value.BaseUrl.TrimEnd('/');
         _httpClient = httpClient;
         _logger = logger;
         _resourceService = resourceService;
         _db = db;
     }
+
+    private static readonly string ConvertEndpoint = "/convert";
 
     private async Task<byte[]> ConvertAsync(
                 Stream fileStream,
@@ -49,7 +49,7 @@ public class LibreOfficeConverterHandler : MediaJobHandlerBase<OfficeConversionM
         if (outputFilename != null)
             content.Add(new StringContent(outputFilename), "output_filename");
 
-        var response = await _httpClient.PostAsync($"{_baseUrl}/convert", content);
+        var response = await _httpClient.PostAsync(ConvertEndpoint, content);
 
         if (!response.IsSuccessStatusCode)
         {

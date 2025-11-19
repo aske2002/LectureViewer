@@ -33,6 +33,7 @@ public interface IResourceService
         CancellationToken cancellationToken = default
     );
 
+    Task<Stream> GetResourceStreamByIdAsync(ResourceId resourceId, CancellationToken cancellationToken);
     Task<IFormFile> GetResourceContentByIdAsync(ResourceId resourceId, CancellationToken cancellationToken);
     Task<Resource> GetResourceByIdAsync(ResourceId id, CancellationToken cancellationToken);
 }

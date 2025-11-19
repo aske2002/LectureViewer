@@ -11,5 +11,9 @@ internal class ResourceConfiguration : IEntityTypeConfiguration<Resource>
             .WithMany(r => r.AssociatedResources)
             .HasForeignKey(r => r.ParentResourceId)
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(r => r.ThumbnailResource)
+            .WithMany()
+            .HasForeignKey(r => r.ThumbnailResourceId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

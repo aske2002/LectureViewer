@@ -1,0 +1,37 @@
+services:
+  transcoder:
+    image: media-transcoder
+    build:
+      context: ./MediaTranscoding
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "9191:3000"
+
+  whisper:
+    image: whisper-service:gpu
+    build:
+      context: ./Transcription
+      dockerfile: Dockerfile.gpu
+    restart: always
+    ports:
+      - "9292:3000"
+    volumes:
+      - ./models:/app/models  
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  documentserver:
+    build:
+      context: ./DocumentServer
+      dockerfile: Dockerfile
+    image: document-server
+    restart: always
+    ports:
+      - "9393:3000"
+

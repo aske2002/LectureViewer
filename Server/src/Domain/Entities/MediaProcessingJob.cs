@@ -66,15 +66,22 @@ public class FlashcardGenerationMediaProcessingJob : LectureRelatedMediaProcessi
 
 public class ThumbnailExtractionMediaProcessingJob : LectureRelatedMediaProcessingJob
 {
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    public ResourceId? OutputResourceId { get; set; }
+    public Resource? OutputResource { get; set; }
 }
 
-public class MediaConversionMediaProcessingJob : MediaProcessingJob
+public class MediaTranscodingMediaProcessingJob : MediaProcessingJob
 {
     public required ResourceId InputResourceId { get; set; }
     public required Resource InputResource { get; set; }
     public ResourceId? OutputResourceId { get; set; }
     public Resource? OutputResource { get; set; }
     public required string TargetFormat { get; set; }
+    public int? TargetWidth { get; set; }
+    public int? TargetHeight { get; set; }
+    public int? TargetBitrateKbps { get; set; }
 }
 
 public class OfficeConversionMediaProcessingJob : MediaProcessingJob
