@@ -9,22 +9,24 @@ services:
       - "9191:3000"
 
   whisper:
-    image: whisper-service:gpu
+    # image: whisper-service:gpu
+    image: whisper-service:cpu
     build:
       context: ./Transcription
-      dockerfile: Dockerfile.gpu
+      dockerfile: Dockerfile.cpu
+      # dockerfile: Dockerfile.gpu
     restart: always
     ports:
       - "9292:3000"
     volumes:
       - ./models:/app/models  
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
 
   documentserver:
     build:
@@ -34,4 +36,15 @@ services:
     restart: always
     ports:
       - "9393:3000"
+  postgres:
+      image: postgres:18
+      container_name: postgres-local
+      environment:
+        POSTGRES_PASSWORD: "61dba46f-17fd-4145-98c0-7db7a283a678"
+        PGDATA: "/var/lib/postgresql/18/docker"
+      ports:
+        - "5432:5432"
+      volumes:
+        - ./pgdata:/var/lib/postgresql
+      restart: "always"
 
