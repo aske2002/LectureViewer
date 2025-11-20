@@ -4,38 +4,43 @@ using backend.Infrastructure.Enums;
 
 namespace backend.Infrastructure.Models;
 
-[JsonPolymorphic(TypeDiscriminatorPropertyName = nameof(Type))]
-[JsonDerivedType(typeof(WhisperTranscriptEvent), nameof(WhisperEventType.Transcript))]
-[JsonDerivedType(typeof(WhisperProgressEvent), nameof(WhisperEventType.Progress))]
-[JsonDerivedType(typeof(WhisperLogEvent), nameof(WhisperEventType.Log))]
-[JsonDerivedType(typeof(WhisperEndEvent), nameof(WhisperEventType.End))]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "status")]
+[JsonDerivedType(typeof(WhisperTranscriptEvent), WhisperEventType.Transcript)]
+[JsonDerivedType(typeof(WhisperProgressEvent), WhisperEventType.Progress)]
+[JsonDerivedType(typeof(WhisperLogEvent), WhisperEventType.Log)]
+[JsonDerivedType(typeof(WhisperEndEvent), WhisperEventType.End)]
+[JsonDerivedType(typeof(WhisperConnectEvent), WhisperEventType.Connected)]
 abstract class WhisperEvent
 {
-    public abstract WhisperEventType Type { get; }
-    public required int Timestamp { get; set; } 
 }
 
-class WhisperTranscriptEvent : WhisperEvent
+abstract class WhisperEventBase : WhisperEvent
 {
-    public override WhisperEventType Type => WhisperEventType.Transcript;
+    public required long Timestamp { get; set; }
+
+}
+
+class WhisperConnectEvent : WhisperEvent
+{
+}
+
+class WhisperTranscriptEvent : WhisperEventBase
+{
     public required double From { get; set; }
     public required double To { get; set; }
     public required string Text { get; set; }
 }
 
-class WhisperProgressEvent : WhisperEvent
+class WhisperProgressEvent : WhisperEventBase
 {
-    public override WhisperEventType Type => WhisperEventType.Progress;
     public required double Progress { get; set; }
 }
 
-class WhisperLogEvent : WhisperEvent
+class WhisperLogEvent : WhisperEventBase
 {
-    public override WhisperEventType Type => WhisperEventType.Log;
     public required string Message { get; set; }
 }
 
-class WhisperEndEvent : WhisperEvent
+class WhisperEndEvent : WhisperEventBase
 {
-    public override WhisperEventType Type => WhisperEventType.End;
 }

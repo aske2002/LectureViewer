@@ -1,10 +1,14 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
 using backend.Infrastructure.MediaProcessing.Transcription.Models;
 using backend.Infrastructure.Models;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace backend.Infrastructure.MediaProcessing.Transcription;
 
@@ -13,12 +17,14 @@ public class LocalTranscriptionService : ITranscriptionService
     private readonly HttpClient httpClient;
     private readonly IResourceService _resourceService;
     private readonly ILogger<LocalTranscriptionService> _logger;
+    private readonly JsonOptions _jsonOptions;
 
-    public LocalTranscriptionService(HttpClient httpClient, IResourceService resourceService, ILogger<LocalTranscriptionService> logger)
+    public LocalTranscriptionService(HttpClient httpClient, IResourceService resourceService, ILogger<LocalTranscriptionService> logger, IOptions<JsonOptions> jsonOptions)
     {
         this.httpClient = httpClient;
         _resourceService = resourceService;
         _logger = logger;
+        _jsonOptions = jsonOptions.Value;
     }
 
     static readonly string HealthCheckEndpoint = "/health";
@@ -73,32 +79,76 @@ public class LocalTranscriptionService : ITranscriptionService
         var endpoint = TranscriptionEndpoint.Replace("{id}", id);
         var response = await httpClient.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<WhisperProcessResult>(cancellationToken: cancellationToken);
-        if (result == null)
+        var stringResult = await response.Content.ReadAsStringAsync(cancellationToken);
+        try
         {
-            throw new Exception("Failed to deserialize transcription result.");
+            var result = JsonSerializer.Deserialize<WhisperProcessResult>(stringResult, _jsonOptions.SerializerOptions);
+            if (result == null)
+            {
+                throw new Exception("Failed to deserialize transcription result.");
+            }
+            return result;
         }
-        return result;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to deserialize transcription result: {Result}", stringResult);
+            throw;
+        }
     }
 
-    private async Task<IAsyncEnumerable<WhisperEvent?>> StreamTranscriptionAsync(string id, CancellationToken cancellationToken)
+    private async IAsyncEnumerable<WhisperEvent?> ReadSseStreamAsync(HttpResponseMessage response, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        using var reader = new StreamReader(stream);
+
+        while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
+        {
+            var line = await reader.ReadLineAsync();
+
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+
+            // SSE lines look like: "data: { ... }"
+            if (line.StartsWith("data: "))
+            {
+                var json = line.Substring("data: ".Length);
+
+                WhisperEvent? evt;
+                try
+                {
+                    evt = JsonSerializer.Deserialize<WhisperEvent>(json, _jsonOptions.SerializerOptions);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to parse SSE JSON: {Json}", json);
+                    continue;
+                }
+
+                yield return evt;
+            }
+        }
+    }
+
+    private async IAsyncEnumerable<WhisperEvent?> ReadSseStreamAsync(string id, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var endpoint = StreamTranscriptionEndpoint.Replace("{id}", id);
         var response = await httpClient.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
-        var contentStream = response.Content.ReadFromJsonAsAsyncEnumerable<WhisperEvent?>(cancellationToken: cancellationToken);
-        if (contentStream == null)
+
+        await foreach (var evt in ReadSseStreamAsync(response, cancellationToken))
         {
-            throw new Exception("Failed to get transcription stream.");
+            yield return evt;
         }
-        return contentStream;
     }
 
-    public async Task<string> TranscribeAsync(Resource file, CancellationToken cancellationToken)
+    public async Task<TranscriptionResponse> TranscribeAsync(Resource file, CancellationToken cancellationToken)
     {
+        cancellationToken.Register(() => _logger.LogWarning("Cancellation token triggered"));
         var resourceContent = await _resourceService.GetResourceStreamByIdAsync(file.Id, cancellationToken);
         var id = await StartTranscriptionAsync(resourceContent, file.FileName, cancellationToken);
-        var eventStream = await StreamTranscriptionAsync(id, cancellationToken);
+
+        var eventStream = ReadSseStreamAsync(id, cancellationToken);
+
         await foreach (var output in eventStream.WithCancellation(cancellationToken))
         {
             if (output is WhisperEndEvent endEvent)
@@ -106,7 +156,22 @@ public class LocalTranscriptionService : ITranscriptionService
                 var result = await GetTranscriptionAsync(id, cancellationToken);
                 if (result is WhisperProcessSuccessResult successResult)
                 {
-                    return successResult.Data.Transcription.Select(e => e.Text).Aggregate((a, b) => a + b);
+                    return new TranscriptionResponse()
+                    {
+                        ModelName = successResult.Data.Model.Type,
+                        Provider = TranscriptionProvider.LocalWhisper,
+                        Language = successResult.Data.Params.Language,
+                        Items = successResult.Data.Transcription.Select(ti => new TranscriptionResponseItem()
+                        {
+                            Text = ti.Text,
+                            TimeStamp = new TranscriptionResponseTimeStamp()
+                            {
+                                From = TimeSpan.FromSeconds(ti.Offsets.From),
+                                To = TimeSpan.FromSeconds(ti.Offsets.To)
+                            },
+                            Confidence = ti.Tokens.Average(t => t.P)
+                        })
+                    };
                 }
                 else if (result is WhisperProcessErrorResult errorResult)
                 {
@@ -116,12 +181,13 @@ public class LocalTranscriptionService : ITranscriptionService
                 {
                     throw new Exception("Unknown transcription result.");
                 }
-            } else if (output is WhisperLogEvent logEvent)
+            }
+            else if (output is WhisperLogEvent logEvent)
             {
                 _logger.LogInformation("Transcription log: {Message}", logEvent.Message);
             }
         }
-        
+
         throw new Exception("Transcription did not complete successfully.");
     }
 }

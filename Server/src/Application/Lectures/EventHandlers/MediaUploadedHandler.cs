@@ -49,7 +49,15 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
                     JobType = MediaJobType.OfficeConversion,
                 };
 
+                var thumbnailJob = new ThumbnailExtractionMediaProcessingJob
+                {
+                    InputResourceId = lectureContent.ResourceId,
+                    InputResource = lectureContent.Resource,
+                    JobType = MediaJobType.ThumbnailExtraction
+                };
+
                 await jobService.CreateJob(job, token);
+                await jobService.CreateJob(thumbnailJob, token);
             }
             else if (MimeTypeHelpers.IsVideoMimeType(lectureContent.Resource.MimeType) ||
                      MimeTypeHelpers.IsAudioMimeType(lectureContent.Resource.MimeType))
@@ -64,8 +72,8 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
 
                 var thumbnailJob = new ThumbnailExtractionMediaProcessingJob
                 {
-                    LectureContentId = lectureContent.Id,
-                    LectureContent = lectureContent,
+                    InputResourceId = lectureContent.ResourceId,
+                    InputResource = lectureContent.Resource,
                     JobType = MediaJobType.ThumbnailExtraction,
                 };
 

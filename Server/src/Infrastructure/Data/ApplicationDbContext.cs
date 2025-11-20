@@ -10,16 +10,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    public DbSet<TodoList> TodoLists => Set<TodoList>();
-
-    public DbSet<TodoItem> TodoItems => Set<TodoItem>();
-
     public DbSet<Country> Countries => Set<Country>();
-    public DbSet<Destination> Destinations => Set<Destination>();
     public DbSet<Resource> Resources => Set<Resource>();
-    public DbSet<Trip> Trips => Set<Trip>();
-    public DbSet<TripDescription> TripDescriptions => Set<TripDescription>();
-    public DbSet<ClassYear> ClassYears => Set<ClassYear>();
 
     // Course related DbSets
     public DbSet<Course> Courses => Set<Course>();

@@ -8,7 +8,6 @@ internal class CountryConfiguration : IEntityTypeConfiguration<Country>
 {
     public void Configure(EntityTypeBuilder<Country> builder)
     {
-        builder.HasMany(m => m.Destinations).WithOne(r => r.Country).HasForeignKey(r => r.CountryId);
         builder.HasIndex(m => m.IsoCode).IsUnique();
     }
 }

@@ -13,6 +13,7 @@ using backend.Infrastructure.MediaProcessing.Configurations;
 using backend.Infrastructure.MediaProcessing.Transcription;
 using backend.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -29,11 +30,17 @@ public static class DependencyInjection
     {
         builder.AddMediaProcessing();
 
+        builder.Services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.AllowOutOfOrderMetadataProperties = true;
+        });
         // Settings
         builder.Services.Configure<TranscodingConfiguration>(
             builder.Configuration.GetSection("Transcoding"));
         builder.Services.Configure<TranscriptionConfiguration>(
             builder.Configuration.GetSection("Transcription"));
+        builder.Services.Configure<DocumentConversionConfiguration>(
+            builder.Configuration.GetSection("DocumentConversion"));
             
         builder.Services.AddHttpClient<IDocumentService, DocumentService>()
             .ConfigureHttpClient((sp, client) =>
@@ -79,10 +86,10 @@ public static class DependencyInjection
         builder.Services.ConfigureDataSeeders();
         builder.Services.AddLogging(options =>
         {
-            options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Debug);
-            options.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Debug);
-            options.AddFilter("Microsoft.EntityFrameworkCore.Database.Transaction", LogLevel.Debug);
-            options.AddFilter("Microsoft.EntityFrameworkCore.Update", LogLevel.Debug);
+            // options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Debug);
+            // options.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Debug);
+            // options.AddFilter("Microsoft.EntityFrameworkCore.Database.Transaction", LogLevel.Debug);
+            // options.AddFilter("Microsoft.EntityFrameworkCore.Update", LogLevel.Debug);
         });
         builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         builder.Services.AddScoped<ApplicationDbContextInitialiser>();

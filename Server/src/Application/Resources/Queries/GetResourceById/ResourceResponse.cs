@@ -8,6 +8,8 @@ public record ResourceResponse : BaseResponse<ResourceId>
 {
     public ResourceType ResourceType { get; init; } = ResourceType.Empty;
     public ICollection<ResourceResponse> AssociatedResources { get; init; } = new List<ResourceResponse>();
+    public ResourceResponse? ThumbnailResource => AssociatedResources
+        .FirstOrDefault(r => r.ResourceType == ResourceType.Thumbnail);
     public string FileName { get; init; } = string.Empty;
     public string MimeType { get; init; } = string.Empty;
     public string Url { get => $"/api/Resources/{Id}/{FileName}"; }

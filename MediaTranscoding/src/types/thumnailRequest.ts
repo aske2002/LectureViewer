@@ -1,10 +1,11 @@
 import z from "zod";
+import { zodNumberFromString } from "../utils/zodNumberFromString";
 
 export const ThumnailRequestSchema = z.object({
-    timeSeconds: z.number().optional(),
-    timePercentage: z.number().optional(),
-    width: z.number().optional(),
-    height: z.number().optional(),
+    timeSeconds: zodNumberFromString.optional(),
+    timePercentage: zodNumberFromString.optional(),
+    width: zodNumberFromString.optional(),
+    height: zodNumberFromString.optional(),
 });
 
 export type ThumnailRequest = z.infer<typeof ThumnailRequestSchema>;

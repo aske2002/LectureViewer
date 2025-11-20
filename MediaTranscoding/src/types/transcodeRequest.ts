@@ -1,13 +1,14 @@
 import z from "zod";
+import { zodNumberFromString } from "../utils/zodNumberFromString";
 
 export const TranscodeRequestSchema = z.object({
     format: z.string(),
-    bitrate: z.number().optional(),
-    width: z.number().optional(),
-    height: z.number().optional(),
-    framerate: z.number().optional(),
-    audioChannels: z.number().optional(),
-    audioSampleRate: z.number().optional(),
+    bitrate: zodNumberFromString.optional(),
+    width: zodNumberFromString.optional(),
+    height: zodNumberFromString.optional(),
+    framerate: zodNumberFromString.optional(),
+    audioChannels: zodNumberFromString.optional(),
+    audioSampleRate: zodNumberFromString.optional()
 });
 
 export type TranscodeRequest = z.infer<typeof TranscodeRequestSchema>;

@@ -9,5 +9,4 @@ public class Country : BaseAuditableEntity<CountryId>
     public string? Name { get; init; }
     public string? IsoCode { get; init; }
     public string? Description { get; init; }
-    public IList<Destination> Destinations { get; init; } = new List<Destination>();
 }

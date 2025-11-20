@@ -5,6 +5,8 @@ using backend.Domain.Entities;
 using backend.Domain.Enums;
 using backend.Infrastructure.Data;
 using backend.Infrastructure.MediaProcessing;
+using backend.Infrastructure.Models;
+using backend.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -15,66 +17,40 @@ public class LibreOfficeConverterHandler : MediaJobHandlerBase<OfficeConversionM
     private readonly IResourceService _resourceService;
     private readonly ApplicationDbContext _db;
 
-    private readonly HttpClient _httpClient;
+    private readonly IDocumentService _documentService;
+
 
     public LibreOfficeConverterHandler(ILogger<LibreOfficeConverterHandler> logger, IResourceService resourceService, ApplicationDbContext db,
-        HttpClient httpClient) : base(db)
+        IDocumentService documentService) : base(db)
     {
-        _httpClient = httpClient;
+        _documentService = documentService;
         _logger = logger;
         _resourceService = resourceService;
         _db = db;
     }
-
-    private static readonly string ConvertEndpoint = "/convert";
-
-    private async Task<byte[]> ConvertAsync(
-                Stream fileStream,
-        string fileName,
-        string outputFormat = "pdf",
-        string? filterOptions = null,
-        string? outputFilename = null)
-    {
-        using var content = new MultipartFormDataContent();
-
-        var fileContent = new StreamContent(fileStream);
-        fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-        content.Add(fileContent, "file", fileName);
-        content.Add(new StringContent(outputFormat), "output_format");
-
-        if (filterOptions != null)
-            content.Add(new StringContent(filterOptions), "filter_options");
-
-        if (outputFilename != null)
-            content.Add(new StringContent(outputFilename), "output_filename");
-
-        var response = await _httpClient.PostAsync(ConvertEndpoint, content);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"LibreOffice conversion failed: {response.StatusCode} - {error}");
-        }
-
-        return await response.Content.ReadAsByteArrayAsync();
-    }
-
     public async override Task HandleAsync(OfficeConversionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
     {
 
-        var resourceContent = await _resourceService.GetResourceContentByIdAsync(job.InputResourceId, token);
+        var resource = await FirstResourceOrDefaultAsync(job, r => MimeTypeHelpers.IsDocumentMimeType(r.MimeType), token);
+
+
+        if (resource == null)
+        {
+            throw new Exception("Input resource not found.");
+        }
+
+        var resourceContent = await _resourceService.GetResourceContentByIdAsync(resource.Id, token);
         var fileStream = resourceContent.OpenReadStream();
 
-        var outputFile = await ConvertAsync(fileStream, job.TargetFormat);
+        var outputFile = await _documentService.ConvertAsync(fileStream, resourceContent.FileName, new ConvertDocumentRequest(job.TargetFormat));
         var fileName = Path.GetFileNameWithoutExtension(resourceContent.FileName) + "." + job.TargetFormat;
 
-        var resource = await _resourceService.AddAssociatedResourceAsync(job.InputResourceId, fileName, ResourceType.Document, outputFile, cancellationToken: token);
+        var outputResource = await _resourceService.AddAssociatedResourceAsync(resource.Id, fileName, ResourceType.Document, outputFile, cancellationToken: token);
 
-        job.OutputResourceId = resource.Id;
-        job.OutputResource = resource;
+        job.OutputResourceId = outputResource.Id;
+        job.OutputResource = outputResource;
 
         await _db.SaveChangesAsync(token);
-        _logger.LogInformation("Conversion complete: {Output}", resource.Id);
+        _logger.LogInformation("Conversion complete: {Output}", outputResource.Id);
     }
 }

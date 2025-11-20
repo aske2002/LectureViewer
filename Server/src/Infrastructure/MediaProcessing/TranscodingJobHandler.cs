@@ -19,7 +19,16 @@ public class TranscodingJobHandler : MediaJobHandlerBase<MediaTranscodingMediaPr
 
     public async override Task HandleAsync(MediaTranscodingMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
     {
-        var resourceContent = await _resourceService.GetResourceContentByIdAsync(job.InputResourceId, token);
+        var resource = await FirstResourceOrDefaultAsync(job, (r) => MimeTypeHelpers.IsAudioMimeType(r.MimeType) ||
+                                                                     MimeTypeHelpers.IsImageMimeType(r.MimeType) ||
+                                                                     MimeTypeHelpers.IsVideoMimeType(r.MimeType), token);
+
+        if (resource == null)
+        {
+            throw new Exception("Input resource not found.");
+        }
+
+        var resourceContent = await _resourceService.GetResourceContentByIdAsync(resource.Id, token);
 
         if (resourceContent == null)
         {

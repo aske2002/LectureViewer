@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Infrastructure.Data;
@@ -11,9 +12,11 @@ using backend.Infrastructure.Data;
 namespace backend.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251120171955_ThumnailExtractionNoLecture")]
+    partial class ThumnailExtractionNoLecture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,6 +250,41 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.ClassYear", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassYears");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Country", b =>
                 {
                     b.Property<Guid>("Id")
@@ -472,6 +510,40 @@ namespace backend.Infrastructure.Data.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("CourseInviteLinks");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Destination", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("Destinations");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
@@ -1146,6 +1218,155 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("Semester");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.TodoItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Done")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ListId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("Reminder")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListId");
+
+                    b.ToTable("TodoItems");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TodoList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TodoLists");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Trip", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClassYearId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DestinationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassYearId");
+
+                    b.HasIndex("DestinationId");
+
+                    b.ToTable("Trips");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TripDescription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("TripDescriptions");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.FreeTextFlashCard", b =>
                 {
                     b.HasBaseType("backend.Domain.Entities.Flashcard");
@@ -1525,6 +1746,17 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.Destination", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Country", "Country")
+                        .WithMany("Destinations")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
                 {
                     b.HasOne("backend.Domain.Entities.MediaProcessingJob", "ArtifactFromJob")
@@ -1786,6 +2018,70 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("ThumbnailResource");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.TodoItem", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.TodoList", "List")
+                        .WithMany("Items")
+                        .HasForeignKey("ListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("List");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TodoList", b =>
+                {
+                    b.OwnsOne("backend.Domain.ValueObjects.Colour", "Colour", b1 =>
+                        {
+                            b1.Property<Guid>("TodoListId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Code")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("TodoListId");
+
+                            b1.ToTable("TodoLists");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TodoListId");
+                        });
+
+                    b.Navigation("Colour")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Trip", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.ClassYear", "ClassYear")
+                        .WithMany("Trips")
+                        .HasForeignKey("ClassYearId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Destination", "Destination")
+                        .WithMany("Trips")
+                        .HasForeignKey("DestinationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClassYear");
+
+                    b.Navigation("Destination");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TripDescription", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Trip", "Trip")
+                        .WithMany("DescriptionParts")
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trip");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.SingleChoiceFlashcardAnswer", b =>
                 {
                     b.HasOne("backend.Domain.Entities.FlashcardChoice", "SelectedChoice")
@@ -1855,6 +2151,16 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("OutputResource");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.ClassYear", b =>
+                {
+                    b.Navigation("Trips");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Country", b =>
+                {
+                    b.Navigation("Destinations");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Course", b =>
                 {
                     b.Navigation("Enrollments");
@@ -1874,6 +2180,11 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.CourseEnrollment", b =>
                 {
                     b.Navigation("FlashcardAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Destination", b =>
+                {
+                    b.Navigation("Trips");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
@@ -1942,6 +2253,16 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.Semester", b =>
                 {
                     b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TodoList", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Trip", b =>
+                {
+                    b.Navigation("DescriptionParts");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcard", b =>

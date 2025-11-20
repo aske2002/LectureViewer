@@ -1,9 +1,10 @@
 import z from "zod";
+import { zodNumberFromString } from "../utils/zodNumberFromString";
 
 export const ExtractDocumentThumnailRequestSchema = z.object({
-  width: z.number().optional(),
-  height: z.number().optional(),
-  pageNumber: z.number().min(1).optional(),
+  width: zodNumberFromString.optional(),
+  height: zodNumberFromString.optional(),
+  pageNumber: zodNumberFromString.optional()
 });
 
 export type ExtractDocumentThumnailRequest = z.infer<typeof ExtractDocumentThumnailRequestSchema>;

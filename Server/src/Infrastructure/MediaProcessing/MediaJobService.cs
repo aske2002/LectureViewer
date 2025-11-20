@@ -34,6 +34,7 @@ public class MediaJobService : IMediaJobService
                 (j.ParentJob == null || j.ParentJob.Attempts.Any(pa => pa.Status == JobStatus.Completed)) &&
                 !j.Failed
             )
+            .Include(j => j.ParentJob)
             .Include(j => j.Attempts)
                 .ThenInclude(a => a.Logs)
             .OrderBy(j => j.Created)
@@ -41,6 +42,16 @@ public class MediaJobService : IMediaJobService
 
         if (job is null)
             return null;
+
+        if (job is IHasInputResource parentJobWithInput)
+        {
+            await _db.Entry(parentJobWithInput).Reference(r => r.InputResource).LoadAsync(token);
+        }
+
+        if (job is IHasOutputResource parentJobWithOutput)
+        {
+            await _db.Entry(parentJobWithOutput).Reference(r => r.OutputResource).LoadAsync(token);
+        }
 
         var attempt = job.Attempts.FirstOrDefault(a => a.Status == JobStatus.InProgress);
         if (attempt is null)

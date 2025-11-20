@@ -432,7 +432,7 @@
                   "description": "A CourseId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "dcaaaaa8-4294-4b27-8ec4-da012c6cc607"
+                  "example": "508fbb7e-82a4-4f7c-9ea6-dd03ebffe701"
                 }
               }
             }
@@ -468,7 +468,7 @@
                   "description": "A CourseEnrollmentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "384610fd-80d4-4767-b2a9-81a5234a2f9b"
+                  "example": "7dc2d6db-9b10-4801-a18f-424ff2553cd6"
                 }
               }
             }
@@ -492,7 +492,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "8aac56c4-5676-4434-bc6b-16acddfcbd59"
+              "example": "94293468-0373-4c0a-a5b9-278b1287ad9e"
             },
             "x-position": 1
           }
@@ -527,7 +527,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "51f518b1-4712-4021-9dfa-0a0c61f4b4cb"
+              "example": "df8ee56e-e4a8-43fe-b715-f94b8a268ac7"
             },
             "x-position": 1
           }
@@ -562,7 +562,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "22cd6be1-2031-42ce-ba34-b406dabb14b2"
+              "example": "90c79082-25c6-4b1d-b5b7-e940390e7589"
             },
             "x-position": 1
           }
@@ -589,114 +589,7 @@
                   "description": "A LectureId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "22de5256-8ee6-4f4f-b40c-c879fbe691c8"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Destinations": {
-      "get": {
-        "tags": [
-          "Destinations"
-        ],
-        "operationId": "GetDestinations",
-        "parameters": [
-          {
-            "name": "PageNumber",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "nullable": true
-            },
-            "x-position": 2
-          },
-          {
-            "name": "OrderBy",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 3
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FilteredListOfDestinationDto"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Destinations"
-        ],
-        "operationId": "CreateDestination",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDestinationCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "description": "A DestinationId identifier",
-                  "format": "uuid",
-                  "nullable": false,
-                  "example": "ed4377f9-98bd-4d31-9756-b5dd04db17ec"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Destinations/countries": {
-      "get": {
-        "tags": [
-          "Destinations"
-        ],
-        "operationId": "GetCountries",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CountryDto"
-                  }
+                  "example": "93ba0372-377b-435d-8141-c1ad33264755"
                 }
               }
             }
@@ -720,7 +613,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "1065614b-7238-423e-a1cb-a8a71893af6f"
+              "example": "090111e4-4185-454f-b1d5-54edf539a6d2"
             },
             "x-position": 1
           },
@@ -733,7 +626,7 @@
               "description": "A LectureId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "dd47a762-2da0-4527-8ea0-df4e1ccf1f2d"
+              "example": "014dc06e-ac36-4e3c-be0d-1fdb42aa287b"
             },
             "x-position": 2
           }
@@ -768,7 +661,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "55dbbfc1-6452-4356-922e-150fdc71c228"
+              "example": "1fb9a836-c953-4cf6-bf02-7766747da6e9"
             },
             "x-position": 1
           },
@@ -781,7 +674,7 @@
               "description": "A LectureId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "c64ba101-c3c8-468e-976c-c2362ba0f081"
+              "example": "7d799dc4-4248-41bb-b062-9e52ac3adeb3"
             },
             "x-position": 2
           },
@@ -794,7 +687,7 @@
               "description": "A LectureContentId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "3e9cade8-fec6-4091-bca6-46547202b453"
+              "example": "7a1d411a-16d2-4936-9059-cc5f8427b369"
             },
             "x-position": 3
           },
@@ -807,7 +700,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "64a175c2-6bfd-422c-89a2-6a850e913c0e"
+              "example": "7c6f5c78-c6b7-4b60-9665-6f29ed619b9a"
             },
             "x-position": 4
           },
@@ -844,7 +737,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "1e1bc921-a9f9-4640-88a5-e7c0a98ddc29"
+              "example": "4aab1af4-be93-4467-a00f-f31b52c81680"
             },
             "x-position": 1
           },
@@ -857,7 +750,7 @@
               "description": "A LectureId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "d6f862c8-b8ac-48ac-88b8-9f6f52133898"
+              "example": "9528b8dc-d403-4115-9d18-ea29e4e5786e"
             },
             "x-position": 2
           },
@@ -914,7 +807,7 @@
                   "description": "A LectureContentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "317474db-de66-400e-b1d4-78fc74d2b772"
+                  "example": "c6c110b2-af7e-4a78-8bcd-00c5aefa5535"
                 }
               }
             }
@@ -980,7 +873,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "77070961-6dbd-4c02-a5e0-94ec58f71e2e"
+              "example": "21ad55af-7c42-4551-8911-95bd733be804"
             },
             "x-position": 1
           }
@@ -1015,7 +908,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "3e081896-8b21-4fca-9093-18d7ce49d9f8"
+              "example": "5b9c9200-a5f8-49ef-8fd0-4976b2b3a2d8"
             },
             "x-position": 1
           },
@@ -1031,327 +924,6 @@
         ],
         "responses": {
           "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/TodoItems": {
-      "get": {
-        "tags": [
-          "TodoItems"
-        ],
-        "operationId": "GetTodoItemsWithPagination",
-        "parameters": [
-          {
-            "name": "ListId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "A TodoListId identifier",
-              "format": "uuid",
-              "nullable": false,
-              "example": "c65b86aa-143b-44ec-924e-05edeb1a0c94"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "PageNumber",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 3
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FilteredListOfTodoItemBriefDto"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "TodoItems"
-        ],
-        "operationId": "CreateTodoItem",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTodoItemCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "description": "A TodoItemId identifier",
-                  "format": "uuid",
-                  "nullable": false,
-                  "example": "9d591f20-7c55-443a-9abc-fe29d8b4c236"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/TodoItems/{id}": {
-      "put": {
-        "tags": [
-          "TodoItems"
-        ],
-        "operationId": "UpdateTodoItem",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "A TodoItemId identifier",
-              "format": "uuid",
-              "nullable": false,
-              "example": "423fc61b-c704-4a34-9b24-26b0ea33c6e3"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTodoItemCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "400": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "TodoItems"
-        ],
-        "operationId": "DeleteTodoItem",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/TodoItems/UpdateDetail/{id}": {
-      "put": {
-        "tags": [
-          "TodoItems"
-        ],
-        "operationId": "UpdateTodoItemDetail",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "A TodoItemId identifier",
-              "format": "uuid",
-              "nullable": false,
-              "example": "d178ca9f-263a-4e0f-9989-5eebb326d6f3"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTodoItemDetailCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "400": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/TodoLists": {
-      "get": {
-        "tags": [
-          "TodoLists"
-        ],
-        "operationId": "GetTodoLists",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TodosVm"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "TodoLists"
-        ],
-        "operationId": "CreateTodoList",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTodoListCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "description": "A TodoListId identifier",
-                  "format": "uuid",
-                  "nullable": false,
-                  "example": "7a16b25a-eada-4c9b-87cf-cbb61a93fae8"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/TodoLists/{id}": {
-      "put": {
-        "tags": [
-          "TodoLists"
-        ],
-        "operationId": "UpdateTodoList",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "A TodoListId identifier",
-              "format": "uuid",
-              "nullable": false,
-              "example": "ee4e5f52-6390-4582-acd7-a402bf4a5517"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTodoListCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "400": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "TodoLists"
-        ],
-        "operationId": "DeleteTodoList",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "A TodoListId identifier",
-              "format": "uuid",
-              "nullable": false,
-              "example": "ad24bc79-e6c3-4d48-b8f9-ba2cd593ecaf"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "204": {
             "description": ""
           }
         }
@@ -1757,7 +1329,7 @@
             "description": "A SemesterId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "805faf57-eb3b-4d78-a3dd-e33c2d586a28"
+            "example": "a4383839-8eb2-4d25-97cb-20056e0fcf77"
           }
         }
       },
@@ -1811,7 +1383,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "d8688c24-62b7-498c-a42e-5e95f1b650fb"
+            "example": "738a047a-3342-4222-81f8-88da6cfada19"
           }
         }
       },
@@ -1827,7 +1399,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "79d003f3-fd5e-4d9b-b22f-c59729737e1f"
+            "example": "8fd7c2c2-fb1c-4148-b0ae-26b4fdbbee5a"
           },
           "user": {
             "$ref": "#/components/schemas/ClaimsPrincipal"
@@ -2066,7 +1638,7 @@
             "description": "A LectureId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "b3eae293-80b6-4824-bc7d-38382f118a34"
+            "example": "4a7405ca-1077-447f-aef8-325464a72cb2"
           }
         }
       },
@@ -2153,233 +1725,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "bce931d1-f065-4c1e-8c76-5c7f3eed4c67"
-          }
-        }
-      },
-      "FilteredListOfDestinationDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/FilteredQuery"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "items": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/DestinationDto"
-                }
-              },
-              "totalPages": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "totalCount": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "hasPreviousPage": {
-                "type": "boolean"
-              },
-              "hasNextPage": {
-                "type": "boolean"
-              }
-            }
-          }
-        ]
-      },
-      "DestinationDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseResponseOfDestinationId"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string",
-                "nullable": true
-              },
-              "country": {
-                "$ref": "#/components/schemas/CountryDto"
-              },
-              "description": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "CountryDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseResponseOfCountryId"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string",
-                "nullable": true
-              },
-              "code": {
-                "type": "string",
-                "nullable": true
-              },
-              "flag": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/ResourceResponse"
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "ResourceResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseResponseOfResourceId"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "resourceType": {
-                "$ref": "#/components/schemas/ResourceType"
-              },
-              "associatedResources": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ResourceResponse"
-                }
-              },
-              "fileName": {
-                "type": "string"
-              },
-              "mimeType": {
-                "type": "string"
-              },
-              "url": {
-                "type": "string"
-              },
-              "size": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "order": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "ResourceType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Media",
-          "Flag",
-          "Empty",
-          "Document",
-          "Thumbnail"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ]
-      },
-      "BaseResponseOfResourceId": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A ResourceId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "fc9d283c-8bee-4782-91dd-485d8f84e91d"
-          }
-        }
-      },
-      "BaseResponseOfCountryId": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A CountryId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "0a440d7c-bd84-42a4-8009-352de8d1c191"
-          }
-        }
-      },
-      "BaseResponseOfDestinationId": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A DestinationId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "2e97f974-f2dc-4a8a-8abc-5672deaa3a40"
-          }
-        }
-      },
-      "FilteredQuery": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "orderBy": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "CreateDestinationCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "countryId": {
-            "type": "string",
-            "description": "A CountryId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "1ce5d62d-345d-4c3f-8262-6ada99d830a4"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
+            "example": "ccf92c3f-30fa-4f7f-aaab-e6276e0b0646"
           }
         }
       },
@@ -2442,7 +1788,7 @@
                 "description": "A ResourceId identifier",
                 "format": "uuid",
                 "nullable": false,
-                "example": "a5759889-4eb8-421a-a325-4991a76457cd"
+                "example": "3e5e422e-0703-4464-97d8-bbd050667772"
               },
               "contentType": {
                 "$ref": "#/components/schemas/LectureContentType"
@@ -2482,6 +1828,86 @@
           "Other"
         ]
       },
+      "ResourceResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseResponseOfResourceId"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "resourceType": {
+                "$ref": "#/components/schemas/ResourceType"
+              },
+              "associatedResources": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ResourceResponse"
+                }
+              },
+              "thumbnailResource": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ResourceResponse"
+                  }
+                ]
+              },
+              "fileName": {
+                "type": "string"
+              },
+              "mimeType": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "size": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "order": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ResourceType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Media",
+          "Flag",
+          "Empty",
+          "Document",
+          "Thumbnail"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "BaseResponseOfResourceId": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A ResourceId identifier",
+            "format": "uuid",
+            "nullable": false,
+            "example": "65731b02-bb5b-41ad-8b24-4484aad16799"
+          }
+        }
+      },
       "BaseResponseOfLectureContentId": {
         "type": "object",
         "x-abstract": true,
@@ -2492,7 +1918,7 @@
             "description": "A LectureContentId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "01ee6626-442d-41bb-b095-700dc1d07f10"
+            "example": "10e63201-cc2a-49eb-ac11-54abd1a8ea99"
           }
         }
       },
@@ -2529,247 +1955,21 @@
           }
         ]
       },
-      "FilteredListOfTodoItemBriefDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/FilteredQuery"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "items": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/TodoItemBriefDto"
-                }
-              },
-              "totalPages": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "totalCount": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "hasPreviousPage": {
-                "type": "boolean"
-              },
-              "hasNextPage": {
-                "type": "boolean"
-              }
-            }
-          }
-        ]
-      },
-      "TodoItemBriefDto": {
+      "FilteredQuery": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
+          "pageNumber": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
-          "listId": {
+          "pageSize": {
             "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
+            "format": "int32",
             "nullable": true
           },
-          "done": {
-            "type": "boolean"
-          }
-        }
-      },
-      "CreateTodoItemCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "listId": {
-            "type": "string",
-            "description": "A TodoListId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "4b9e5a52-a4bb-4a0b-a0f1-688fe3a6a68c"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "UpdateTodoItemCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A TodoItemId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "fd9146c6-02a7-4313-9ea8-f44f86a1642b"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "done": {
-            "type": "boolean"
-          }
-        }
-      },
-      "UpdateTodoItemDetailCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A TodoItemId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "de16c75b-8fee-4377-b204-5d40b7e170ce"
-          },
-          "listId": {
-            "type": "string",
-            "description": "A TodoListId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "84210be5-9e0c-47ca-92d6-4e1c9280a6f3"
-          },
-          "priority": {
-            "$ref": "#/components/schemas/PriorityLevel"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "PriorityLevel": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "None",
-          "Low",
-          "Medium",
-          "High"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "TodosVm": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "priorityLevels": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LookupDto"
-            }
-          },
-          "lists": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TodoListDto"
-            }
-          }
-        }
-      },
-      "LookupDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "TodoListDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "colour": {
-            "type": "string",
-            "nullable": true
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TodoItemDto"
-            }
-          }
-        }
-      },
-      "TodoItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "listId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "done": {
-            "type": "boolean"
-          },
-          "priority": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "CreateTodoListCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "UpdateTodoListCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "A TodoListId identifier",
-            "format": "uuid",
-            "nullable": false,
-            "example": "eb07ad50-8eac-4508-95a1-14fd188b35a4"
-          },
-          "title": {
+          "orderBy": {
             "type": "string",
             "nullable": true
           }

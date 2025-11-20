@@ -21,26 +21,9 @@ public class ThumnailExtractionHandler : MediaJobHandlerBase<ThumbnailExtraction
 
     public async override Task HandleAsync(ThumbnailExtractionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
     {
-        var allPreviousJobs = await ListAllPreviousJobsAsync(job, token);
-        var resource = allPreviousJobs
-            .Select(pj =>
-            {
-                if (pj is MediaTranscodingMediaProcessingJob mtj &&
-                    mtj.OutputResource != null &&
-                   (MimeTypeHelpers.IsVideoMimeType(mtj.OutputResource.MimeType) || MimeTypeHelpers.IsAudioMimeType(mtj.OutputResource.MimeType)))
-                {
-                    return mtj.OutputResource;
-                }
-                else if (pj is OfficeConversionMediaProcessingJob ocj &&
-                    ocj.OutputResource != null &&
-                    MimeTypeHelpers.IsDocumentMimeType(ocj.OutputResource.MimeType))
-                {
-                    return ocj.OutputResource;
-                }
-                return null;
-            })
-            .FirstOrDefault(r => r != null);
-
+        var resource = await FirstResourceOrDefaultAsync(job, (r) => MimeTypeHelpers.IsVideoMimeType(r.MimeType) ||
+                                                                    MimeTypeHelpers.IsAudioMimeType(r.MimeType) ||
+                                                                    MimeTypeHelpers.IsDocumentMimeType(r.MimeType), token);
         if (resource == null)
         {
             throw new Exception("No suitable converted media or document found for thumbnail extraction.");
@@ -82,9 +65,10 @@ public class ThumnailExtractionHandler : MediaJobHandlerBase<ThumbnailExtraction
             );
         }
 
+
         if (thumnailData != null)
         {
-            var outputResource = await _resourceService.CreateResourceAsync(
+            var outputResource = await _resourceService.AddAssociatedResourceAsync(resource.Id,
                 Path.GetFileNameWithoutExtension(resourceContent.FileName) + "_thumbnail.png",
                 ResourceType.Thumbnail,
                 thumnailData,

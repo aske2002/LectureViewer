@@ -2,11 +2,11 @@ using System.Text.Json.Serialization;
 
 namespace backend.Infrastructure.Enums;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum WhisperEventType
+public static class WhisperEventType
 {
-    Transcript,
-    Progress,
-    Log,
-    End
+    public const string Transcript = "transcript";
+    public const string Progress = "progress";
+    public const string Log = "log";
+    public const string End = "end";
+    public const string Connected = "connected";
 }

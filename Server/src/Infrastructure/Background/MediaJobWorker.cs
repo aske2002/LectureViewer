@@ -31,7 +31,7 @@ public class MediaJobWorker : BackgroundService
 
             var (job, attempt) = result.Value;
             var genericHandlerType = typeof(IMediaJobHandler<>).MakeGenericType(job.GetType());
-            var handler = scope.ServiceProvider.GetRequiredService(genericHandlerType) as IMediaJobHandler;
+            var handler = scope.ServiceProvider.GetService(genericHandlerType) as IMediaJobHandler;
 
             if (handler is null)
             {

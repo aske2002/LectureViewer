@@ -50,6 +50,7 @@ internal class ThumbnailExtractionMediaProcessingJobConfiguration : IEntityTypeC
     public void Configure(EntityTypeBuilder<ThumbnailExtractionMediaProcessingJob> builder)
     {
         builder.HasOne(j => j.OutputResource).WithMany().HasForeignKey(j => j.OutputResourceId);
+        builder.HasOne(j => j.InputResource).WithMany().HasForeignKey(j => j.InputResourceId);
     }
 }
 

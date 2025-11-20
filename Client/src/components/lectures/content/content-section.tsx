@@ -178,10 +178,13 @@ function LectureContentSectionItem({
     resource: { fileName },
   } = content;
 
-  const { mimeType, id: resourceId } = useMemo(() => {
+  const {
+    mimeType,
+    id: resourceId,
+  } = useMemo(() => {
     if (documentMimeTypes.includes(content.resource.mimeType)) {
       return (
-        content.resource.associatedResources?.find(
+        content.resource.associatedResources?.  find(
           (res) => res.mimeType === "application/pdf"
         ) || content.resource
       );
@@ -189,10 +192,13 @@ function LectureContentSectionItem({
     return content.resource;
   }, [content]);
 
-  const { url, downloadUrl } = useMemo(
+  const { url, downloadUrl, thumbnailUrl } = useMemo(
     () => ({
       url: `/api/Lectures/${courseId}/${lectureId}/contents/${content.id}/${resourceId}`,
       downloadUrl: `/api/Lectures/${courseId}/${lectureId}/contents/${content.id}/${resourceId}?download=true`,
+      thumbnailUrl: content.resource.thumbnailResource
+        ? `/api/Lectures/${courseId}/${lectureId}/contents/${content.id}/${content.resource.thumbnailResource.id}`
+        : undefined,
     }),
     [courseId, lectureId, content, resourceId]
   );
@@ -214,18 +220,17 @@ function LectureContentSectionItem({
       <Card
         key={content.id}
         onClick={() => setPreviewOpen(true)}
-        className="p-4 hover:border-primary transition-colors w-full"
+        className="p-4 hover:border-primary transition-colors w-full flex flex-col md:flex-row"
       >
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 flex-col">
           <div className={`${colorClass} mt-1 shrink-0`}>
             <LectureContentTypeIcon
               type={content.contentType}
               className="h-6 w-6"
             />
           </div>
-          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-medium text-sm truncate">{content.name}</h3>
+              <h3 className="font-medium text-sm wrap-break-word">{content.name}</h3>
             </div>
             {content.description && (
               <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
@@ -238,17 +243,25 @@ function LectureContentSectionItem({
               <span>•</span>
               <span>{size}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-between">
               <Badge variant="outline" className="text-xs capitalize">
                 {content.contentType}
               </Badge>
-              <Button size="sm" variant="ghost" className="h-7 px-2 ml-auto">
+              <Button size="sm" variant="ghost" className="h-7 px-2">
                 <Download className="h-3 w-3 mr-1" />
                 Download
               </Button>
-            </div>
           </div>
         </div>
+        {thumbnailUrl && (
+          <div className="grow flex-col flex justify-center rounded-md shadow-md border overflow-hidden max-h-56">
+            <img
+              src={thumbnailUrl}
+              alt="Thumbnail"
+              className="object-cover grow object-center"
+            />
+          </div>
+        )}
       </Card>
     </>
   );

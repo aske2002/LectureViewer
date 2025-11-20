@@ -974,190 +974,6 @@ export class CoursesClient implements ICoursesClient {
     }
 }
 
-export interface IDestinationsClient {
-    getDestinations(pageNumber?: number | null | undefined, pageSize?: number | null | undefined, orderBy?: string | undefined): Promise<FilteredListOfDestinationDto>;
-    createDestination(command: CreateDestinationCommand): Promise<string>;
-    getCountries(): Promise<CountryDto[]>;
-}
-
-export class DestinationsClient implements IDestinationsClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
-    }
-
-    getDestinations(pageNumber?: number | null | undefined, pageSize?: number | null | undefined, orderBy?: string | undefined, cancelToken?: CancelToken): Promise<FilteredListOfDestinationDto> {
-        let url_ = this.baseUrl + "/api/Destinations?";
-        if (pageNumber !== undefined && pageNumber !== null)
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize !== undefined && pageSize !== null)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (orderBy === null)
-            throw new Error("The parameter 'orderBy' cannot be null.");
-        else if (orderBy !== undefined)
-            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetDestinations(_response);
-        });
-    }
-
-    protected processGetDestinations(response: AxiosResponse): Promise<FilteredListOfDestinationDto> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = FilteredListOfDestinationDto.fromJS(resultData200);
-            return Promise.resolve<FilteredListOfDestinationDto>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<FilteredListOfDestinationDto>(null as any);
-    }
-
-    createDestination(command: CreateDestinationCommand, cancelToken?: CancelToken): Promise<string> {
-        let url_ = this.baseUrl + "/api/Destinations";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreateDestination(_response);
-        });
-    }
-
-    protected processCreateDestination(response: AxiosResponse): Promise<string> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return Promise.resolve<string>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    getCountries( cancelToken?: CancelToken): Promise<CountryDto[]> {
-        let url_ = this.baseUrl + "/api/Destinations/countries";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetCountries(_response);
-        });
-    }
-
-    protected processGetCountries(response: AxiosResponse): Promise<CountryDto[]> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(CountryDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return Promise.resolve<CountryDto[]>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<CountryDto[]>(null as any);
-    }
-}
-
 export interface ILecturesClient {
     getLectureDetails(courseId: string, lectureId: string): Promise<LectureDto>;
     getLectureContent(courseId: string, lectureId: string, lectureContentId: string, resourceId: string, download?: string | null | undefined): Promise<void>;
@@ -1528,522 +1344,6 @@ export class ResourcesClient implements IResourcesClient {
             }
         }
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-}
-
-export interface ITodoItemsClient {
-    getTodoItemsWithPagination(listId: string, pageNumber: number, pageSize: number): Promise<FilteredListOfTodoItemBriefDto>;
-    createTodoItem(command: CreateTodoItemCommand): Promise<string>;
-    updateTodoItem(id: string, command: UpdateTodoItemCommand): Promise<void>;
-    deleteTodoItem(id: string): Promise<void>;
-    updateTodoItemDetail(id: string, command: UpdateTodoItemDetailCommand): Promise<void>;
-}
-
-export class TodoItemsClient implements ITodoItemsClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
-    }
-
-    getTodoItemsWithPagination(listId: string, pageNumber: number, pageSize: number, cancelToken?: CancelToken): Promise<FilteredListOfTodoItemBriefDto> {
-        let url_ = this.baseUrl + "/api/TodoItems?";
-        if (listId === undefined || listId === null)
-            throw new Error("The parameter 'listId' must be defined and cannot be null.");
-        else
-            url_ += "ListId=" + encodeURIComponent("" + listId) + "&";
-        if (pageNumber === undefined || pageNumber === null)
-            throw new Error("The parameter 'pageNumber' must be defined and cannot be null.");
-        else
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === undefined || pageSize === null)
-            throw new Error("The parameter 'pageSize' must be defined and cannot be null.");
-        else
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetTodoItemsWithPagination(_response);
-        });
-    }
-
-    protected processGetTodoItemsWithPagination(response: AxiosResponse): Promise<FilteredListOfTodoItemBriefDto> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = FilteredListOfTodoItemBriefDto.fromJS(resultData200);
-            return Promise.resolve<FilteredListOfTodoItemBriefDto>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<FilteredListOfTodoItemBriefDto>(null as any);
-    }
-
-    createTodoItem(command: CreateTodoItemCommand, cancelToken?: CancelToken): Promise<string> {
-        let url_ = this.baseUrl + "/api/TodoItems";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreateTodoItem(_response);
-        });
-    }
-
-    protected processCreateTodoItem(response: AxiosResponse): Promise<string> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 201) {
-            const _responseText = response.data;
-            let result201: any = null;
-            let resultData201  = _responseText;
-                result201 = resultData201 !== undefined ? resultData201 : <any>null;
-    
-            return Promise.resolve<string>(result201);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    updateTodoItem(id: string, command: UpdateTodoItemCommand, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/TodoItems/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "PUT",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdateTodoItem(_response);
-        });
-    }
-
-    protected processUpdateTodoItem(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status === 400) {
-            const _responseText = response.data;
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    deleteTodoItem(id: string, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/TodoItems/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "DELETE",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDeleteTodoItem(_response);
-        });
-    }
-
-    protected processDeleteTodoItem(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    updateTodoItemDetail(id: string, command: UpdateTodoItemDetailCommand, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/TodoItems/UpdateDetail/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "PUT",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdateTodoItemDetail(_response);
-        });
-    }
-
-    protected processUpdateTodoItemDetail(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status === 400) {
-            const _responseText = response.data;
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-}
-
-export interface ITodoListsClient {
-    getTodoLists(): Promise<TodosVm>;
-    createTodoList(command: CreateTodoListCommand): Promise<string>;
-    updateTodoList(id: string, command: UpdateTodoListCommand): Promise<void>;
-    deleteTodoList(id: string): Promise<void>;
-}
-
-export class TodoListsClient implements ITodoListsClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
-    }
-
-    getTodoLists( cancelToken?: CancelToken): Promise<TodosVm> {
-        let url_ = this.baseUrl + "/api/TodoLists";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetTodoLists(_response);
-        });
-    }
-
-    protected processGetTodoLists(response: AxiosResponse): Promise<TodosVm> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = TodosVm.fromJS(resultData200);
-            return Promise.resolve<TodosVm>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<TodosVm>(null as any);
-    }
-
-    createTodoList(command: CreateTodoListCommand, cancelToken?: CancelToken): Promise<string> {
-        let url_ = this.baseUrl + "/api/TodoLists";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreateTodoList(_response);
-        });
-    }
-
-    protected processCreateTodoList(response: AxiosResponse): Promise<string> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 201) {
-            const _responseText = response.data;
-            let result201: any = null;
-            let resultData201  = _responseText;
-                result201 = resultData201 !== undefined ? resultData201 : <any>null;
-    
-            return Promise.resolve<string>(result201);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    updateTodoList(id: string, command: UpdateTodoListCommand, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/TodoLists/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "PUT",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdateTodoList(_response);
-        });
-    }
-
-    protected processUpdateTodoList(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status === 400) {
-            const _responseText = response.data;
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    deleteTodoList(id: string, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/TodoLists/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "DELETE",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDeleteTodoList(_response);
-        });
-    }
-
-    protected processDeleteTodoList(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
             const _responseText = response.data;
             return Promise.resolve<void>(null as any);
 
@@ -3744,416 +3044,6 @@ export interface ICreateLectureCommand {
     courseId: string;
 }
 
-export class FilteredQuery implements IFilteredQuery {
-    pageNumber!: number | undefined;
-    pageSize!: number | undefined;
-    orderBy!: string | undefined;
-
-    constructor(data?: IFilteredQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.pageNumber = _data["pageNumber"];
-            this.pageSize = _data["pageSize"];
-            this.orderBy = _data["orderBy"];
-        }
-    }
-
-    static fromJS(data: any): FilteredQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilteredQuery();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["pageNumber"] = this.pageNumber;
-        data["pageSize"] = this.pageSize;
-        data["orderBy"] = this.orderBy;
-        return data;
-    }
-}
-
-export interface IFilteredQuery {
-    pageNumber: number | undefined;
-    pageSize: number | undefined;
-    orderBy: string | undefined;
-}
-
-export class FilteredListOfDestinationDto extends FilteredQuery implements IFilteredListOfDestinationDto {
-    items!: DestinationDto[];
-    totalPages!: number;
-    totalCount!: number;
-    hasPreviousPage!: boolean;
-    hasNextPage!: boolean;
-
-    constructor(data?: IFilteredListOfDestinationDto) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(DestinationDto.fromJS(item));
-            }
-            this.totalPages = _data["totalPages"];
-            this.totalCount = _data["totalCount"];
-            this.hasPreviousPage = _data["hasPreviousPage"];
-            this.hasNextPage = _data["hasNextPage"];
-        }
-    }
-
-    static override fromJS(data: any): FilteredListOfDestinationDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilteredListOfDestinationDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        data["totalPages"] = this.totalPages;
-        data["totalCount"] = this.totalCount;
-        data["hasPreviousPage"] = this.hasPreviousPage;
-        data["hasNextPage"] = this.hasNextPage;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IFilteredListOfDestinationDto extends IFilteredQuery {
-    items: DestinationDto[];
-    totalPages: number;
-    totalCount: number;
-    hasPreviousPage: boolean;
-    hasNextPage: boolean;
-}
-
-export abstract class BaseResponseOfDestinationId implements IBaseResponseOfDestinationId {
-    /** A DestinationId identifier */
-    id!: string;
-
-    constructor(data?: IBaseResponseOfDestinationId) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): BaseResponseOfDestinationId {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseResponseOfDestinationId' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        return data;
-    }
-}
-
-export interface IBaseResponseOfDestinationId {
-    /** A DestinationId identifier */
-    id: string;
-}
-
-export class DestinationDto extends BaseResponseOfDestinationId implements IDestinationDto {
-    name!: string | undefined;
-    country!: CountryDto;
-    description!: string | undefined;
-
-    constructor(data?: IDestinationDto) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.country = _data["country"] ? CountryDto.fromJS(_data["country"]) : <any>undefined;
-            this.description = _data["description"];
-        }
-    }
-
-    static override fromJS(data: any): DestinationDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new DestinationDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["country"] = this.country ? this.country.toJSON() : <any>undefined;
-        data["description"] = this.description;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IDestinationDto extends IBaseResponseOfDestinationId {
-    name: string | undefined;
-    country: CountryDto;
-    description: string | undefined;
-}
-
-export abstract class BaseResponseOfCountryId implements IBaseResponseOfCountryId {
-    /** A CountryId identifier */
-    id!: string;
-
-    constructor(data?: IBaseResponseOfCountryId) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): BaseResponseOfCountryId {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseResponseOfCountryId' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        return data;
-    }
-}
-
-export interface IBaseResponseOfCountryId {
-    /** A CountryId identifier */
-    id: string;
-}
-
-export class CountryDto extends BaseResponseOfCountryId implements ICountryDto {
-    name!: string | undefined;
-    code!: string | undefined;
-    flag!: ResourceResponse | undefined;
-
-    constructor(data?: ICountryDto) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.code = _data["code"];
-            this.flag = _data["flag"] ? ResourceResponse.fromJS(_data["flag"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): CountryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CountryDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["code"] = this.code;
-        data["flag"] = this.flag ? this.flag.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface ICountryDto extends IBaseResponseOfCountryId {
-    name: string | undefined;
-    code: string | undefined;
-    flag: ResourceResponse | undefined;
-}
-
-export abstract class BaseResponseOfResourceId implements IBaseResponseOfResourceId {
-    /** A ResourceId identifier */
-    id!: string;
-
-    constructor(data?: IBaseResponseOfResourceId) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): BaseResponseOfResourceId {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseResponseOfResourceId' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        return data;
-    }
-}
-
-export interface IBaseResponseOfResourceId {
-    /** A ResourceId identifier */
-    id: string;
-}
-
-export class ResourceResponse extends BaseResponseOfResourceId implements IResourceResponse {
-    resourceType!: ResourceType;
-    associatedResources!: ResourceResponse[];
-    fileName!: string;
-    mimeType!: string;
-    url!: string;
-    size!: number;
-    order!: number | undefined;
-
-    constructor(data?: IResourceResponse) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.resourceType = _data["resourceType"];
-            if (Array.isArray(_data["associatedResources"])) {
-                this.associatedResources = [] as any;
-                for (let item of _data["associatedResources"])
-                    this.associatedResources!.push(ResourceResponse.fromJS(item));
-            }
-            this.fileName = _data["fileName"];
-            this.mimeType = _data["mimeType"];
-            this.url = _data["url"];
-            this.size = _data["size"];
-            this.order = _data["order"];
-        }
-    }
-
-    static override fromJS(data: any): ResourceResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ResourceResponse();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["resourceType"] = this.resourceType;
-        if (Array.isArray(this.associatedResources)) {
-            data["associatedResources"] = [];
-            for (let item of this.associatedResources)
-                data["associatedResources"].push(item.toJSON());
-        }
-        data["fileName"] = this.fileName;
-        data["mimeType"] = this.mimeType;
-        data["url"] = this.url;
-        data["size"] = this.size;
-        data["order"] = this.order;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IResourceResponse extends IBaseResponseOfResourceId {
-    resourceType: ResourceType;
-    associatedResources: ResourceResponse[];
-    fileName: string;
-    mimeType: string;
-    url: string;
-    size: number;
-    order: number | undefined;
-}
-
-export enum ResourceType {
-    Media = 0,
-    Flag = 1,
-    Empty = 2,
-    Document = 3,
-    Thumbnail = 4,
-}
-
-export class CreateDestinationCommand implements ICreateDestinationCommand {
-    name!: string;
-    /** A CountryId identifier */
-    countryId!: string;
-    description!: string | undefined;
-
-    constructor(data?: ICreateDestinationCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.countryId = _data["countryId"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): CreateDestinationCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateDestinationCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["countryId"] = this.countryId;
-        data["description"] = this.description;
-        return data;
-    }
-}
-
-export interface ICreateDestinationCommand {
-    name: string;
-    /** A CountryId identifier */
-    countryId: string;
-    description: string | undefined;
-}
-
 export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
     startDate!: Date;
     endDate!: Date;
@@ -4318,6 +3208,163 @@ export enum LectureContentType {
     Other = "Other",
 }
 
+export abstract class BaseResponseOfResourceId implements IBaseResponseOfResourceId {
+    /** A ResourceId identifier */
+    id!: string;
+
+    constructor(data?: IBaseResponseOfResourceId) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): BaseResponseOfResourceId {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseResponseOfResourceId' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface IBaseResponseOfResourceId {
+    /** A ResourceId identifier */
+    id: string;
+}
+
+export class ResourceResponse extends BaseResponseOfResourceId implements IResourceResponse {
+    resourceType!: ResourceType;
+    associatedResources!: ResourceResponse[];
+    thumbnailResource!: ResourceResponse | undefined;
+    fileName!: string;
+    mimeType!: string;
+    url!: string;
+    size!: number;
+    order!: number | undefined;
+
+    constructor(data?: IResourceResponse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.resourceType = _data["resourceType"];
+            if (Array.isArray(_data["associatedResources"])) {
+                this.associatedResources = [] as any;
+                for (let item of _data["associatedResources"])
+                    this.associatedResources!.push(ResourceResponse.fromJS(item));
+            }
+            this.thumbnailResource = _data["thumbnailResource"] ? ResourceResponse.fromJS(_data["thumbnailResource"]) : <any>undefined;
+            this.fileName = _data["fileName"];
+            this.mimeType = _data["mimeType"];
+            this.url = _data["url"];
+            this.size = _data["size"];
+            this.order = _data["order"];
+        }
+    }
+
+    static override fromJS(data: any): ResourceResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResourceResponse();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["resourceType"] = this.resourceType;
+        if (Array.isArray(this.associatedResources)) {
+            data["associatedResources"] = [];
+            for (let item of this.associatedResources)
+                data["associatedResources"].push(item.toJSON());
+        }
+        data["thumbnailResource"] = this.thumbnailResource ? this.thumbnailResource.toJSON() : <any>undefined;
+        data["fileName"] = this.fileName;
+        data["mimeType"] = this.mimeType;
+        data["url"] = this.url;
+        data["size"] = this.size;
+        data["order"] = this.order;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IResourceResponse extends IBaseResponseOfResourceId {
+    resourceType: ResourceType;
+    associatedResources: ResourceResponse[];
+    thumbnailResource: ResourceResponse | undefined;
+    fileName: string;
+    mimeType: string;
+    url: string;
+    size: number;
+    order: number | undefined;
+}
+
+export enum ResourceType {
+    Media = 0,
+    Flag = 1,
+    Empty = 2,
+    Document = 3,
+    Thumbnail = 4,
+}
+
+export class FilteredQuery implements IFilteredQuery {
+    pageNumber!: number | undefined;
+    pageSize!: number | undefined;
+    orderBy!: string | undefined;
+
+    constructor(data?: IFilteredQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.pageNumber = _data["pageNumber"];
+            this.pageSize = _data["pageSize"];
+            this.orderBy = _data["orderBy"];
+        }
+    }
+
+    static fromJS(data: any): FilteredQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new FilteredQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["pageNumber"] = this.pageNumber;
+        data["pageSize"] = this.pageSize;
+        data["orderBy"] = this.orderBy;
+        return data;
+    }
+}
+
+export interface IFilteredQuery {
+    pageNumber: number | undefined;
+    pageSize: number | undefined;
+    orderBy: string | undefined;
+}
+
 export class FilteredListOfResourceResponse extends FilteredQuery implements IFilteredListOfResourceResponse {
     items!: ResourceResponse[];
     totalPages!: number;
@@ -4373,544 +3420,6 @@ export interface IFilteredListOfResourceResponse extends IFilteredQuery {
     totalCount: number;
     hasPreviousPage: boolean;
     hasNextPage: boolean;
-}
-
-export class FilteredListOfTodoItemBriefDto extends FilteredQuery implements IFilteredListOfTodoItemBriefDto {
-    items!: TodoItemBriefDto[];
-    totalPages!: number;
-    totalCount!: number;
-    hasPreviousPage!: boolean;
-    hasNextPage!: boolean;
-
-    constructor(data?: IFilteredListOfTodoItemBriefDto) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(TodoItemBriefDto.fromJS(item));
-            }
-            this.totalPages = _data["totalPages"];
-            this.totalCount = _data["totalCount"];
-            this.hasPreviousPage = _data["hasPreviousPage"];
-            this.hasNextPage = _data["hasNextPage"];
-        }
-    }
-
-    static override fromJS(data: any): FilteredListOfTodoItemBriefDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilteredListOfTodoItemBriefDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        data["totalPages"] = this.totalPages;
-        data["totalCount"] = this.totalCount;
-        data["hasPreviousPage"] = this.hasPreviousPage;
-        data["hasNextPage"] = this.hasNextPage;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IFilteredListOfTodoItemBriefDto extends IFilteredQuery {
-    items: TodoItemBriefDto[];
-    totalPages: number;
-    totalCount: number;
-    hasPreviousPage: boolean;
-    hasNextPage: boolean;
-}
-
-export class TodoItemBriefDto implements ITodoItemBriefDto {
-    id!: number;
-    listId!: number;
-    title!: string | undefined;
-    done!: boolean;
-
-    constructor(data?: ITodoItemBriefDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.listId = _data["listId"];
-            this.title = _data["title"];
-            this.done = _data["done"];
-        }
-    }
-
-    static fromJS(data: any): TodoItemBriefDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TodoItemBriefDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["listId"] = this.listId;
-        data["title"] = this.title;
-        data["done"] = this.done;
-        return data;
-    }
-}
-
-export interface ITodoItemBriefDto {
-    id: number;
-    listId: number;
-    title: string | undefined;
-    done: boolean;
-}
-
-export class CreateTodoItemCommand implements ICreateTodoItemCommand {
-    /** A TodoListId identifier */
-    listId!: string;
-    title!: string | undefined;
-
-    constructor(data?: ICreateTodoItemCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.listId = _data["listId"];
-            this.title = _data["title"];
-        }
-    }
-
-    static fromJS(data: any): CreateTodoItemCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateTodoItemCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["listId"] = this.listId;
-        data["title"] = this.title;
-        return data;
-    }
-}
-
-export interface ICreateTodoItemCommand {
-    /** A TodoListId identifier */
-    listId: string;
-    title: string | undefined;
-}
-
-export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
-    /** A TodoItemId identifier */
-    id!: string;
-    title!: string | undefined;
-    done!: boolean;
-
-    constructor(data?: IUpdateTodoItemCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-            this.done = _data["done"];
-        }
-    }
-
-    static fromJS(data: any): UpdateTodoItemCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoItemCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        data["done"] = this.done;
-        return data;
-    }
-}
-
-export interface IUpdateTodoItemCommand {
-    /** A TodoItemId identifier */
-    id: string;
-    title: string | undefined;
-    done: boolean;
-}
-
-export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand {
-    /** A TodoItemId identifier */
-    id!: string;
-    /** A TodoListId identifier */
-    listId!: string;
-    priority!: PriorityLevel;
-    note!: string | undefined;
-
-    constructor(data?: IUpdateTodoItemDetailCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.listId = _data["listId"];
-            this.priority = _data["priority"];
-            this.note = _data["note"];
-        }
-    }
-
-    static fromJS(data: any): UpdateTodoItemDetailCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoItemDetailCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["listId"] = this.listId;
-        data["priority"] = this.priority;
-        data["note"] = this.note;
-        return data;
-    }
-}
-
-export interface IUpdateTodoItemDetailCommand {
-    /** A TodoItemId identifier */
-    id: string;
-    /** A TodoListId identifier */
-    listId: string;
-    priority: PriorityLevel;
-    note: string | undefined;
-}
-
-export enum PriorityLevel {
-    None = 0,
-    Low = 1,
-    Medium = 2,
-    High = 3,
-}
-
-export class TodosVm implements ITodosVm {
-    priorityLevels!: LookupDto[];
-    lists!: TodoListDto[];
-
-    constructor(data?: ITodosVm) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["priorityLevels"])) {
-                this.priorityLevels = [] as any;
-                for (let item of _data["priorityLevels"])
-                    this.priorityLevels!.push(LookupDto.fromJS(item));
-            }
-            if (Array.isArray(_data["lists"])) {
-                this.lists = [] as any;
-                for (let item of _data["lists"])
-                    this.lists!.push(TodoListDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): TodosVm {
-        data = typeof data === 'object' ? data : {};
-        let result = new TodosVm();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.priorityLevels)) {
-            data["priorityLevels"] = [];
-            for (let item of this.priorityLevels)
-                data["priorityLevels"].push(item.toJSON());
-        }
-        if (Array.isArray(this.lists)) {
-            data["lists"] = [];
-            for (let item of this.lists)
-                data["lists"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ITodosVm {
-    priorityLevels: LookupDto[];
-    lists: TodoListDto[];
-}
-
-export class LookupDto implements ILookupDto {
-    id!: number;
-    title!: string | undefined;
-
-    constructor(data?: ILookupDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-        }
-    }
-
-    static fromJS(data: any): LookupDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new LookupDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        return data;
-    }
-}
-
-export interface ILookupDto {
-    id: number;
-    title: string | undefined;
-}
-
-export class TodoListDto implements ITodoListDto {
-    id!: number;
-    title!: string | undefined;
-    colour!: string | undefined;
-    items!: TodoItemDto[];
-
-    constructor(data?: ITodoListDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-            this.colour = _data["colour"];
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(TodoItemDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): TodoListDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TodoListDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        data["colour"] = this.colour;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ITodoListDto {
-    id: number;
-    title: string | undefined;
-    colour: string | undefined;
-    items: TodoItemDto[];
-}
-
-export class TodoItemDto implements ITodoItemDto {
-    id!: number;
-    listId!: number;
-    title!: string | undefined;
-    done!: boolean;
-    priority!: number;
-    note!: string | undefined;
-
-    constructor(data?: ITodoItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.listId = _data["listId"];
-            this.title = _data["title"];
-            this.done = _data["done"];
-            this.priority = _data["priority"];
-            this.note = _data["note"];
-        }
-    }
-
-    static fromJS(data: any): TodoItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TodoItemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["listId"] = this.listId;
-        data["title"] = this.title;
-        data["done"] = this.done;
-        data["priority"] = this.priority;
-        data["note"] = this.note;
-        return data;
-    }
-}
-
-export interface ITodoItemDto {
-    id: number;
-    listId: number;
-    title: string | undefined;
-    done: boolean;
-    priority: number;
-    note: string | undefined;
-}
-
-export class CreateTodoListCommand implements ICreateTodoListCommand {
-    title!: string | undefined;
-
-    constructor(data?: ICreateTodoListCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-        }
-    }
-
-    static fromJS(data: any): CreateTodoListCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateTodoListCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        return data;
-    }
-}
-
-export interface ICreateTodoListCommand {
-    title: string | undefined;
-}
-
-export class UpdateTodoListCommand implements IUpdateTodoListCommand {
-    /** A TodoListId identifier */
-    id!: string;
-    title!: string | undefined;
-
-    constructor(data?: IUpdateTodoListCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-        }
-    }
-
-    static fromJS(data: any): UpdateTodoListCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoListCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        return data;
-    }
-}
-
-export interface IUpdateTodoListCommand {
-    /** A TodoListId identifier */
-    id: string;
-    title: string | undefined;
 }
 
 export interface FileParameter {

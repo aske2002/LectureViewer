@@ -17,6 +17,18 @@ public interface IMediaProcessingJob
     string? ErrorMessage { get; set; }
 }
 
+public interface IHasOutputResource
+{
+    ResourceId? OutputResourceId { get; set; }
+    Resource? OutputResource { get; set; }
+}
+
+public interface IHasInputResource
+{
+    ResourceId? InputResourceId { get; set; }
+    Resource? InputResource { get; set; }
+}
+
 public abstract class MediaProcessingJob : BaseAuditableEntity<MediaProcessingJobId>, IMediaProcessingJob
 {
     public IList<MediaProcessingJob> DependentJobs { get; private set; } = new List<MediaProcessingJob>();
@@ -64,18 +76,20 @@ public class FlashcardGenerationMediaProcessingJob : LectureRelatedMediaProcessi
 
 }
 
-public class ThumbnailExtractionMediaProcessingJob : LectureRelatedMediaProcessingJob
+public class ThumbnailExtractionMediaProcessingJob : MediaProcessingJob,IHasOutputResource, IHasInputResource
 {
     public int? Width { get; set; }
     public int? Height { get; set; }
+    public ResourceId? InputResourceId { get; set; }
+    public Resource? InputResource { get; set; }
     public ResourceId? OutputResourceId { get; set; }
     public Resource? OutputResource { get; set; }
 }
 
-public class MediaTranscodingMediaProcessingJob : MediaProcessingJob
+public class MediaTranscodingMediaProcessingJob : MediaProcessingJob, IHasOutputResource, IHasInputResource
 {
-    public required ResourceId InputResourceId { get; set; }
-    public required Resource InputResource { get; set; }
+    public ResourceId? InputResourceId { get; set; }
+    public Resource? InputResource { get; set; }
     public ResourceId? OutputResourceId { get; set; }
     public Resource? OutputResource { get; set; }
     public required string TargetFormat { get; set; }
@@ -84,10 +98,10 @@ public class MediaTranscodingMediaProcessingJob : MediaProcessingJob
     public int? TargetBitrateKbps { get; set; }
 }
 
-public class OfficeConversionMediaProcessingJob : MediaProcessingJob
+public class OfficeConversionMediaProcessingJob : MediaProcessingJob, IHasOutputResource, IHasInputResource
 {
-    public required ResourceId InputResourceId { get; set; }
-    public required Resource InputResource { get; set; }
+    public ResourceId? InputResourceId { get; set; }
+    public Resource? InputResource { get; set; }
     public ResourceId? OutputResourceId { get; set; }
     public Resource? OutputResource { get; set; }
     public required string TargetFormat { get; set; }

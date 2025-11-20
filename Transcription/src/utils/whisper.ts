@@ -52,14 +52,14 @@ export type WhisperEvent = {
   timeStamp: number;
 } & (
   | {
-      type: WhisperEventType.Transcript;
+      status: WhisperEventType.Transcript;
       from: number;
       to: number;
       text: string;
     }
-  | { type: WhisperEventType.Progress; progress: number }
-  | { type: WhisperEventType.Log; message: string }
-  | { type: WhisperEventType.End }
+  | { status: WhisperEventType.Progress; progress: number }
+  | { status: WhisperEventType.Log; message: string }
+  | { status: WhisperEventType.End }
 );
 
 export class WhisperProcess {
@@ -70,7 +70,7 @@ export class WhisperProcess {
     this.outputBuffer.push({ stream, message });
     this.listeners.forEach((l) => {
       l({
-        type: WhisperEventType.Log,
+        status: WhisperEventType.Log,
         message: message,
         timeStamp: Date.now(),
       });
@@ -102,7 +102,7 @@ export class WhisperProcess {
   public streamStatus(res: Response<any, Record<string, any>, number>) {
     const listener = (event: WhisperEvent) => {
       res.write(`data: ${JSON.stringify(event)}\n\n`);
-      if (event.type === "end") {
+      if (event.status === "end") {
         res.end();
       }
     };
@@ -118,7 +118,7 @@ export class WhisperProcess {
       this.status === WhisperProcessStatus.Success
     ) {
       listener({
-        type: WhisperEventType.End,
+        status: WhisperEventType.End,
         timeStamp: Date.now(),
       });
     }
@@ -155,7 +155,7 @@ export class WhisperProcess {
 
   private finally = async () => {
     this.listeners.forEach((listener) =>
-      listener({ type: WhisperEventType.End, timeStamp: Date.now() })
+      listener({ status: WhisperEventType.End, timeStamp: Date.now() })
     );
     this.listeners = [];
     fs.rmSync(this.tmpPath, { recursive: true, force: true });
@@ -270,7 +270,7 @@ export class WhisperProcess {
           const text = match[3];
           this.listeners.forEach((listener) =>
             listener({
-              type: WhisperEventType.Transcript,
+              status: WhisperEventType.Transcript,
               from,
               to,
               text,
@@ -292,7 +292,7 @@ export class WhisperProcess {
           const progress = match ? parseFloat(match[1]) : 0;
           this.listeners.forEach((listener) =>
             listener({
-              type: WhisperEventType.Progress,
+              status: WhisperEventType.Progress,
               progress,
               timeStamp: Date.now(),
             })

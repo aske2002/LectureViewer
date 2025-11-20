@@ -4,5 +4,5 @@ namespace backend.Infrastructure.MediaProcessing.Transcription;
 
 public interface ITranscriptionService
 {
-    Task<string> TranscribeAsync(Resource file, CancellationToken cancellationToken);
+    Task<TranscriptionResponse> TranscribeAsync(Resource file, CancellationToken cancellationToken);
 }

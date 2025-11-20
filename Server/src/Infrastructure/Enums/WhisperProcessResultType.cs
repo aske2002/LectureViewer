@@ -1,11 +1,9 @@
-using System.Text.Json.Serialization;
 
 namespace backend.Infrastructure.Enums;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum WhisperProcessResultType
+public static class WhisperProcessResultType
 {
-    Success,
-    Error,
-    Running
+    public const string Success = "success";
+    public const string Error = "error";
+    public const string Running = "running";
 }

@@ -24,6 +24,26 @@ public abstract class MediaJobHandlerBase<TJob> : IMediaJobHandler<TJob>
 
     public abstract Task HandleAsync(TJob job, MediaProcessingJobAttempt attempt, CancellationToken token);
 
+    protected async Task<Resource?> FirstResourceOrDefaultAsync(MediaProcessingJob job, Func<Resource, bool> predicate, CancellationToken token)
+    {
+        if (job is IHasInputResource jobWithInput && jobWithInput.InputResource != null)
+        {
+            if (predicate(jobWithInput.InputResource))
+            {
+                return jobWithInput.InputResource;
+            }
+        }
+
+        var allPreviousJobs = await ListAllPreviousJobsAsync(job, token);
+
+        return allPreviousJobs.OfType<IHasOutputResource>()
+            .Select(pj => pj.OutputResource)
+            .Where(r => r != null)
+            .Cast<Resource>()
+            .OrderByDescending(r => r.Created)
+            .ToList().FirstOrDefault(predicate);
+    }
+
     protected async Task<ICollection<MediaProcessingJob>> ListAllPreviousJobsAsync(MediaProcessingJob job, CancellationToken token)
     {
         var jobs = new List<MediaProcessingJob>();
@@ -32,9 +52,14 @@ public abstract class MediaJobHandlerBase<TJob> : IMediaJobHandler<TJob>
 
         if (job.ParentJob is not null)
         {
-            if (job.ParentJob is MediaTranscodingMediaProcessingJob conversionJob)
+            if (job.ParentJob is IHasInputResource parentJobWithInput)
             {
-                await DbContext.MediaConversionMediaProcessingJobs.Entry(conversionJob).Reference(j => j.OutputResource).LoadAsync(token);
+                await DbContext.Entry(parentJobWithInput).Reference(r => r.InputResource).LoadAsync(token);
+            }
+
+            if (job.ParentJob is IHasOutputResource parentJobWithOutput)
+            {
+                await DbContext.Entry(parentJobWithOutput).Reference(r => r.OutputResource).LoadAsync(token);
             }
 
             jobs.Add(job.ParentJob);
