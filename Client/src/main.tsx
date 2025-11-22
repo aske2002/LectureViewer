@@ -5,13 +5,14 @@ import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ApiProvider } from "./context/api-provider-context";
 import axios from "axios";
-import { pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
+import { pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 
 import pdfWorker from "/pdf.worker.min.mjs?url";
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+import { MilkdownProvider } from "@milkdown/react";
 
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 const axiosInstance = axios.create();
 const queryClient = new QueryClient();
@@ -39,7 +40,9 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ApiProvider axiosInstance={axiosInstance}>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+            <MilkdownProvider>
+              <RouterProvider router={router} />
+            </MilkdownProvider>
         </QueryClientProvider>
       </ApiProvider>
     </StrictMode>

@@ -69,6 +69,7 @@ public abstract class MediaJobHandlerBase<TJob> : IMediaJobHandler<TJob>
 
         return jobs;
     }
+    
     async Task IMediaJobHandler.HandleAsync(IMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
     {
         if (job is not TJob typedJob)

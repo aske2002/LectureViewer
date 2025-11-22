@@ -34,8 +34,7 @@ import {
 import { getEnumEntries } from "@/lib/getEnumValues";
 import { LoadingButton } from "../shared/loading-button";
 import { useCoursesApi } from "@/api/use-courses-api";
-import MarkdownInput from "../shared/markdown/markdown-input";
-import { MilkdownProvider } from "@milkdown/react";
+import Editor from "../shared/editor/advanced-editor";
 
 const formDataSchema = z.object({
   name: z.string().min(1, "Course name is required"),
@@ -144,12 +143,10 @@ export function CreateCourseDialog() {
               <FormItem className="overflow-hidden flex flex-col">
                 <FormLabel htmlFor={field.name}>Description</FormLabel>
                 <FormControl>
-                  <MilkdownProvider>
-                    <MarkdownInput
-                      value={field.value}
-                      onChange={field.onChange}
+                    <Editor
+                      // value={field.value}
+                      // onChange={field.onChange}
                     />
-                  </MilkdownProvider>
                 </FormControl>
                 <FormMessage />
               </FormItem>
