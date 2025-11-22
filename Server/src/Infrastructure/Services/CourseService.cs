@@ -288,7 +288,14 @@ public class CourseService : ICourseService
             throw new CourseNotFoundException(courseId);
         }
 
-        var lecture = await _lectureRepository.GetByIdAsync(lectureId, include: l => l.Include(l => l.Course).Include(l => l.Contents).ThenInclude(c => c.Resource).ThenInclude(r => r.AssociatedResources));
+        var lecture = await _lectureRepository.GetByIdAsync(lectureId, include: l => 
+            l.Include(l => l.Course)
+            .Include(l => l.Contents)
+                .ThenInclude(c => c.Resource)
+                    .ThenInclude(r => r.AssociatedResources)
+            .Include(l => l.Transcripts)
+                .ThenInclude(t => t.Items));
+                
         if (lecture == null || lecture.CourseId.Value != courseId.Value)
         {
             throw new LectureNotFoundException(lectureId);

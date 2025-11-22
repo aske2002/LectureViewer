@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { replaceAll } from "@milkdown/kit/utils";
 import { Crepe } from "@milkdown/crepe";
-import { Milkdown } from "@milkdown/react";
 import { Editor } from "@milkdown/core";
 
 import "@milkdown/crepe/theme/common/style.css";
@@ -59,9 +58,8 @@ export function MilkdownEditor({ onChange, value }: MilkdownEditorProps) {
 
   return (
     <div
+      className="flex grow"
       ref={divRef}
     />
   );
-
-  return <Milkdown />;
 }

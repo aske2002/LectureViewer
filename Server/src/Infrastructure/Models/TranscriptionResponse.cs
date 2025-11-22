@@ -24,4 +24,11 @@ public class TranscriptionResponse
     public required string Language {get; set;}
     public IEnumerable<TranscriptionResponseItem> Items {get; set;} = new List<TranscriptionResponseItem>();
 
+    public string FullText 
+    {
+        get
+        {
+            return string.Join(" ", Items.Select(i => i.Text));
+        }
+    }
 }

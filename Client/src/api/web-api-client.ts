@@ -3050,6 +3050,7 @@ export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
     title!: string;
     description!: string;
     contents!: LectureContentDto[];
+    transcripts!: TranscriptionDto[];
     primaryContent!: LectureContentDto | undefined;
 
     constructor(data?: ILectureDto) {
@@ -3067,6 +3068,11 @@ export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
                 this.contents = [] as any;
                 for (let item of _data["contents"])
                     this.contents!.push(LectureContentDto.fromJS(item));
+            }
+            if (Array.isArray(_data["transcripts"])) {
+                this.transcripts = [] as any;
+                for (let item of _data["transcripts"])
+                    this.transcripts!.push(TranscriptionDto.fromJS(item));
             }
             this.primaryContent = _data["primaryContent"] ? LectureContentDto.fromJS(_data["primaryContent"]) : <any>undefined;
         }
@@ -3090,6 +3096,11 @@ export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
             for (let item of this.contents)
                 data["contents"].push(item.toJSON());
         }
+        if (Array.isArray(this.transcripts)) {
+            data["transcripts"] = [];
+            for (let item of this.transcripts)
+                data["transcripts"].push(item.toJSON());
+        }
         data["primaryContent"] = this.primaryContent ? this.primaryContent.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
@@ -3102,6 +3113,7 @@ export interface ILectureDto extends IBaseResponseOfLectureId {
     title: string;
     description: string;
     contents: LectureContentDto[];
+    transcripts: TranscriptionDto[];
     primaryContent: LectureContentDto | undefined;
 }
 
@@ -3319,6 +3331,172 @@ export enum ResourceType {
     Empty = 2,
     Document = 3,
     Thumbnail = 4,
+}
+
+export abstract class BaseResponseOfTranscriptId implements IBaseResponseOfTranscriptId {
+    /** A TranscriptId identifier */
+    id!: string;
+
+    constructor(data?: IBaseResponseOfTranscriptId) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): BaseResponseOfTranscriptId {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseResponseOfTranscriptId' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface IBaseResponseOfTranscriptId {
+    /** A TranscriptId identifier */
+    id: string;
+}
+
+export class TranscriptionDto extends BaseResponseOfTranscriptId implements ITranscriptionDto {
+    items!: TranscriptionItemDto[];
+    summary!: string | undefined;
+    language!: string;
+    transcriptText!: string;
+
+    constructor(data?: ITranscriptionDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(TranscriptionItemDto.fromJS(item));
+            }
+            this.summary = _data["summary"];
+            this.language = _data["language"];
+            this.transcriptText = _data["transcriptText"];
+        }
+    }
+
+    static override fromJS(data: any): TranscriptionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TranscriptionDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["summary"] = this.summary;
+        data["language"] = this.language;
+        data["transcriptText"] = this.transcriptText;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ITranscriptionDto extends IBaseResponseOfTranscriptId {
+    items: TranscriptionItemDto[];
+    summary: string | undefined;
+    language: string;
+    transcriptText: string;
+}
+
+export abstract class BaseResponseOfTranscriptItemId implements IBaseResponseOfTranscriptItemId {
+    /** A TranscriptItemId identifier */
+    id!: string;
+
+    constructor(data?: IBaseResponseOfTranscriptItemId) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): BaseResponseOfTranscriptItemId {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseResponseOfTranscriptItemId' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface IBaseResponseOfTranscriptItemId {
+    /** A TranscriptItemId identifier */
+    id: string;
+}
+
+export class TranscriptionItemDto extends BaseResponseOfTranscriptItemId implements ITranscriptionItemDto {
+    startTime!: string;
+    endTime!: string;
+    text!: string;
+
+    constructor(data?: ITranscriptionItemDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.startTime = _data["startTime"];
+            this.endTime = _data["endTime"];
+            this.text = _data["text"];
+        }
+    }
+
+    static override fromJS(data: any): TranscriptionItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TranscriptionItemDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["startTime"] = this.startTime;
+        data["endTime"] = this.endTime;
+        data["text"] = this.text;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ITranscriptionItemDto extends IBaseResponseOfTranscriptItemId {
+    startTime: string;
+    endTime: string;
+    text: string;
 }
 
 export class FilteredQuery implements IFilteredQuery {

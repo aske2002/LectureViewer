@@ -50,28 +50,28 @@ public abstract class MediaProcessingJob : BaseAuditableEntity<MediaProcessingJo
                 : JobStatus.Pending;
 }
 
-public abstract class LectureRelatedMediaProcessingJob : MediaProcessingJob
+public class LectureProcessingJob : MediaProcessingJob
 {
-    public required LectureContentId LectureContentId { get; set; }
-    public required LectureContent LectureContent { get; set; }
+    public required LectureContentId LectureContentId { get; set; } = LectureContentId.Default();
+    public required LectureContent LectureContent { get; set; } = null!;
 }
 
-public class KeywordExtractionMediaProcessingJob : LectureRelatedMediaProcessingJob
-{
-
-}
-
-public class CategoryClassificationMediaProcessingJob : LectureRelatedMediaProcessingJob
+public class KeywordExtractionMediaProcessingJob : MediaProcessingJob
 {
 
 }
 
-public class TranscriptionMediaProcessingJob : LectureRelatedMediaProcessingJob
+public class CategoryClassificationMediaProcessingJob : MediaProcessingJob
 {
 
 }
 
-public class FlashcardGenerationMediaProcessingJob : LectureRelatedMediaProcessingJob
+public class TranscriptionMediaProcessingJob : MediaProcessingJob
+{
+
+}
+
+public class FlashcardGenerationMediaProcessingJob : MediaProcessingJob
 {
 
 }

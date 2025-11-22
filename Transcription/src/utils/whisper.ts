@@ -227,9 +227,10 @@ export class WhisperProcess {
     fs.copyFileSync(inputFilePath, this.inputFilePath);
 
     const temperature = options.temperature || 0.0;
+    const language = options.language || WhisperLanguage.Auto;
 
     const args = [
-      ...(options.language ? ["--language", options.language] : []),
+      ...(language ? ["--language", language] : []),
       ...(options.verbose ? ["--verbose", "True"] : []),
       "--print-progress",
       "True",

@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<TranscriptionMediaProcessingJob> TranscriptionMediaProcessingJobs => Set<TranscriptionMediaProcessingJob>();
     public DbSet<FlashcardGenerationMediaProcessingJob> FlashcardGenerationMediaProcessingJobs => Set<FlashcardGenerationMediaProcessingJob>();
     public DbSet<ThumbnailExtractionMediaProcessingJob> ThumbnailExtractionMediaProcessingJobs => Set<ThumbnailExtractionMediaProcessingJob>();
+    public DbSet<LectureProcessingJob> LectureProcessingJobs => Set<LectureProcessingJob>();
     public DbSet<OfficeConversionMediaProcessingJob> OfficeConversionMediaProcessingJobs => Set<OfficeConversionMediaProcessingJob>();
     public DbSet<MediaTranscodingMediaProcessingJob> MediaConversionMediaProcessingJobs => Set<MediaTranscodingMediaProcessingJob>();
     public DbSet<KeywordExtractionMediaProcessingJob> KeywordExtractionMediaProcessingJobs => Set<KeywordExtractionMediaProcessingJob>();
@@ -35,10 +36,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     // Lecture related DbSets
     public DbSet<Lecture> Lectures => Set<Lecture>();
     public DbSet<LectureContent> LectureContents => Set<LectureContent>();
-    public DbSet<LectureTranscript> LectureTranscripts => Set<LectureTranscript>();
-    public DbSet<LectureTranscriptTimestamp> LectureTranscriptTimestamps => Set<LectureTranscriptTimestamp>();
-    public DbSet<LectureTranscriptKeyword> LectureTranscriptKeywords => Set<LectureTranscriptKeyword>();
-    public DbSet<LectureTranscriptKeywordOccurrence> LectureTranscriptKeywordOccurrences => Set<LectureTranscriptKeywordOccurrence>();  
+    public DbSet<Transcript> Transcripts => Set<Transcript>();
+    public DbSet<TranscriptKeyword> TranscriptTimestamps => Set<TranscriptKeyword>();
+    public DbSet<TranscriptKeyword> TranscriptKeywords => Set<TranscriptKeyword>();
+    public DbSet<TranscriptKeywordOccurrence> TranscriptKeywordOccurrences => Set<TranscriptKeywordOccurrence>();  
     
     // Flashcard related DbSets
     public DbSet<Flashcard> Flashcards => Set<Flashcard>();

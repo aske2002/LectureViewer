@@ -9,8 +9,7 @@ internal class LectureContentConfiguration : IEntityTypeConfiguration<LectureCon
     public void Configure(EntityTypeBuilder<LectureContent> builder)
     {
         builder.HasOne(lc => lc.Lecture).WithMany(l => l.Contents).HasForeignKey(lc => lc.LectureId);
-        builder.HasMany(lc => lc.ProcessingJobs).WithOne(pj => pj.LectureContent).HasForeignKey(pj => pj.LectureContentId);
-        builder.HasOne(lc => lc.Transcript).WithOne(lc => lc.Source).HasForeignKey<LectureTranscript>(lc => lc.SourceId);
+        builder.HasOne(lc => lc.Transcript).WithMany().HasForeignKey(lc => lc.TranscriptId);
         builder.HasOne(lc => lc.Resource).WithMany().HasForeignKey(lc => lc.ResourceId);
         builder.Property(lc => lc.ContentType).HasConversion<string>();
     }

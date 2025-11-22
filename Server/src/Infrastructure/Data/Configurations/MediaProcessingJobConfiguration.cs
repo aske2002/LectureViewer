@@ -16,6 +16,7 @@ internal class MediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaP
         builder.Ignore(j => j.Status);
 
         builder.HasDiscriminator(f => f.JobType)
+            .HasValue<LectureProcessingJob>(MediaJobType.LectureProcessing)
             .HasValue<TranscriptionMediaProcessingJob>(MediaJobType.Transcription)
             .HasValue<FlashcardGenerationMediaProcessingJob>(MediaJobType.FlashcardGeneration)
             .HasValue<ThumbnailExtractionMediaProcessingJob>(MediaJobType.ThumbnailExtraction)
@@ -26,13 +27,11 @@ internal class MediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaP
     }
 }
 
-
-
-internal class LectureRelatedMediaProcessingJobConfiguration : IEntityTypeConfiguration<LectureRelatedMediaProcessingJob>
+internal class LectureProcessingJobConfiguration : IEntityTypeConfiguration<LectureProcessingJob>
 {
-    public void Configure(EntityTypeBuilder<LectureRelatedMediaProcessingJob> builder)
+    public void Configure(EntityTypeBuilder<LectureProcessingJob> builder)
     {
-        builder.HasOne(j => j.LectureContent).WithMany(l => l.ProcessingJobs).HasForeignKey(j => j.LectureContentId);
+        builder.HasOne(j => j.LectureContent).WithMany().HasForeignKey(j => j.LectureContentId);
     }
 }
 

@@ -15,6 +15,7 @@ public record LectureDto : BaseResponse<LectureId>
     public required string Title { get; set; }
     public required string Description { get; set; }
     public required IList<LectureContentDto> Contents { get; init; } = new List<LectureContentDto>();
+    public required IList<TranscriptionDto> Transcripts { get; init; } = new List<TranscriptionDto>();
     public LectureContentDto? PrimaryContent => Contents.FirstOrDefault(c =>
         (
             c.ContentType == Domain.Enums.LectureContentType.Video ||
