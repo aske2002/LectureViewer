@@ -1,9 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
-import { useEditor } from "@tiptap/react";
+import { useCurrentEditor, useEditor } from "@tiptap/react";
 import { Check, Trash } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -32,8 +31,7 @@ interface LinkSelectorProps {
 
 export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const editor = useEditor({});
-
+  const { editor } = useCurrentEditor();
   // Autofocus on input by default
   useEffect(() => {
     inputRef.current?.focus();
@@ -43,7 +41,11 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
   return (
     <Popover modal={true} open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <Button size="sm" variant="ghost" className="gap-2 rounded-none border-none">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="gap-2 rounded-none border-none"
+        >
           <p className="text-base">↗</p>
           <p
             className={cn("underline decoration-stone-400 underline-offset-4", {

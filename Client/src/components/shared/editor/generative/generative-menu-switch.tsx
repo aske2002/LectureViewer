@@ -2,7 +2,7 @@ import { Fragment, type ReactNode, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import EditorBubble from "../editor-bubble";
 import { removeAIHighlight } from "../extensions/ai-highlight";
-import { useEditor } from "@tiptap/react";
+import { useCurrentEditor, useEditor } from "@tiptap/react";
 import Magic from "../magic";
 
 interface GenerativeMenuSwitchProps {
@@ -10,19 +10,24 @@ interface GenerativeMenuSwitchProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-const GenerativeMenuSwitch = ({ children, open, onOpenChange }: GenerativeMenuSwitchProps) => {
-  const editor = useEditor({});
+const GenerativeMenuSwitch = ({
+  children,
+  open,
+  onOpenChange,
+}: GenerativeMenuSwitchProps) => {
+  const { editor } = useCurrentEditor();
 
   useEffect(() => {
-    if (!open) removeAIHighlight(editor);
-  }, [open]);
+    if (editor &&!open) removeAIHighlight(editor);
+  }, [open, editor]);
+
   return (
     <EditorBubble
       tippyOptions={{
         placement: open ? "bottom-start" : "top",
         onHidden: () => {
           onOpenChange(false);
-          editor.chain().unsetHighlight().run();
+          editor?.chain().unsetHighlight().run();
         },
       }}
       className="flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl"

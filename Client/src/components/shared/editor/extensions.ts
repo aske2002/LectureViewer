@@ -4,7 +4,6 @@ import {
   CodeBlockLowlight,
   Color,
   CustomKeymap,
-  GlobalDragHandle,
   HighlightExtension,
   HorizontalRule,
   MarkdownExtension,
@@ -17,10 +16,12 @@ import {
   TiptapImage,
   TiptapLink,
   TiptapUnderline,
+  DragHandle,
   Twitter,
   UpdatedImage,
   UploadImagesPlugin,
   Youtube,
+  MathBubble,
 } from "./extensions/index";
 
 import { cx } from "class-variance-authority";
@@ -159,6 +160,7 @@ const markdownExtension = MarkdownExtension.configure({
   transformCopiedText: false,
 });
 
+
 export const defaultExtensions = [
   starterKit,
   placeholder,
@@ -176,9 +178,10 @@ export const defaultExtensions = [
   characterCount,
   TiptapUnderline,
   markdownExtension,
+  DragHandle,
   HighlightExtension,
   TextStyle,
   Color,
   CustomKeymap,
-  GlobalDragHandle,
+  MathBubble,
 ];

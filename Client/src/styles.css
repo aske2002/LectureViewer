@@ -132,9 +132,15 @@ code {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  .ProseMirror {
+    @apply p-12 px-8 sm:px-12;
+  }
+
 }
 
 pre {

@@ -1,13 +1,18 @@
-
 import { cn } from "@/lib/utils";
-import { BoldIcon, CodeIcon, ItalicIcon, StrikethroughIcon, UnderlineIcon } from "lucide-react";
+import {
+  BoldIcon,
+  CodeIcon,
+  ItalicIcon,
+  StrikethroughIcon,
+  UnderlineIcon,
+} from "lucide-react";
 import type { SelectorItem } from "./node-selector";
-import { useEditor } from "@tiptap/react";
+import { useCurrentEditor, useEditor } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import EditorBubbleItem from "../editor-bubble-item";
 
 export const TextButtons = () => {
-  const editor = useEditor({});
+  const { editor } = useCurrentEditor();
   if (!editor) return null;
   const items: SelectorItem[] = [
     {
@@ -50,7 +55,12 @@ export const TextButtons = () => {
             item.command(editor);
           }}
         >
-          <Button size="sm" className="rounded-none" variant="ghost" type="button">
+          <Button
+            size="sm"
+            className="rounded-none"
+            variant="ghost"
+            type="button"
+          >
             <item.icon
               className={cn("h-4 w-4", {
                 "text-blue-500": item.isActive(editor),

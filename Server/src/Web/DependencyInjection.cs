@@ -1,15 +1,14 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Azure.Identity;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Helpers;
-using backend.Domain.Identifiers;
 using backend.Infrastructure.Data;
-using backend.Infrastructure.Data.Resources;
 using backend.Web.Services;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using NJsonSchema.Generation;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -47,6 +46,23 @@ public static class DependencyInjection
             configure.AddStronglyTypedIdTypeMapper();
             configure.Title = "backend API";
         });
+
+
+        builder.Services.AddOpenTelemetry()
+        .ConfigureResource(resource => resource.AddService("base"))
+            .WithTracing(tracing => tracing
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
+                .AddOtlpExporter(
+                    options => options.Endpoint = new Uri(Guard.Against.NullOrEmpty(builder.Configuration["OtelExporterOtlpEndpoint"]))
+                    ))
+            .WithMetrics(metrics => metrics
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddOtlpExporter(
+                    options => options.Endpoint = new Uri(Guard.Against.NullOrEmpty(builder.Configuration["OtelExporterOtlpEndpoint"]))
+                ));
 
     }
 

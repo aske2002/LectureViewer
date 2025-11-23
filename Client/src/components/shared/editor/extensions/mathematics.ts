@@ -22,7 +22,6 @@ export interface MathematicsOptions {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     LatexCommand: {
-
       /**
        * Set selection to a LaTex symbol
        */
@@ -32,16 +31,19 @@ declare module "@tiptap/core" {
        * Unset a LaTex symbol
        */
       unsetLatex: () => ReturnType;
-
+      /**
+       * Update LaTex symbol at given position
+       */
+      updateMath: (pos: number, latex: string) => ReturnType;
     };
   }
 }
 
 /**
  * This extension adds support for mathematical symbols with LaTex expression.
- * 
+ *
  * NOTE: Don't forget to import `katex/dist/katex.min.css` CSS for KaTex styling.
- * 
+ *
  * @see https://katex.org/
  */
 export const Mathematics = Node.create<MathematicsOptions>({
@@ -66,7 +68,7 @@ export const Mathematics = Node.create<MathematicsOptions>({
         if (!$pos.parent.isTextblock) {
           return false;
         }
-        
+
         return $pos.parent.type.name !== "codeBlock";
       },
       katexOptions: {
@@ -78,6 +80,27 @@ export const Mathematics = Node.create<MathematicsOptions>({
 
   addCommands() {
     return {
+      updateMath:
+        (pos: number, latex: string) =>
+        ({ tr, state, dispatch }) => {
+          const node = state.doc.nodeAt(pos);
+          if (!node || node.type.name !== "math") return false;
+
+          if (latex === "") {
+            tr.delete(pos, pos + node.nodeSize);
+            if (dispatch) dispatch(tr);
+            return true;
+          }
+
+          const newNode = node.type.create({
+            ...node.attrs,
+            latex,
+          });
+
+          tr.replaceWith(pos, pos + node.nodeSize, newNode);
+          if (dispatch) dispatch(tr);
+          return true;
+        },
       setLatex:
         ({ latex }) =>
         ({ chain, state }) => {

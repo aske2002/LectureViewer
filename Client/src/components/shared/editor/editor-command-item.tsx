@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { CommandEmpty, CommandItem } from "cmdk";
+import { CommandEmpty, CommandItem } from "@/components/ui/command";
 import { useCurrentEditor } from "@tiptap/react";
 import { useAtomValue } from "jotai";
 import { rangeAtom } from "./utils/atoms";

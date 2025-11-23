@@ -40,9 +40,7 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ApiProvider axiosInstance={axiosInstance}>
         <QueryClientProvider client={queryClient}>
-            <MilkdownProvider>
               <RouterProvider router={router} />
-            </MilkdownProvider>
         </QueryClientProvider>
       </ApiProvider>
     </StrictMode>

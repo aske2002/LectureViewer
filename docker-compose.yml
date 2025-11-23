@@ -7,7 +7,11 @@ services:
     restart: always
     ports:
       - "9191:3000"
-
+  openTelemetry:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    ports:
+      - "18888:18888"
+      - "18889:18889"
   whisper:
     image: whisper-service:gpu
     # image: whisper-service:cpu

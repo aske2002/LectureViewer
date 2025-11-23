@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEditor } from "@tiptap/react";
+import { useCurrentEditor, useEditor } from "@tiptap/react";
 import { SigmaIcon } from "lucide-react";
 
 export const MathSelector = () => {
-  const editor = useEditor({});
-
+  const { editor } = useCurrentEditor();
   if (!editor) return null;
 
   return (

@@ -79,17 +79,15 @@ public static class DependencyInjection
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
             options.UseNpgsql(connectionString).EnableSensitiveDataLogging();
-            options.EnableSensitiveDataLogging();
             options.EnableDetailedErrors();
-            options.LogTo(Console.WriteLine, LogLevel.Information);
         });
         builder.Services.ConfigureDataSeeders();
         builder.Services.AddLogging(options =>
         {
-            // options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Debug);
-            // options.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Debug);
-            // options.AddFilter("Microsoft.EntityFrameworkCore.Database.Transaction", LogLevel.Debug);
-            // options.AddFilter("Microsoft.EntityFrameworkCore.Update", LogLevel.Debug);
+            options.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+            options.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Warning);
+            options.AddFilter("Microsoft.EntityFrameworkCore.Database.Transaction", LogLevel.Warning);
+            options.AddFilter("Microsoft.EntityFrameworkCore.Update", LogLevel.Warning);
         });
         builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         builder.Services.AddScoped<ApplicationDbContextInitialiser>();

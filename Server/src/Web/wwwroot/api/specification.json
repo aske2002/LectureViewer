@@ -432,7 +432,7 @@
                   "description": "A CourseId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "6ec97b6e-7688-416b-b546-3e28c94b73df"
+                  "example": "89764835-6e54-43c7-8807-0e5c458fef42"
                 }
               }
             }
@@ -468,7 +468,7 @@
                   "description": "A CourseEnrollmentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "0c85906c-8cd9-4b0a-95f8-50dad9d0fb4c"
+                  "example": "31a9813e-165b-48b6-b48a-bca8b5e9fc6b"
                 }
               }
             }
@@ -492,7 +492,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "72442614-117a-49f8-96b3-03879695f229"
+              "example": "f29e5f4e-2d5f-4024-862b-c75b3f96afff"
             },
             "x-position": 1
           }
@@ -527,7 +527,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "5cffa09c-a3f7-40bd-b35e-57431a936cd8"
+              "example": "907ce1d5-e80d-451b-8c8b-730b795375db"
             },
             "x-position": 1
           }
@@ -562,7 +562,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "eeb4284d-049e-4ba5-8b9d-39fb83c195d2"
+              "example": "2e4a766f-8759-442a-9a18-3578aa2eb7c5"
             },
             "x-position": 1
           }
@@ -589,7 +589,7 @@
                   "description": "A LectureId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "4e2cddac-c3d0-47c9-8bf0-52fe6d81248a"
+                  "example": "88051b0f-80d0-4712-942e-af88b1df52a2"
                 }
               }
             }
@@ -613,7 +613,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "877ca40a-4af3-443c-9581-b1b7ce396160"
+              "example": "5b4a8aa5-3676-4f21-a9a4-db425484322f"
             },
             "x-position": 1
           },
@@ -626,7 +626,7 @@
               "description": "A LectureId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "449b9926-a24c-4480-b9b5-3ee4867a350c"
+              "example": "56b237da-5d16-4c7f-b9df-db63098ce28a"
             },
             "x-position": 2
           }
@@ -661,7 +661,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "b4667c00-309e-4a12-8f7e-9d9f96438c04"
+              "example": "0211e430-d1c0-430f-b597-5c0c3bc3a5ad"
             },
             "x-position": 1
           },
@@ -674,7 +674,7 @@
               "description": "A LectureId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "dc20060e-7cf9-4585-a64e-cff0311d1c93"
+              "example": "d88dc71a-f7ae-4f82-952f-09963f0b20e5"
             },
             "x-position": 2
           },
@@ -687,7 +687,7 @@
               "description": "A LectureContentId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "800603be-ef9b-49a2-965b-e5853f757778"
+              "example": "568c793f-9afb-4e00-ae4c-bb43dd4e4e9b"
             },
             "x-position": 3
           },
@@ -700,7 +700,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "16bdf99e-5754-4c82-89a8-3315278cd172"
+              "example": "0b333791-e467-4f86-a919-865659a848d0"
             },
             "x-position": 4
           },
@@ -737,7 +737,7 @@
               "description": "A CourseId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "49da0244-f5dd-4090-a4d4-68b2deff0769"
+              "example": "ac1e21ae-e6d1-4353-a632-d012f14f073d"
             },
             "x-position": 1
           },
@@ -750,7 +750,7 @@
               "description": "A LectureId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "1c54c58b-cfc2-4a78-8885-f284e17847d9"
+              "example": "895c6294-e327-482d-af42-36f5fa2ce78b"
             },
             "x-position": 2
           },
@@ -807,7 +807,7 @@
                   "description": "A LectureContentId identifier",
                   "format": "uuid",
                   "nullable": false,
-                  "example": "45f3c836-3c03-41e1-a997-3851a51e1e85"
+                  "example": "ee23a646-2718-4140-a3f8-b2e4c778b4a9"
                 }
               }
             }
@@ -873,7 +873,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "a97ddecb-ec46-4550-93b9-0defe9c10be5"
+              "example": "f066eea6-12cc-4fc5-81bf-6877168ed8c5"
             },
             "x-position": 1
           }
@@ -908,7 +908,7 @@
               "description": "A ResourceId identifier",
               "format": "uuid",
               "nullable": false,
-              "example": "9532986e-92c2-49f3-97e0-ecf3d0c7335b"
+              "example": "5de3d9f4-6e4a-41c0-a5e7-c3b224a80493"
             },
             "x-position": 1
           },
@@ -1329,7 +1329,7 @@
             "description": "A SemesterId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "dc66b70e-5fb0-45b2-8902-eb46da621741"
+            "example": "8e477622-0ed6-41cc-b700-926338cf9876"
           }
         }
       },
@@ -1383,7 +1383,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "e15668bb-492b-45af-b627-0d6c63b4ef1a"
+            "example": "dae3ebc7-000b-42cd-9503-9f74a82df9b4"
           }
         }
       },
@@ -1399,7 +1399,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "0662d549-ac96-44cb-b023-0825faa935d9"
+            "example": "561cedaa-3a29-4d61-9dd8-dae6178c5ddd"
           },
           "user": {
             "$ref": "#/components/schemas/ClaimsPrincipal"
@@ -1638,7 +1638,7 @@
             "description": "A LectureId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "834d7acc-7f87-4b17-a5da-50e01c19b4a1"
+            "example": "8a282d74-ceec-44d2-80d7-b87bc5cbdcfb"
           }
         }
       },
@@ -1725,7 +1725,7 @@
             "description": "A CourseId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "7e374400-b3c0-4d13-96cc-0dd3c85bd50f"
+            "example": "81b9dbc7-9b32-49d5-b647-20500af2a18e"
           }
         }
       },
@@ -1794,7 +1794,7 @@
                 "description": "A ResourceId identifier",
                 "format": "uuid",
                 "nullable": false,
-                "example": "ed065e08-0325-4919-840c-e2947fa95de5"
+                "example": "78cb3f1c-2ba4-4a67-95e0-675877674097"
               },
               "contentType": {
                 "$ref": "#/components/schemas/LectureContentType"
@@ -1910,7 +1910,7 @@
             "description": "A ResourceId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "a002c4ed-ba9c-4f59-a3c7-bc857ef8c322"
+            "example": "4ca1f80e-36ae-4163-8482-179e69be0ba1"
           }
         }
       },
@@ -1924,7 +1924,7 @@
             "description": "A LectureContentId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "92b2ad59-9276-4c51-a511-6232974fcdb0"
+            "example": "3976ec02-f6a6-4a0a-88b7-d8b212641d00"
           }
         }
       },
@@ -1991,7 +1991,7 @@
             "description": "A TranscriptItemId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "7c705118-a426-4e4c-acbb-a01bdcef1e01"
+            "example": "d47d4fcc-bc59-4075-8725-a904a6c6726c"
           }
         }
       },
@@ -2005,7 +2005,7 @@
             "description": "A TranscriptId identifier",
             "format": "uuid",
             "nullable": false,
-            "example": "f7a19919-50b5-4db9-ac9c-85da5c9602a9"
+            "example": "5a2341a6-6e70-4eed-a4bd-ca0efe2df616"
           }
         }
       },

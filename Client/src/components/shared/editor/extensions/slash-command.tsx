@@ -1,86 +1,113 @@
 import { Extension } from "@tiptap/core";
 import type { Editor, Range } from "@tiptap/core";
-import { ReactRenderer } from "@tiptap/react";
-import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
-import type { RefObject } from "react";
-import type { ReactNode } from "react";
-import tippy, { type GetReferenceClientRect, type Instance, type Props } from "tippy.js";
-import { EditorCommandOut } from "../editor-command";
+import Suggestion, {
+  SuggestionKeyDownProps,
+  SuggestionOptions,
+  SuggestionProps,
+} from "@tiptap/suggestion";
+import { PluginKey } from "@tiptap/pm/state";
 
-const Command = Extension.create({
+import { type RefObject } from "react";
+import type { ReactNode } from "react";
+import { updateSlashPortal } from "./slash-portal";
+import { ReactRenderer } from "@tiptap/react";
+
+export const SlashCommandPluginKey = new PluginKey<SlashCommandOptions>(
+  "slashCommand"
+);
+
+export type SlashCommandOptions = {
+  clientRect?: DOMRect | null;
+  editor: Editor;
+  query: string;
+  range: Range;
+  element: RefObject<HTMLElement> | null;
+  open?: boolean;
+};
+
+const Command = Extension.create<
+  Partial<SuggestionOptions>,
+  SlashCommandOptions
+>({
   name: "slash-command",
   addOptions() {
     return {
-      suggestion: {
-        char: "/",
-        command: ({ editor, range, props }) => {
-          props.command({ editor, range });
-        },
-      } as SuggestionOptions,
+      ...this.parent?.(),
+      char: "/",
+      command: ({
+        editor,
+        range,
+        props,
+      }: {
+        editor: Editor;
+        range: Range;
+        props: SuggestionProps;
+      }) => {
+        console.log("SlashCommand command executed", { props });
+        props.command({ editor, range });
+      },
     };
   },
   addProseMirrorPlugins() {
+    console.log("Options", this.options);
     return [
       Suggestion({
+        pluginKey: SlashCommandPluginKey,
+        
+        ...this.options,
         editor: this.editor,
-        ...this.options.suggestion,
       }),
     ];
   },
 });
 
 const renderItems = (elementRef?: RefObject<Element> | null) => {
-  let component: ReactRenderer | null = null;
-  let popup: Instance<Props>[] | null = null;
-
   return {
-    onStart: (props: { editor: Editor; clientRect: DOMRect }) => {
-      component = new ReactRenderer(EditorCommandOut, {
-        props,
-        editor: props.editor,
-      });
+    onStart: (props: SuggestionProps) => {
+      const { editor } = props;
 
-      const { selection } = props.editor.state;
-
-      const parentNode = selection.$from.node(selection.$from.depth);
-      const blockType = parentNode.type.name;
-
-      if (blockType === "codeBlock") {
-        return false;
-      }
-
-      // @ts-ignore
-      popup = tippy("body", {
-        getReferenceClientRect: props.clientRect,
-        appendTo: () => (elementRef ? elementRef.current : document.body),
-        content: component.element,
-        showOnCreate: true,
-        interactive: true,
-        trigger: "manual",
-        placement: "bottom-start",
-      });
-    },
-    onUpdate: (props: { editor: Editor; clientRect: GetReferenceClientRect }) => {
-      component?.updateProps(props);
-
-      popup?.[0]?.setProps({
-        getReferenceClientRect: props.clientRect,
-      });
+      editor.view.dispatch(
+        editor.view.state.tr.setMeta(SlashCommandPluginKey, {
+          open: true,
+          element: elementRef,
+          query: props.query,
+          range: props.range,
+          clientRect: props.clientRect?.(),
+        })
+      );
     },
 
-    onKeyDown: (props: { event: KeyboardEvent }) => {
-      if (props.event.key === "Escape") {
-        popup?.[0]?.hide();
+    onUpdate: (props: SuggestionProps) => {
+      const { editor } = props;
 
+      editor.view.dispatch(
+        editor.view.state.tr.setMeta(SlashCommandPluginKey, {
+          open: true,
+          element: elementRef,
+          query: props.query,
+          range: props.range,
+          clientRect: props.clientRect?.(),
+        })
+      );
+    },
+
+    onKeyDown: ({ event, view }: SuggestionKeyDownProps) => {
+      if (event.key === "Escape") {
+        const current = SlashCommandPluginKey.getState(view.state);
+
+        view.dispatch(
+          view.state.tr.setMeta(SlashCommandPluginKey, {
+            ...current,
+            open: false,
+          })
+        );
         return true;
       }
-
-      // @ts-ignore
-      return component?.ref?.onKeyDown(props);
+      return false;
     },
+
     onExit: () => {
-      popup?.[0]?.destroy();
-      component?.destroy();
+      updateSlashPortal({ open: false });
     },
   };
 };

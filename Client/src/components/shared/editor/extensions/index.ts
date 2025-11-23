@@ -19,9 +19,10 @@ import UpdatedImage from "./updated-image";
 import CharacterCount from "@tiptap/extension-character-count";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Youtube from "@tiptap/extension-youtube";
-import GlobalDragHandle from "tiptap-extension-global-drag-handle";
+import DragHandle from "@tiptap/extension-drag-handle";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { UploadImagesPlugin } from "../plugins";
+import { MathBubble } from "./math-bubble";
 
 const PlaceholderExtension = Placeholder.configure({
   placeholder: ({ node }) => {
@@ -54,7 +55,10 @@ const Horizontal = HorizontalRule.extend({
           const start = range.from;
           const end = range.to;
 
-          tr.insert(start - 1, this.type.create(attributes)).delete(tr.mapping.map(start), tr.mapping.map(end));
+          tr.insert(start - 1, this.type.create(attributes)).delete(
+            tr.mapping.map(start),
+            tr.mapping.map(end)
+          );
         },
       }),
     ];
@@ -86,5 +90,6 @@ export {
   Twitter,
   Mathematics,
   CharacterCount,
-  GlobalDragHandle,
+  DragHandle,
+  MathBubble,
 };
