@@ -140,7 +140,7 @@ export function CreateCourseDialog() {
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem className="overflow-hidden flex flex-col">
+              <FormItem className="flex flex-col overflow-hidden">
                 <FormLabel htmlFor={field.name}>Description</FormLabel>
                 <FormControl>
                     <Editor

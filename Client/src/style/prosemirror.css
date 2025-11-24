@@ -1,20 +1,10 @@
-
 .ProseMirror .is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: hsl(var(--muted-foreground));
+  color: var(--color-neutral-300) !important;
   pointer-events: none;
   height: 0;
 }
-.ProseMirror .is-empty::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: hsl(var(--muted-foreground));
-  pointer-events: none;
-  height: 0;
-}
-
-/* Custom image styles */
 
 .ProseMirror img {
   transition: filter 0.1s ease-in-out;

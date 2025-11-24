@@ -22,6 +22,7 @@ import "@/style/prosemirror.css";
 import "katex/dist/katex.min.css";
 
 import hljs from "highlight.js/lib/core";
+import { SlashPortalRenderer } from "./extensions/slash-portal";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -56,10 +57,10 @@ const Editor = () => {
       );
       window.localStorage.setItem("novel-content", JSON.stringify(json));
       console.log("Serialized Content:", json);
-      window.localStorage.setItem(
-        "markdown",
-        editor.storage.markdown.manager.serialize(json)
-      );
+      // window.localStorage.setItem(
+      //   "markdown",
+      //   editor.storage.markdown.manager.serialize(json)
+      // );
       setSaveStatus("Saved");
     },
     500
@@ -78,7 +79,7 @@ const Editor = () => {
   if (!initialContent) return null;
 
   return (
-    <div className="relative w-full max-w-5xl">
+    <div className="flex w-full max-w-5xl sm:rounded-lg sm:border overflow-hidden">
       <div className="flex absolute right-5 top-5 z-10 mb-5 gap-2">
         <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground">
           {saveStatus}
@@ -97,7 +98,7 @@ const Editor = () => {
         <EditorContent
           initialContent={initialContent}
           extensions={extensions}
-          className="relative min-h-[500px] w-full max-w-5xl border-muted bg-background sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:shadow-lg"
+          className="relative w-full max-w-5xl overflow-auto"
           editorProps={{
             handleDOMEvents: {
               keydown: (_view, event) => handleCommandNavigation(event),
@@ -117,7 +118,7 @@ const Editor = () => {
           }}
           slotAfter={<ImageResizer />}
         >
-          <EditorCommand className="h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
+          <EditorCommand className="h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-sm transition-all">
             <EditorCommandEmpty className="px-2 text-muted-foreground">
               No results
             </EditorCommandEmpty>
@@ -142,6 +143,8 @@ const Editor = () => {
               ))}
             </EditorCommandList>
           </EditorCommand>
+          <SlashPortalRenderer />
+
           <GenerativeMenuSwitch open={openAI} onOpenChange={setOpenAI}>
             <Separator orientation="vertical" />
             <NodeSelector open={openNode} onOpenChange={setOpenNode} />

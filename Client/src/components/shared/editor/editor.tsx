@@ -5,38 +5,14 @@ import { forwardRef, useRef } from "react";
 import type { FC, ReactNode } from "react";
 import tunnel from "tunnel-rat";
 import { novelStore } from "./utils/store";
-import { EditorCommandTunnelContext } from "./editor-command";
-import { SlashPortalRenderer } from "./extensions/slash-portal";
 import { MathBubblePortal } from "./extensions/math-bubble";
+import { EditorCommandTunnelContext } from "./utils/commandTunnel";
 
 export interface EditorProps {
   readonly className?: string;
   initialContent?: JSONContent;
   onChange?: (content: { markdown: string; json: JSONContent }) => void;
 }
-
-export const Editor: FC<EditorProps> = ({
-  className,
-  initialContent,
-  onChange,
-}) => {
-  return (
-    <EditorRoot>
-      <EditorContent
-        className={className}
-        initialContent={initialContent}
-        onUpdate={({ editor }) => {
-          if (onChange) {
-            onChange({
-              markdown: editor.getMarkdown(),
-              json: editor.getJSON(),
-            });
-          }
-        }}
-      ></EditorContent>
-    </EditorRoot>
-  );
-};
 
 interface EditorRootProps {
   readonly children: ReactNode;
@@ -65,7 +41,6 @@ export const EditorContent = forwardRef<HTMLDivElement, EditorContentProps>(
     <div ref={ref} className={className}>
       <EditorProvider {...rest} content={initialContent}>
         <MathBubblePortal />
-        <SlashPortalRenderer />
         {children}
       </EditorProvider>
     </div>

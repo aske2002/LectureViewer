@@ -1,27 +1,20 @@
-import { createContext, useEffect, useState } from "react";
-import { EditorCommandOut, EditorCommandOutProps } from "../editor-command";
+import { useEffect, useRef, useState } from "react";
+import { EditorCommandOut } from "../editor-command";
 import { EditorEvents, useCurrentEditor } from "@tiptap/react";
-import { SlashCommandPluginKey } from "./slash-command";
-
-export const SlashPortalContext = createContext<HTMLElement | null>(null);
-export let updateSlashPortal: (props: any) => void = () => {};
+import { SlashCommandOptions, SlashCommandPluginKey } from "./slash-command";
 
 export const SlashPortalRenderer = () => {
-  const [portalProps, setPortalProps] = useState<EditorCommandOutProps | null>(
+  const [portalProps, setPortalProps] = useState<SlashCommandOptions | null>(
     null
   );
   const { editor } = useCurrentEditor();
-
-  useEffect(() => {
-    updateSlashPortal = setPortalProps;
-  }, []);
 
   useEffect(() => {
     if (!editor) return;
 
     const handleTransaction = ({ editor }: EditorEvents["transaction"]) => {
       const pluginState = SlashCommandPluginKey.getState(editor.state);
-      console.log("SlashPortalRenderer transaction", { pluginState });
+      setPortalProps(pluginState ? pluginState : null);
     };
 
     editor.on("transaction", handleTransaction);
@@ -31,12 +24,23 @@ export const SlashPortalRenderer = () => {
     };
   }, [editor]);
 
+  const handleClose = () => {
+    if (!editor) return;
+    console.log("Closing slash command portal");
+    editor.view.dispatch(
+      editor.state.tr.setMeta(SlashCommandPluginKey, {
+        ...portalProps,
+        open: false,
+      })
+    );
+  };
+
   if (!portalProps) return null;
 
   return (
     <EditorCommandOut
       {...portalProps}
-      onClose={() => setPortalProps({ ...portalProps, open: false })}
+      onClose={handleClose}
     />
   );
 };

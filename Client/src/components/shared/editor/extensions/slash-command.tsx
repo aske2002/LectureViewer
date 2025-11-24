@@ -5,19 +5,19 @@ import Suggestion, {
   SuggestionOptions,
   SuggestionProps,
 } from "@tiptap/suggestion";
-import { PluginKey } from "@tiptap/pm/state";
-
+import { PluginKey, Plugin } from "@tiptap/pm/state";
 import { type RefObject } from "react";
 import type { ReactNode } from "react";
-import { updateSlashPortal } from "./slash-portal";
-import { ReactRenderer } from "@tiptap/react";
 
+export const SlashCommandSuggestionPluginKey = new PluginKey<SuggestionOptions>(
+  "slashCommandSuggestion"
+);
 export const SlashCommandPluginKey = new PluginKey<SlashCommandOptions>(
   "slashCommand"
 );
 
 export type SlashCommandOptions = {
-  clientRect?: DOMRect | null;
+  clientRect?: (() => DOMRect | null) | null;
   editor: Editor;
   query: string;
   range: Range;
@@ -43,20 +43,44 @@ const Command = Extension.create<
         range: Range;
         props: SuggestionProps;
       }) => {
-        console.log("SlashCommand command executed", { props });
         props.command({ editor, range });
       },
     };
   },
   addProseMirrorPlugins() {
-    console.log("Options", this.options);
+    const suggestionPlugin = Suggestion({
+      pluginKey: SlashCommandSuggestionPluginKey,
+      ...this.options,
+      editor: this.editor,
+    });
     return [
-      Suggestion({
-        pluginKey: SlashCommandPluginKey,
-        
-        ...this.options,
-        editor: this.editor,
+      new Plugin<SlashCommandOptions>({
+        key: SlashCommandPluginKey,
+        state: {
+          init: () => ({
+            open: false,
+            editor: this.editor,
+            element: null,
+            query: "",
+            range: {
+              from: 0,
+              to: 0,
+            },
+            clientRect: () => null,
+          }),
+          apply(tr, prev) {
+            const meta = tr.getMeta(SlashCommandPluginKey);
+            if (!meta) return prev;
+            return {
+              ...prev,
+              ...meta, // merge new values
+            };
+          },
+        },
+        props: {}, // optional
       }),
+
+      suggestionPlugin,
     ];
   },
 });
@@ -72,7 +96,7 @@ const renderItems = (elementRef?: RefObject<Element> | null) => {
           element: elementRef,
           query: props.query,
           range: props.range,
-          clientRect: props.clientRect?.(),
+          clientRect: props.clientRect,
         })
       );
     },
@@ -86,7 +110,7 @@ const renderItems = (elementRef?: RefObject<Element> | null) => {
           element: elementRef,
           query: props.query,
           range: props.range,
-          clientRect: props.clientRect?.(),
+          clientRect: props.clientRect,
         })
       );
     },
@@ -106,8 +130,15 @@ const renderItems = (elementRef?: RefObject<Element> | null) => {
       return false;
     },
 
-    onExit: () => {
-      updateSlashPortal({ open: false });
+    onExit: (props: SuggestionProps) => {
+      const { editor } = props;
+
+      editor.view.dispatch(
+        editor.view.state.tr.setMeta(SlashCommandPluginKey, {
+          ...SlashCommandPluginKey.getState(editor.view.state),
+          open: false,
+        })
+      );
     },
   };
 };

@@ -157,6 +157,28 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
+    title: "Math",
+    description: "Insert math equations.",
+    searchTerms: ["equation", "latex", "formula"],
+    icon: <Text size={18} />,
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setLatex({ latex: " " }).run(),
+  },
+  {
+    title: "Table",
+    description: "Insert a table.",
+    searchTerms: ["grid", "spreadsheet", "rows", "columns"],
+    icon: <CheckSquare size={18} />,
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertTable({ rows: 2, cols: 2, withHeaderRow: true })
+        .run();
+    },
+  },
+  {
     title: "Youtube",
     description: "Embed a Youtube video.",
     searchTerms: ["video", "youtube", "embed"],

@@ -1,33 +1,19 @@
 import { useAtom, useSetAtom } from "jotai";
-import { useEffect, forwardRef, createContext } from "react";
+import { useEffect, forwardRef } from "react";
 import { Command, CommandInput, CommandList } from "@/components/ui/command";
 import { queryAtom, rangeAtom } from "./utils/atoms";
 import { novelStore } from "./utils/store";
-import type tunnel from "tunnel-rat";
-import type { ComponentPropsWithoutRef, FC, RefObject } from "react";
-import type { Range } from "@tiptap/core";
+import type { ComponentPropsWithoutRef, FC } from "react";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverAnchor } from "@radix-ui/react-popover";
+import { SlashCommandOptions } from "./extensions/slash-command";
+import { EditorCommandTunnelContext } from "./utils/commandTunnel";
 
-export const EditorCommandTunnelContext = createContext(
-  {} as ReturnType<typeof tunnel>
-);
-
-export interface EditorCommandOutProps {
-  readonly query: string;
-  readonly range: Range;
-  readonly element: RefObject<HTMLElement>;
-  onClose?: () => void;
-  open?: boolean;
-}
-
-export const EditorCommandOut: FC<EditorCommandOutProps> = ({
-  query,
-  range,
-  onClose,
-  element,
-  open = false,
-}) => {
+export const EditorCommandOut: FC<
+  SlashCommandOptions & {
+    onClose: () => void;
+  }
+> = ({ query, range, onClose, clientRect, open = false }) => {
   const setQuery = useSetAtom(queryAtom, { store: novelStore });
   const setRange = useSetAtom(rangeAtom, { store: novelStore });
 
@@ -64,7 +50,7 @@ export const EditorCommandOut: FC<EditorCommandOutProps> = ({
     };
   }, []);
 
-  console.log("EditorCommandOut render", { open, query, range });
+  if (!open) return null;
 
   return (
     <EditorCommandTunnelContext.Consumer>
@@ -74,18 +60,26 @@ export const EditorCommandOut: FC<EditorCommandOutProps> = ({
           modal={true}
           onOpenChange={(open) => !open && onClose && onClose()}
         >
-          <PopoverAnchor virtualRef={element}>
-            <PopoverContent
-              side="bottom"
-              alignOffset={0}
-              sideOffset={0}
-              align="start"
-              className="p-0"
-              onOpenAutoFocus={(e) => e.preventDefault()}
-            >
-              <tunnelInstance.Out />
-            </PopoverContent>
-          </PopoverAnchor>
+          <PopoverAnchor
+            virtualRef={{
+              current: {
+                getBoundingClientRect: () => {
+                  return clientRect?.() || new DOMRect(0, 0, 0, 0);
+                },
+              },
+            }}
+          />
+
+          <PopoverContent
+            side="bottom"
+            alignOffset={0}
+            sideOffset={0}
+            align="start"
+            className="p-0"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            <tunnelInstance.Out />
+          </PopoverContent>
         </Popover>
       )}
     </EditorCommandTunnelContext.Consumer>

@@ -13,24 +13,24 @@ services:
       - "18888:18888"
       - "18889:18889"
   whisper:
-    image: whisper-service:gpu
-    # image: whisper-service:cpu
+    # image: whisper-service:gpu
+    image: whisper-service:cpu
     build:
       context: ./Transcription
-      # dockerfile: Dockerfile.cpu
-      dockerfile: Dockerfile.gpu
+      dockerfile: Dockerfile.cpu
+      # dockerfile: Dockerfile.gpu
     restart: always
     ports:
       - "9292:3000"
     volumes:
       - ./models:/app/models  
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
 
   documentserver:
     build:

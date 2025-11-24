@@ -1,3 +1,4 @@
+import { ReactNodeViewRenderer } from "@tiptap/react";
 import {
   AIHighlight,
   CharacterCount,
@@ -24,8 +25,20 @@ import {
   MathBubble,
 } from "./extensions/index";
 
+import { Gapcursor } from "@tiptap/extensions";
+import {
+  Table,
+  TableCell,
+  TableHeader,
+  TableKit,
+  TableOptions,
+  TableRow,
+} from "@tiptap/extension-table";
 import { cx } from "class-variance-authority";
 import { common, createLowlight } from "lowlight";
+import TaskItemNodeView from "./task-item-view";
+import { cn } from "@/lib/utils";
+import {TableCellNodeView, TableHeaderNodeView, TableNodeView, TableRowNodeView } from "./extensions/table-view";
 
 //TODO I am using cx here to get tailwind autocomplete working, idk if someone else can write a regex to just capture the class key in objects
 const aiHighlight = AIHighlight;
@@ -34,7 +47,7 @@ const placeholder = Placeholder;
 const tiptapLink = TiptapLink.configure({
   HTMLAttributes: {
     class: cx(
-      "text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer",
+      "text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer"
     ),
   },
 });
@@ -65,9 +78,13 @@ const taskList = TaskList.configure({
     class: cx("not-prose pl-2 "),
   },
 });
-const taskItem = TaskItem.configure({
+
+const taskItem = TaskItem.extend({
   HTMLAttributes: {
     class: cx("flex gap-2 items-start my-4"),
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(TaskItemNodeView);
   },
   nested: true,
 });
@@ -86,7 +103,7 @@ const starterKit = StarterKit.configure({
   },
   orderedList: {
     HTMLAttributes: {
-      class: cx("list-decimal list-outside leading-3 -mt-2"),
+      class: cn("list-decimal list-outside leading-3 -mt-2"),
     },
   },
   listItem: {
@@ -101,7 +118,9 @@ const starterKit = StarterKit.configure({
   },
   codeBlock: {
     HTMLAttributes: {
-      class: cx("rounded-md bg-muted text-muted-foreground border p-5 font-mono font-medium"),
+      class: cx(
+        "rounded-md bg-muted text-muted-foreground border p-5 font-mono font-medium"
+      ),
     },
   },
   code: {
@@ -161,6 +180,24 @@ const markdownExtension = MarkdownExtension.configure({
 });
 
 
+
+const table = Table.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer((props) =>
+      TableNodeView({
+        ...props,
+        options: this.options,
+      }),
+      {
+        as: "p",
+      }
+    );
+  },
+}).configure({
+  resizable: true,
+  renderWrapper: false,
+});
+
 export const defaultExtensions = [
   starterKit,
   placeholder,
@@ -184,4 +221,9 @@ export const defaultExtensions = [
   Color,
   CustomKeymap,
   MathBubble,
+  table,
+  TableRow,
+  TableCell,
+  TableHeader,
+  Gapcursor,
 ];

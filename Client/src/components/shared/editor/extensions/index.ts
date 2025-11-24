@@ -25,13 +25,18 @@ import { UploadImagesPlugin } from "../plugins";
 import { MathBubble } from "./math-bubble";
 
 const PlaceholderExtension = Placeholder.configure({
-  placeholder: ({ node }) => {
+  placeholder: ({ node, editor }) => {
+    console.log(node, editor);
+    const isTopLevel = editor.state.doc.firstChild === node;
+    if (!isTopLevel) {
+      return "";
+    }
     if (node.type.name === "heading") {
       return `Heading ${node.attrs.level}`;
     }
     return "Press '/' for commands";
   },
-  includeChildren: true,
+  showOnlyCurrent: true,
 });
 
 const HighlightExtension = Highlight.configure({

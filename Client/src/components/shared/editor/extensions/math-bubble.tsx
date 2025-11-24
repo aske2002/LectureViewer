@@ -7,8 +7,6 @@ import { Input } from "@/components/ui/input"; // shadcn
 import { useCurrentEditor } from "@tiptap/react";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverAnchor } from "@radix-ui/react-popover";
-import { Mathematics } from "./mathematics";
-
 interface MathBubbleUpdatePayload {
   node: null | Node;
   pos: number | null;
