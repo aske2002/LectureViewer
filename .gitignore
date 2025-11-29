@@ -1,4 +1,5 @@
 
 Server/src/Web/Resources/
 /models
+/ollama-models
 pgdata
