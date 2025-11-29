@@ -6,11 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ApiProvider } from "./context/api-provider-context";
 import axios from "axios";
 import { pdfjs } from "react-pdf";
+
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-
 import pdfWorker from "/pdf.worker.min.mjs?url";
-import { MilkdownProvider } from "@milkdown/react";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 

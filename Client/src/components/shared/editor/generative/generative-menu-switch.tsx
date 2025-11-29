@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import EditorBubble from "../editor-bubble";
 import { removeAIHighlight } from "../extensions/ai-highlight";
 import { useCurrentEditor, useEditor } from "@tiptap/react";
-import Magic from "../magic";
+import Magic from "../../icons/magic";
 
 interface GenerativeMenuSwitchProps {
   children: ReactNode;

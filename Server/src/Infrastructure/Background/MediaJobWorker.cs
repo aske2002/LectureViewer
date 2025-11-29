@@ -1,5 +1,7 @@
 using backend.Domain.Entities;
+using backend.Domain.Events;
 using backend.Infrastructure.MediaProcessing;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

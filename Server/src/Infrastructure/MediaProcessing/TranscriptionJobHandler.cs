@@ -51,6 +51,5 @@ public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaPro
 
         await _db.Transcripts.AddAsync(transcript, token);
         await _db.SaveChangesAsync(token);
-        await _mediator.Publish(new TranscriptionCompletedEvent(transcript), token);
     }
 }

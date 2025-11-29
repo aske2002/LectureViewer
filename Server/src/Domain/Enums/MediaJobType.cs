@@ -6,6 +6,7 @@ public enum MediaJobType
     OfficeConversion,
     MediaTranscoding,
     CategoryClassification,
+    ResumeExtraction,
     KeywordExtraction,
     LectureProcessing
 }

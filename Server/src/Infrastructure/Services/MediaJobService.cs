@@ -1,7 +1,9 @@
 
 using backend.Domain.Entities;
+using backend.Domain.Events;
 using backend.Domain.Identifiers;
 using backend.Infrastructure.Data;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -11,11 +13,13 @@ public class MediaJobService : IMediaJobService
 {
     private readonly ApplicationDbContext _db;
     private readonly ILogger<MediaJobService> _logger;
+    private readonly IMediator _mediator;
 
-    public MediaJobService(ApplicationDbContext db, ILogger<MediaJobService> logger)
+    public MediaJobService(ApplicationDbContext db, ILogger<MediaJobService> logger, IMediator mediator)
     {
         _db = db;
         _logger = logger;
+        _mediator = mediator;
     }
 
     public async Task CreateJob(MediaProcessingJob job, CancellationToken token)
@@ -89,6 +93,7 @@ public class MediaJobService : IMediaJobService
 
         await _db.SaveChangesAsync(token);
         _logger.LogInformation("Job {JobId} marked as completed.", attempt.JobId);
+        await _mediator.Publish(JobEventFactory.CreateSuccessEvent(attempt.Job), token);
     }
 
     public async Task MarkJobFailedAsync(MediaProcessingJobId jobId, string errorMessage, CancellationToken token = default)
@@ -108,6 +113,7 @@ public class MediaJobService : IMediaJobService
 
         await _db.SaveChangesAsync(token);
         _logger.LogWarning("Job {JobId} failed: {Error}", jobId, errorMessage);
+        await _mediator.Publish(JobEventFactory.CreateErrorEvent(job), token);
     }
 
     public async Task MarkAttemptFailedAsync(MediaProcessingJobAttemptId jobId, string errorMessage, CancellationToken token = default)

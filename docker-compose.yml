@@ -23,7 +23,7 @@ services:
     ports:
       - "9292:3000"
     volumes:
-      - ./models:/app/models  
+      - ./models:/app/models
     # deploy:
     #   resources:
     #     reservations:
@@ -32,6 +32,19 @@ services:
     #           count: 1
     #           capabilities: [gpu]
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
   documentserver:
     build:
       context: ./DocumentServer
@@ -41,14 +54,13 @@ services:
     ports:
       - "9393:3000"
   postgres:
-      image: postgres:18
-      container_name: postgres-local
-      environment:
-        POSTGRES_PASSWORD: "61dba46f-17fd-4145-98c0-7db7a283a678"
-        PGDATA: "/var/lib/postgresql/18/docker"
-      ports:
-        - "5432:5432"
-      volumes:
-        - ./pgdata:/var/lib/postgresql
-      restart: "always"
-
+    image: postgres:18
+    container_name: postgres-local
+    environment:
+      POSTGRES_PASSWORD: "61dba46f-17fd-4145-98c0-7db7a283a678"
+      PGDATA: "/var/lib/postgresql/18/docker"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql
+    restart: "always"

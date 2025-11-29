@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
-@source inline("text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer opacity-40 rounded-lg border border-stone-200 border-muted not-prose pl-2 flex gap-2 items-start my-4 mt-4 mb-6 border-t border-muted-foreground list-disc list-outside leading-3 -mt-2 list-decimal leading-normal -mb-2 border-l-4 border-primary rounded-md bg-muted text-muted-foreground p-5 font-mono font-medium px-1.5 py-1 text-foreground p-1 hover:bg-accent tight");
+@source inline("text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer opacity-40 rounded-lg border border-stone-200 border-muted not-prose pl-2 flex gap-2 items-start my-4 mt-4 mb-6 border-t border-muted-foreground list-disc list-outside leading-3 -mt-2 list-decimal leading-normal -mb-2 border-l-4 border-primary rounded-md bg-muted text-muted-foreground p-5 font-mono font-medium px-1.5 py-1 text-foreground p-1 hover:bg-accent tight border");
 
 @custom-variant dark (&:is(.dark *));
 

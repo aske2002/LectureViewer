@@ -8,21 +8,4 @@
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true
   },
-  "tailwindCSS.experimental.classRegex": [
-    "(?:cx|cn)\\(([\\s\\S]*?)\\)",
-    "(['\"`])([^\"'`]*?)\\1"
-  ],
-  "tailwindCSS.includeLanguages": {
-    "typescript": "html",
-    "typescriptreact": "html",
-    "javascript": "html",
-    "javascriptreact": "html"
-  },
-  "tailwindCSS.files.include": [
-    "**/*.html",
-    "**/*.js",
-    "**/*.ts",
-    "**/*.jsx",
-    "**/*.tsx"
-  ]
 }

@@ -1,4 +1,4 @@
-namespace backend.Infrastructure.MediaProcessing.Configurations;
+namespace backend.Infrastructure.Configurations;
 public class DocumentConversionConfiguration
 {
     public string BaseUrl { get; set; } = string.Empty;

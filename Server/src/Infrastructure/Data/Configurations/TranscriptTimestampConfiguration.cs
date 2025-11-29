@@ -3,7 +3,6 @@ namespace StrejsApi.Infrastructure.Databases.Trips.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using backend.Domain.Entities;
-using backend.Domain.Identifiers;
 
 internal class TranscriptItemConfiguration : IEntityTypeConfiguration<TranscriptItem>
 {

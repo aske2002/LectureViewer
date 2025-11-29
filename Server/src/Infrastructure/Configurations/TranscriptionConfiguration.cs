@@ -1,4 +1,4 @@
-namespace backend.Infrastructure.MediaProcessing.Configurations;
+namespace backend.Infrastructure.Configurations;
 public class TranscriptionConfiguration
 {
     public string? LocalTranscriptionApiHost { get; set; }

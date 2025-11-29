@@ -56,6 +56,13 @@ public class LectureProcessingJob : MediaProcessingJob
     public required LectureContent LectureContent { get; set; } = null!;
 }
 
+public class ResumeExtractionMediaProcessingJob : MediaProcessingJob
+{
+    public required string SourceText { get; set; }
+    public int TargetLineLength { get; set; } = 8;
+    public string? Resume { get; set; }
+}
+
 public class KeywordExtractionMediaProcessingJob : MediaProcessingJob
 {
 
@@ -68,7 +75,7 @@ public class CategoryClassificationMediaProcessingJob : MediaProcessingJob
 
 public class TranscriptionMediaProcessingJob : MediaProcessingJob
 {
-
+    public Transcript? Transcript { get; set; }
 }
 
 public class FlashcardGenerationMediaProcessingJob : MediaProcessingJob

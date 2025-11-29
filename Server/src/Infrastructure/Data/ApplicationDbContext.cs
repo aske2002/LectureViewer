@@ -32,6 +32,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<CategoryClassificationMediaProcessingJob> CategoryClassificationMediaProcessingJobs => Set<CategoryClassificationMediaProcessingJob>();
     public DbSet<MediaProcessingJobAttempt> MediaProcessingJobAttempts => Set<MediaProcessingJobAttempt>();
     public DbSet<MediaProcessingJobLog> MediaProcessingJobLogs => Set<MediaProcessingJobLog>();
+    public DbSet<ResumeExtractionMediaProcessingJob> ResumeExtractionMediaProcessingJobs => Set<ResumeExtractionMediaProcessingJob>();
 
     // Lecture related DbSets
     public DbSet<Lecture> Lectures => Set<Lecture>();

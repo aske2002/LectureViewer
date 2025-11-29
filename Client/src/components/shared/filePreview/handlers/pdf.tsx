@@ -8,13 +8,32 @@ import {
   ChevronRight,
   Loader2,
   RefreshCw,
+  BookOpen,
+  X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import useTheme from "@/hooks/use-theme";
-import { OnItemClickArgs } from "react-pdf/dist/shared/types.js";
+import {
+  Dest,
+  OnItemClickArgs,
+  ResolvedDest,
+} from "react-pdf/dist/shared/types.js";
 import { Button } from "@/components/ui/button";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 interface PdfViewerProps {
   url: string;
   name: string;
@@ -24,6 +43,8 @@ interface PdfViewerProps {
   url: string;
 }
 
+type RefProxy = Parameters<pdfjs.PDFDocumentProxy["getPageIndex"]>[0];
+
 function highlightPattern(text: string, pattern: RegExp, background: string) {
   return text.replace(
     pattern,
@@ -31,7 +52,29 @@ function highlightPattern(text: string, pattern: RegExp, background: string) {
   );
 }
 
+async function resolveDestinationPage(
+  dest: any,
+  pdf: pdfjs.PDFDocumentProxy
+): Promise<number> {
+  if (typeof dest === "string") {
+    const destination = await pdf.getDestination(dest);
+    if (destination) {
+      return resolveDestinationPage(destination, pdf);
+    }
+  } else if (Array.isArray(dest)) {
+    const ref = dest[0];
+    if (typeof ref === "object") {
+      return pdf.getPageIndex(ref as RefProxy).then((index) => index + 1);
+    }
+  }
+  return 1; // Default to first page if unable to resolve
+}
+
 function PdfViewer({ url }: PdfViewerProps) {
+  const [showOutline, setShowOutline] = useState(false);
+  const [outline, setOutline] = useState<Awaited<
+    ReturnType<pdfjs.PDFDocumentProxy["getOutline"]>
+  > | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [requestedPageNumber, setRequestedPageNumber] = useState(1);
@@ -78,6 +121,11 @@ function PdfViewer({ url }: PdfViewerProps) {
     setPdfDoc(pdf);
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (!pdfDoc) return;
+    pdfDoc.getOutline().then((items) => setOutline(items));
+  }, [pdfDoc]);
 
   useEffect(() => {
     if (requestedPageNumber != pageNumber) {
@@ -253,6 +301,17 @@ function PdfViewer({ url }: PdfViewerProps) {
 
         {/* Zoom controls */}
         <div className="flex items-center gap-1">
+          {outline && (
+            <Button
+              onClick={() => setShowOutline(!showOutline)}
+              size={"icon"}
+              variant={"ghost"}
+              className="p-2 rounded-lg hover:bg-gray-200"
+              title="Show Outline"
+            >
+              <BookOpen className="w-4 h-4" />
+            </Button>
+          )}
           <Button
             onClick={zoomOut}
             size={"icon"}
@@ -343,12 +402,51 @@ function PdfViewer({ url }: PdfViewerProps) {
           </div>
         )}
 
+        {outline && (
+          <div
+            className={cn(
+              "border-r bg-background transition-all duration-300 ease-in-out overflow-hidden",
+              showOutline ? "w-64" : "w-0"
+            )}
+          >
+            <div className="h-full flex flex-col">
+              <div className="flex items-center justify-between px-4 py-3 border-b">
+                <h3 className="font-semibold text-sm">Document Outline</h3>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setShowOutline(false)}
+                  className="h-6 w-6"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-2">
+                {outline && pdfDoc ? (
+                  outline.map((item, idx) => (
+                    <OutlineItem
+                      key={idx}
+                      item={item}
+                      pdf={pdfDoc}
+                      onNavigate={setPageNumber}
+                    />
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground p-3">
+                    No outline available
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <Document
           file={url}
           onLoadSuccess={handleDocumentLoad}
           loading=""
           onItemClick={handleItemClick}
-          className={"flex justify-center items-center"}
+          className={"flex justify-center items-center overflow-hidden flex-1"}
         >
           <Page
             loading=""
@@ -365,6 +463,57 @@ function PdfViewer({ url }: PdfViewerProps) {
       </div>
     </div>
   );
+}
+
+
+function OutlineItem({
+  item,
+  pdf,
+  onNavigate,
+  level = 0,
+}: {
+  item: any
+  pdf: pdfjs.PDFDocumentProxy
+  onNavigate: (page: number) => void
+  level?: number
+}) {
+  const [expanded, setExpanded] = useState(level === 0)
+  const hasChildren = item.items && item.items.length > 0
+
+  const handleClick = async () => {
+    if (item.dest) {
+      const page = await resolveDestinationPage(item.dest, pdf)
+      onNavigate(page)
+    }
+    if (hasChildren) {
+      setExpanded(!expanded)
+    }
+  }
+
+  return (
+    <div>
+      <button
+        onClick={handleClick}
+        className={cn(
+          "w-full text-left px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2",
+          level > 0 && "text-muted-foreground",
+        )}
+        style={{ paddingLeft: `${level * 1 + 0.75}rem` }}
+      >
+        {hasChildren && (
+          <ChevronRight className={cn("w-4 h-4 transition-transform shrink-0", expanded && "rotate-90")} />
+        )}
+        <span className="truncate">{item.title}</span>
+      </button>
+      {hasChildren && expanded && (
+        <div>
+          {item.items.map((child: any, idx: number) => (
+            <OutlineItem key={idx} item={child} pdf={pdf} onNavigate={onNavigate} level={level + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export const pdfPreviewHandler: FilePreviewHandler = {

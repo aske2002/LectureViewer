@@ -1,4 +1,4 @@
-import { ReactNodeViewRenderer } from "@tiptap/react";
+import { NodeView, ReactNodeViewRenderer } from "@tiptap/react";
 import {
   AIHighlight,
   CharacterCount,
@@ -26,19 +26,12 @@ import {
 } from "./extensions/index";
 
 import { Gapcursor } from "@tiptap/extensions";
-import {
-  Table,
-  TableCell,
-  TableHeader,
-  TableKit,
-  TableOptions,
-  TableRow,
-} from "@tiptap/extension-table";
 import { cx } from "class-variance-authority";
 import { common, createLowlight } from "lowlight";
 import TaskItemNodeView from "./task-item-view";
 import { cn } from "@/lib/utils";
-import {TableCellNodeView, TableHeaderNodeView, TableNodeView, TableRowNodeView } from "./extensions/table-view";
+import { TableKit } from "./extensions/table/kit";
+import { TableAddButtons } from "./extensions/table/responsiveness";
 
 //TODO I am using cx here to get tailwind autocomplete working, idk if someone else can write a regex to just capture the class key in objects
 const aiHighlight = AIHighlight;
@@ -179,23 +172,28 @@ const markdownExtension = MarkdownExtension.configure({
   transformCopiedText: false,
 });
 
-
-
-const table = Table.extend({
-  addNodeView() {
-    return ReactNodeViewRenderer((props) =>
-      TableNodeView({
-        ...props,
-        options: this.options,
-      }),
-      {
-        as: "p",
-      }
-    );
+const table = TableKit.configure({
+  table: {
+    HTMLAttributes: {
+      class: cx("border rounded-md resizable"),
+    },
+    resizable: true,
   },
-}).configure({
-  resizable: true,
-  renderWrapper: false,
+  tableRow: {
+    HTMLAttributes: {
+      class: cx(""),
+    },
+  },
+  tableCell: {
+    HTMLAttributes: {
+      class: cx("border p-2 align-top"),
+    },
+  },
+  tableHeader: {
+    HTMLAttributes: {
+      class: cx("border p-2 align-top bg-accent/50"),
+    },
+  },
 });
 
 export const defaultExtensions = [
@@ -221,9 +219,7 @@ export const defaultExtensions = [
   Color,
   CustomKeymap,
   MathBubble,
-  table,
-  TableRow,
-  TableCell,
-  TableHeader,
+  TableAddButtons,
   Gapcursor,
+  table,
 ];

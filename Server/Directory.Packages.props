@@ -32,12 +32,15 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.67.1" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.67.1-alpha" />
     <PackageVersion Include="MimeTypesMap" Version="1.0.9" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="MiniProfiler.EntityFrameworkCore" Version="4.5.4" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.1" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="10.0.0" />
     <PackageVersion Include="NSwag.CodeGeneration.TypeScript" Version="14.2.0" />
+    <PackageVersion Include="OllamaSharp" Version="5.4.11" />
     <PackageVersion Include="OpenTelemetry" Version="1.14.0" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.14.0" />
     <PackageVersion Include="OpenTelemetry.Api.ProviderBuilderExtensions" Version="1.14.0" />

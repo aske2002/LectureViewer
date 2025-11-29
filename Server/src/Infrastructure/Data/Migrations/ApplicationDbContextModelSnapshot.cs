@@ -1042,7 +1042,8 @@ namespace backend.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("JobId");
+                    b.HasIndex("JobId")
+                        .IsUnique();
 
                     b.HasIndex("LectureId");
 
@@ -1344,6 +1345,23 @@ namespace backend.Infrastructure.Data.Migrations
                         });
 
                     b.HasDiscriminator().HasValue("OfficeConversion");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.ResumeExtractionMediaProcessingJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
+
+                    b.Property<string>("Resume")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SourceText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TargetLineLength")
+                        .HasColumnType("integer");
+
+                    b.HasDiscriminator().HasValue("ResumeExtraction");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.ThumbnailExtractionMediaProcessingJob", b =>
@@ -1758,8 +1776,8 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.Transcript", b =>
                 {
                     b.HasOne("backend.Domain.Entities.TranscriptionMediaProcessingJob", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId")
+                        .WithOne("Transcript")
+                        .HasForeignKey("backend.Domain.Entities.Transcript", "JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1994,6 +2012,11 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcardAnswer", b =>
                 {
                     b.Navigation("PairAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.TranscriptionMediaProcessingJob", b =>
+                {
+                    b.Navigation("Transcript");
                 });
 #pragma warning restore 612, 618
         }

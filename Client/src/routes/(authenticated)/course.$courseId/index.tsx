@@ -3,12 +3,13 @@ import { LectureCard } from "@/components/lectures/lecture-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Clock, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import RequireAuthorization from "@/components/shared/require-authorization";
 import { CoursePermissionType, RoleDto, Season } from "@/api/web-api-client";
 import { useCourseApi } from "@/api/use-course-api";
 import { FullScreenLoader } from "@/components/shared/loader";
 import useCourseColor from "@/hooks/use-course-color";
 import { CreateLectureDialog } from "@/components/lectures/create-lecture-dialog";
+import ProseView from "@/components/shared/editor/prose-view";
+import { EditorPreview } from "@/components/shared/editor/editor";
 
 export const Route = createFileRoute("/(authenticated)/course/$courseId/")({
   component: RouteComponent,
@@ -40,7 +41,7 @@ function RouteComponent() {
           </Link>
 
           <div className="flex items-start justify-between mb-6">
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-8">
               <div
                 style={{ backgroundColor: courseColor.toHex() }}
                 className={`h-16 w-16 rounded-lg flex items-center justify-center shrink-0`}
@@ -55,7 +56,15 @@ function RouteComponent() {
                   <Badge variant="secondary">{course.internalIdentifier}</Badge>
                 </div>
                 <p className="text-muted-foreground mb-3 text-pretty">
-                  {course.description}
+                  <EditorPreview
+                    fontSize="md"
+                    muted
+                    content={
+                      course.description
+                        ? JSON.parse(course.description)
+                        : undefined
+                    }
+                  />
                 </p>
                 <div className="flex items-center  gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">

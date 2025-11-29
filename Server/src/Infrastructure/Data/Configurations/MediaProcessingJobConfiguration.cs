@@ -23,7 +23,8 @@ internal class MediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaP
             .HasValue<OfficeConversionMediaProcessingJob>(MediaJobType.OfficeConversion)
             .HasValue<MediaTranscodingMediaProcessingJob>(MediaJobType.MediaTranscoding)
             .HasValue<KeywordExtractionMediaProcessingJob>(MediaJobType.KeywordExtraction)
-            .HasValue<CategoryClassificationMediaProcessingJob>(MediaJobType.CategoryClassification);
+            .HasValue<CategoryClassificationMediaProcessingJob>(MediaJobType.CategoryClassification)
+            .HasValue<ResumeExtractionMediaProcessingJob>(MediaJobType.ResumeExtraction);
     }
 }
 
@@ -43,7 +44,6 @@ internal class OfficeConversionMediaProcessingJobConfiguration : IEntityTypeConf
         builder.HasOne(j => j.OutputResource).WithMany().HasForeignKey(j => j.OutputResourceId);
     }
 }
-
 internal class ThumbnailExtractionMediaProcessingJobConfiguration : IEntityTypeConfiguration<ThumbnailExtractionMediaProcessingJob>
 {
     public void Configure(EntityTypeBuilder<ThumbnailExtractionMediaProcessingJob> builder)

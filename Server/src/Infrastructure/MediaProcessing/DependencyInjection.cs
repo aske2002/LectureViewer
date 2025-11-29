@@ -1,13 +1,12 @@
 using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
 using backend.Infrastructure.Background;
-using backend.Infrastructure.MediaProcessing.Configurations;
+using backend.Infrastructure.Configurations;
 using backend.Infrastructure.MediaProcessing.Transcription;
 using backend.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace backend.Infrastructure.MediaProcessing;
 
@@ -15,7 +14,6 @@ public static class DependencyInjection
 {
     public static void AddMediaProcessing(this IHostApplicationBuilder builder)
     {
-
         // Background services
         builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         builder.Services.AddHostedService<QueuedHostedService>();
@@ -28,6 +26,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IMediaJobHandler<TranscriptionMediaProcessingJob>, TranscriptionJobHandler>();
         builder.Services.AddScoped<IMediaJobHandler<ThumbnailExtractionMediaProcessingJob>, ThumnailExtractionHandler>();
         builder.Services.AddScoped<IMediaJobHandler<LectureProcessingJob>, LectureProcessingJobHandler>();
+        builder.Services.AddScoped<IMediaJobHandler<ResumeExtractionMediaProcessingJob>, ResumeExtractionHandler>();
 
         var transcriptionConfig = builder.Configuration
             .GetSection("Transcription")
@@ -37,7 +36,8 @@ public static class DependencyInjection
 
         if (!string.IsNullOrEmpty(transcriptionConfig.LocalTranscriptionApiHost))
         {
-            builder.Services.AddHttpClient<ITranscriptionService, LocalTranscriptionService>(c => {
+            builder.Services.AddHttpClient<ITranscriptionService, LocalTranscriptionService>(c =>
+            {
                 c.BaseAddress = new Uri(transcriptionConfig.LocalTranscriptionApiHost);
             });
         }

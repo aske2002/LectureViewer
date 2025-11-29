@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Net.Http.Headers;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
 using backend.Domain.Enums;
@@ -8,7 +6,6 @@ using backend.Infrastructure.MediaProcessing;
 using backend.Infrastructure.Models;
 using backend.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 public class LibreOfficeConverterHandler : MediaJobHandlerBase<OfficeConversionMediaProcessingJob>
 {

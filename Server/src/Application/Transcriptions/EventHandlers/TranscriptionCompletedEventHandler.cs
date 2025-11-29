@@ -6,7 +6,7 @@ using backend.Domain.Entities;
 
 namespace backend.Application.Transcriptions.EventsHandlers;
 
-public class TranscriptionCompletedEventHandler : INotificationHandler<TranscriptionCompletedEvent>
+public class TranscriptionCompletedEventHandler : INotificationHandler<JobSuccessEvent<TranscriptionMediaProcessingJob>>
 {
     private readonly IBackgroundTaskQueue _backgroundTaskQueue;
     private readonly ILogger<TranscriptionCompletedEventHandler> _logger;
@@ -19,11 +19,25 @@ public class TranscriptionCompletedEventHandler : INotificationHandler<Transcrip
         _logger = logger;
     }
 
-    public Task Handle(TranscriptionCompletedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(JobSuccessEvent<TranscriptionMediaProcessingJob> notification, CancellationToken cancellationToken)
     {
-        _backgroundTaskQueue.QueueBackgroundWorkItem((sp, token) =>
+        var transcript = notification.Job.Transcript;
+
+        if (transcript == null)
         {
+            _logger.LogWarning("TranscriptionCompletedEventHandler: Transcript is null for job {JobId}", notification.Job.Id);
             return Task.CompletedTask;
+        }
+
+        _backgroundTaskQueue.QueueBackgroundWorkItem(async (sp, token) =>
+        {
+            var mediaJobService = sp.GetRequiredService<IMediaJobService>();
+            await mediaJobService.CreateJob(new ResumeExtractionMediaProcessingJob()
+            {
+                TargetLineLength = 20,
+                SourceText = transcript.TranscriptText,
+            }, cancellationToken);
+
         });
 
         return Task.CompletedTask;

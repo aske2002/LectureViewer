@@ -25,6 +25,8 @@ public interface IApplicationDbContext
     DbSet<MediaProcessingJobAttempt> MediaProcessingJobAttempts { get; }
     DbSet<MediaProcessingJobLog> MediaProcessingJobLogs { get; }
 
+    DbSet<Transcript> Transcripts { get; }
+
     DbSet<Country> Countries { get; }
     DbSet<Resource> Resources { get; }
     DbSet<Lecture> Lectures { get; }
