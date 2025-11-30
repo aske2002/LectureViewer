@@ -56,7 +56,7 @@ export function LectureHeader({ lecture, courseId }: LectureHeaderProps) {
           </Link>
           <div className="flex items-center gap-2">
             {coursePermissions?.permissions.includes(
-              CoursePermissionType.UploadMedia
+              CoursePermissionType.UploadCourseContent
             ) &&
               course && <UploadLectureContentDialog course={course} lecture={lecture}/>}
             <Button

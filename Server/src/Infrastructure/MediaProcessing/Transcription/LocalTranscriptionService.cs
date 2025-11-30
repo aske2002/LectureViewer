@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Application.Common.Models;
 using backend.Application.Common.Interfaces;
 using backend.Domain.Entities;
 using backend.Infrastructure.MediaProcessing.Transcription.Models;
@@ -61,13 +62,12 @@ public class LocalTranscriptionService : ITranscriptionService
         return await response.Content.ReadFromJsonAsync<List<string>>(cancellationToken: cancellationToken) ?? new List<string>();
     }
 
-    private async Task<string> StartTranscriptionAsync(Stream fileStream, string fileName, CancellationToken cancellationToken)
+    private async Task<string> StartTranscriptionAsync(NonDisposableStreamContent fileContent, string fileName, string language, CancellationToken cancellationToken)
     {
         using var content = new MultipartFormDataContent();
-
-        var fileContent = new StreamContent(fileStream);
         fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
         content.Add(fileContent, "file", fileName);
+        content.Add(new StringContent(language), "language");
 
         var response = await httpClient.PostAsync(TranscriptionsEndpoint, content, cancellationToken);
         response.EnsureSuccessStatusCode();
@@ -141,11 +141,28 @@ public class LocalTranscriptionService : ITranscriptionService
         }
     }
 
+    public async Task<string> DetectLanguageAsync(NonDisposableStreamContent fileContent, string fileName, CancellationToken cancellationToken)
+    {
+        using var content = new MultipartFormDataContent();
+
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+        content.Add(fileContent, "file", fileName);
+
+        var response = await httpClient.PostAsync("/detect-language", content, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var language = await response.Content.ReadAsStringAsync(cancellationToken);
+        return language;
+    }
+
     public async Task<TranscriptionResponse> TranscribeAsync(Resource file, CancellationToken cancellationToken)
     {
+
         cancellationToken.Register(() => _logger.LogWarning("Cancellation token triggered"));
         var resourceContent = await _resourceService.GetResourceStreamByIdAsync(file.Id, cancellationToken);
-        var id = await StartTranscriptionAsync(resourceContent, file.FileName, cancellationToken);
+        var nonDisposableContent = new NonDisposableStreamContent(resourceContent);
+
+        var language = await DetectLanguageAsync(nonDisposableContent, file.FileName, cancellationToken);
+        var id = await StartTranscriptionAsync(nonDisposableContent, file.FileName, language, cancellationToken);
 
         var eventStream = ReadSseStreamAsync(id, cancellationToken);
 
@@ -166,8 +183,8 @@ public class LocalTranscriptionService : ITranscriptionService
                             Text = ti.Text,
                             TimeStamp = new TranscriptionResponseTimeStamp()
                             {
-                                From = TimeSpan.FromSeconds(ti.Offsets.From),
-                                To = TimeSpan.FromSeconds(ti.Offsets.To)
+                                From = TimeSpan.FromMilliseconds(ti.Offsets.From),
+                                To = TimeSpan.FromMilliseconds(ti.Offsets.To)
                             },
                             Confidence = ti.Tokens.Average(t => t.P)
                         })

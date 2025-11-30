@@ -7,7 +7,7 @@ public enum LectureContentType
 {
     Video = 0,
     Audio = 1,
-    Slides = 2,
+    Presentation = 2,
     Document = 3,
     Other = 4
 }

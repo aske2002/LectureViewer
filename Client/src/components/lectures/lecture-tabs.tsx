@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, FileText, Sparkles, List } from "lucide-react";
 import type { Flashcard } from "@/lib/types";
 import { LectureDto } from "@/api/web-api-client";
 import LectureContentSection from "./content/content-section";
+import { TranscriptView } from "./transcript-view";
+import { TranscriptSummaryView } from "./transcript-summary-view";
 
 interface LectureTabsProps {
   courseId: string;
@@ -48,12 +50,7 @@ export function LectureTabs({ lecture, courseId }: LectureTabsProps) {
       </TabsList>
 
       {
-        /* <TabsContent value="transcript">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
-          <TranscriptView lecture={lecture} highlightKeyword={activeKeyword} />
-          <KeywordSidebar keywords={lecture.keywords} lectureId={lecture.id} />
-        </div>
-      </TabsContent>
+        /*
 
       <TabsContent value="keywords">
         <div className="max-w-4xl mx-auto">
@@ -73,11 +70,33 @@ export function LectureTabs({ lecture, courseId }: LectureTabsProps) {
           <FlashcardList flashcards={lecture.flashcards} onCardClick={setSelectedFlashcard} />
         </div>
       </TabsContent> */
-        <TabsContent value="content">
-          <div className=" mx-auto">
-            <LectureContentSection contents={lecture.contents} courseId={courseId} lectureId={lecture.id} />
-          </div>
-        </TabsContent>
+        <>
+          <TabsContent value="transcript">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+              {lecture.primaryResource?.transcription && (
+                <>
+                  <TranscriptView
+                    transcription={lecture.primaryResource.transcription}
+                    highlightKeyword={activeKeyword}
+                  />
+                  <TranscriptSummaryView summary={lecture.primaryResource.transcription.summary || "No summary available yet."} />
+                </>
+              )}
+              {lecture.primaryResource?.transcription === null && (
+                <div className="text-center text-muted-foreground">
+                  No transcript available for this lecture.
+                </div>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="content">
+            <div className=" mx-auto">
+              <LectureContentSection
+                lecture={lecture}
+              />
+            </div>
+          </TabsContent>
+        </>
       }
     </Tabs>
   );

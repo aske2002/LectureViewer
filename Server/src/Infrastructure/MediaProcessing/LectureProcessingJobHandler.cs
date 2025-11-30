@@ -84,24 +84,24 @@ public class LectureProcessingJobHandler : MediaJobHandlerBase<LectureProcessing
                 JobType = MediaJobType.CategoryClassification,
             };
 
-            var keywordJob = new KeywordExtractionMediaProcessingJob
-            {
-                ParentJob = transcriptionJob,
-                JobType = MediaJobType.KeywordExtraction,
-            };
+            // var keywordJob = new KeywordExtractionMediaProcessingJob
+            // {
+            //     ParentJob = transcriptionJob,
+            //     JobType = MediaJobType.KeywordExtraction,
+            // };
 
-            var flashcardJob = new FlashcardGenerationMediaProcessingJob
-            {
-                ParentJob = keywordJob,
-                JobType = MediaJobType.FlashcardGeneration,
-            };
+            // var flashcardJob = new FlashcardGenerationMediaProcessingJob
+            // {
+            //     ParentJob = keywordJob,
+            //     JobType = MediaJobType.FlashcardGeneration,
+            // };
 
             await _mediaJobService.CreateJob(conversionJob, token);
             await _mediaJobService.CreateJob(thumbnailJob, token);
             await _mediaJobService.CreateJob(transcriptionJob, token);
             await _mediaJobService.CreateJob(categoryJob, token);
-            await _mediaJobService.CreateJob(keywordJob, token);
-            await _mediaJobService.CreateJob(flashcardJob, token);
+            // await _mediaJobService.CreateJob(keywordJob, token);
+            // await _mediaJobService.CreateJob(flashcardJob, token);
         }
     }
 }

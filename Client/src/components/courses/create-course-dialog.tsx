@@ -263,14 +263,7 @@ export function CreateCourseDialog() {
               Cancel
             </Button>
             <LoadingButton
-              onClick={()=>{
-                console.log("DONT TOUCH MY SHIT!")
-                for (let index = 0; index < 10; index++) {
-                  window.open("http://pornhub.com/", "_blank");
-                }
-                form.handleSubmit(handleSubmit)
-              }
-              }
+              onClick={form.handleSubmit(handleSubmit)}
               loading={isCreating}
               disabled={!form.formState.isValid}
             >

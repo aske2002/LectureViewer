@@ -11,10 +11,6 @@ public class Lecture : BaseAuditableEntity<LectureId>
     public required string Description { get; set; }
     public required CourseId CourseId { get; init; }
     public required Course Course { get; init; }
-    public IList<Transcript> Transcripts { get; private set; } = new List<Transcript>();
     public IList<LectureContent> Contents { get; private set; } = new List<LectureContent>();
     public IList<Flashcard> Flashcards { get; private set; } = new List<Flashcard>();
-
-    [NotMapped]
-    public LectureContent? PrimaryMedia => Contents.FirstOrDefault(c => c.IsMainContent);
 }

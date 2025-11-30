@@ -976,8 +976,11 @@ export class CoursesClient implements ICoursesClient {
 
 export interface ILecturesClient {
     getLectureDetails(courseId: string, lectureId: string): Promise<LectureDto>;
-    getLectureContent(courseId: string, lectureId: string, lectureContentId: string, resourceId: string, download?: string | null | undefined): Promise<void>;
+    extractTranscriptKeywords(transcriptId: string): Promise<void>;
+    getLectureContentStream(courseId: string, lectureId: string, lectureContentId: string, resourceId: string, download?: string | null | undefined): Promise<void>;
+    listLectureContents(courseId: string, lectureId: string): Promise<LectureContentListDto>;
     uploadLectureMedia(courseId: string, lectureId: string, name: string, description?: string | null | undefined, isMainContent?: boolean | undefined, file?: FileParameter | undefined): Promise<string>;
+    updateLectureContent(courseId: string, command: UpdateLectureContentCommandContent): Promise<LectureContentDto>;
 }
 
 export class LecturesClient implements ILecturesClient {
@@ -1047,7 +1050,54 @@ export class LecturesClient implements ILecturesClient {
         return Promise.resolve<LectureDto>(null as any);
     }
 
-    getLectureContent(courseId: string, lectureId: string, lectureContentId: string, resourceId: string, download?: string | null | undefined, cancelToken?: CancelToken): Promise<void> {
+    extractTranscriptKeywords(transcriptId: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Lectures/transcripts/{transcriptId}/extract-keywords";
+        if (transcriptId === undefined || transcriptId === null)
+            throw new Error("The parameter 'transcriptId' must be defined.");
+        url_ = url_.replace("{transcriptId}", encodeURIComponent("" + transcriptId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processExtractTranscriptKeywords(_response);
+        });
+    }
+
+    protected processExtractTranscriptKeywords(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 204) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    getLectureContentStream(courseId: string, lectureId: string, lectureContentId: string, resourceId: string, download?: string | null | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/Lectures/{courseId}/{lectureId}/contents/{lectureContentId}/{resourceId}?";
         if (courseId === undefined || courseId === null)
             throw new Error("The parameter 'courseId' must be defined.");
@@ -1080,11 +1130,11 @@ export class LecturesClient implements ILecturesClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetLectureContent(_response);
+            return this.processGetLectureContentStream(_response);
         });
     }
 
-    protected processGetLectureContent(response: AxiosResponse): Promise<void> {
+    protected processGetLectureContentStream(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1103,6 +1153,60 @@ export class LecturesClient implements ILecturesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<void>(null as any);
+    }
+
+    listLectureContents(courseId: string, lectureId: string, cancelToken?: CancelToken): Promise<LectureContentListDto> {
+        let url_ = this.baseUrl + "/api/Lectures/{courseId}/{lectureId}/contents";
+        if (courseId === undefined || courseId === null)
+            throw new Error("The parameter 'courseId' must be defined.");
+        url_ = url_.replace("{courseId}", encodeURIComponent("" + courseId));
+        if (lectureId === undefined || lectureId === null)
+            throw new Error("The parameter 'lectureId' must be defined.");
+        url_ = url_.replace("{lectureId}", encodeURIComponent("" + lectureId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processListLectureContents(_response);
+        });
+    }
+
+    protected processListLectureContents(response: AxiosResponse): Promise<LectureContentListDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = LectureContentListDto.fromJS(resultData200);
+            return Promise.resolve<LectureContentListDto>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<LectureContentListDto>(null as any);
     }
 
     uploadLectureMedia(courseId: string, lectureId: string, name: string, description?: string | null | undefined, isMainContent?: boolean | undefined, file?: FileParameter | undefined, cancelToken?: CancelToken): Promise<string> {
@@ -1175,6 +1279,61 @@ export class LecturesClient implements ILecturesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<string>(null as any);
+    }
+
+    updateLectureContent(courseId: string, command: UpdateLectureContentCommandContent, cancelToken?: CancelToken): Promise<LectureContentDto> {
+        let url_ = this.baseUrl + "/api/Lectures/{courseId}/contents";
+        if (courseId === undefined || courseId === null)
+            throw new Error("The parameter 'courseId' must be defined.");
+        url_ = url_.replace("{courseId}", encodeURIComponent("" + courseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "PATCH",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processUpdateLectureContent(_response);
+        });
+    }
+
+    protected processUpdateLectureContent(response: AxiosResponse): Promise<LectureContentDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = LectureContentDto.fromJS(resultData200);
+            return Promise.resolve<LectureContentDto>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<LectureContentDto>(null as any);
     }
 }
 
@@ -2087,6 +2246,10 @@ export enum RoleDto {
 
 export enum PolicyDto {
     CanCreateCourses = "CanCreateCourses",
+    DeleteCourse = "DeleteCourse",
+    CreateLectures = "CreateLectures",
+    EditCourse = "EditCourse",
+    ViewCourse = "ViewCourse",
 }
 
 export abstract class BaseResponseOfCourseId implements IBaseResponseOfCourseId {
@@ -2923,9 +3086,9 @@ export interface ICoursePermissionsDto {
 }
 
 export enum CoursePermissionType {
-    UploadMedia = "UploadMedia",
     Delete = "Delete",
     CreateLectures = "CreateLectures",
+    UploadCourseContent = "UploadCourseContent",
     Edit = "Edit",
     View = "View",
 }
@@ -3045,13 +3208,13 @@ export interface ICreateLectureCommand {
 }
 
 export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
+    /** A CourseId identifier */
+    courseId!: string;
     startDate!: Date;
     endDate!: Date;
     title!: string;
     description!: string;
-    contents!: LectureContentDto[];
-    transcripts!: TranscriptionDto[];
-    primaryContent!: LectureContentDto | undefined;
+    primaryResource!: LecturePrimaryResourceDto | undefined;
 
     constructor(data?: ILectureDto) {
         super(data);
@@ -3060,21 +3223,12 @@ export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.courseId = _data["courseId"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
             this.title = _data["title"];
             this.description = _data["description"];
-            if (Array.isArray(_data["contents"])) {
-                this.contents = [] as any;
-                for (let item of _data["contents"])
-                    this.contents!.push(LectureContentDto.fromJS(item));
-            }
-            if (Array.isArray(_data["transcripts"])) {
-                this.transcripts = [] as any;
-                for (let item of _data["transcripts"])
-                    this.transcripts!.push(TranscriptionDto.fromJS(item));
-            }
-            this.primaryContent = _data["primaryContent"] ? LectureContentDto.fromJS(_data["primaryContent"]) : <any>undefined;
+            this.primaryResource = _data["primaryResource"] ? LecturePrimaryResourceDto.fromJS(_data["primaryResource"]) : <any>undefined;
         }
     }
 
@@ -3087,34 +3241,66 @@ export class LectureDto extends BaseResponseOfLectureId implements ILectureDto {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["courseId"] = this.courseId;
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
         data["title"] = this.title;
         data["description"] = this.description;
-        if (Array.isArray(this.contents)) {
-            data["contents"] = [];
-            for (let item of this.contents)
-                data["contents"].push(item.toJSON());
-        }
-        if (Array.isArray(this.transcripts)) {
-            data["transcripts"] = [];
-            for (let item of this.transcripts)
-                data["transcripts"].push(item.toJSON());
-        }
-        data["primaryContent"] = this.primaryContent ? this.primaryContent.toJSON() : <any>undefined;
+        data["primaryResource"] = this.primaryResource ? this.primaryResource.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
 }
 
 export interface ILectureDto extends IBaseResponseOfLectureId {
+    /** A CourseId identifier */
+    courseId: string;
     startDate: Date;
     endDate: Date;
     title: string;
     description: string;
-    contents: LectureContentDto[];
-    transcripts: TranscriptionDto[];
-    primaryContent: LectureContentDto | undefined;
+    primaryResource: LecturePrimaryResourceDto | undefined;
+}
+
+export class LecturePrimaryResourceDto extends BaseResponseOfLectureId implements ILecturePrimaryResourceDto {
+    presentation!: LectureContentDto | undefined;
+    transcription!: TranscriptionDto | undefined;
+    media!: LectureContentDto | undefined;
+
+    constructor(data?: ILecturePrimaryResourceDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.presentation = _data["presentation"] ? LectureContentDto.fromJS(_data["presentation"]) : <any>undefined;
+            this.transcription = _data["transcription"] ? TranscriptionDto.fromJS(_data["transcription"]) : <any>undefined;
+            this.media = _data["media"] ? LectureContentDto.fromJS(_data["media"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): LecturePrimaryResourceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LecturePrimaryResourceDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["presentation"] = this.presentation ? this.presentation.toJSON() : <any>undefined;
+        data["transcription"] = this.transcription ? this.transcription.toJSON() : <any>undefined;
+        data["media"] = this.media ? this.media.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ILecturePrimaryResourceDto extends IBaseResponseOfLectureId {
+    presentation: LectureContentDto | undefined;
+    transcription: TranscriptionDto | undefined;
+    media: LectureContentDto | undefined;
 }
 
 export abstract class BaseResponseOfLectureContentId implements IBaseResponseOfLectureContentId {
@@ -3215,7 +3401,7 @@ export interface ILectureContentDto extends IBaseResponseOfLectureContentId {
 export enum LectureContentType {
     Video = "Video",
     Audio = "Audio",
-    Slides = "Slides",
+    Presentation = "Presentation",
     Document = "Document",
     Other = "Other",
 }
@@ -3370,6 +3556,7 @@ export interface IBaseResponseOfTranscriptId {
 }
 
 export class TranscriptionDto extends BaseResponseOfTranscriptId implements ITranscriptionDto {
+    created!: Date;
     items!: TranscriptionItemDto[];
     summary!: string | undefined;
     language!: string;
@@ -3382,6 +3569,7 @@ export class TranscriptionDto extends BaseResponseOfTranscriptId implements ITra
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
@@ -3402,6 +3590,7 @@ export class TranscriptionDto extends BaseResponseOfTranscriptId implements ITra
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         if (Array.isArray(this.items)) {
             data["items"] = [];
             for (let item of this.items)
@@ -3416,6 +3605,7 @@ export class TranscriptionDto extends BaseResponseOfTranscriptId implements ITra
 }
 
 export interface ITranscriptionDto extends IBaseResponseOfTranscriptId {
+    created: Date;
     items: TranscriptionItemDto[];
     summary: string | undefined;
     language: string;
@@ -3459,8 +3649,8 @@ export interface IBaseResponseOfTranscriptItemId {
 }
 
 export class TranscriptionItemDto extends BaseResponseOfTranscriptItemId implements ITranscriptionItemDto {
-    startTime!: string;
-    endTime!: string;
+    from!: string;
+    to!: string;
     text!: string;
 
     constructor(data?: ITranscriptionItemDto) {
@@ -3470,8 +3660,8 @@ export class TranscriptionItemDto extends BaseResponseOfTranscriptItemId impleme
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.startTime = _data["startTime"];
-            this.endTime = _data["endTime"];
+            this.from = _data["from"];
+            this.to = _data["to"];
             this.text = _data["text"];
         }
     }
@@ -3485,8 +3675,8 @@ export class TranscriptionItemDto extends BaseResponseOfTranscriptItemId impleme
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["startTime"] = this.startTime;
-        data["endTime"] = this.endTime;
+        data["from"] = this.from;
+        data["to"] = this.to;
         data["text"] = this.text;
         super.toJSON(data);
         return data;
@@ -3494,9 +3684,103 @@ export class TranscriptionItemDto extends BaseResponseOfTranscriptItemId impleme
 }
 
 export interface ITranscriptionItemDto extends IBaseResponseOfTranscriptItemId {
-    startTime: string;
-    endTime: string;
+    from: string;
+    to: string;
     text: string;
+}
+
+export class LectureContentListDto implements ILectureContentListDto {
+    contents!: LectureContentDto[];
+
+    constructor(data?: ILectureContentListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["contents"])) {
+                this.contents = [] as any;
+                for (let item of _data["contents"])
+                    this.contents!.push(LectureContentDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): LectureContentListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LectureContentListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.contents)) {
+            data["contents"] = [];
+            for (let item of this.contents)
+                data["contents"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ILectureContentListDto {
+    contents: LectureContentDto[];
+}
+
+export class UpdateLectureContentCommandContent implements IUpdateLectureContentCommandContent {
+    /** A LectureContentId identifier */
+    lectureContentId!: string;
+    name!: string | undefined;
+    description!: string | undefined;
+    isMainContent!: boolean | undefined;
+
+    constructor(data?: IUpdateLectureContentCommandContent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.lectureContentId = _data["lectureContentId"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.isMainContent = _data["isMainContent"];
+        }
+    }
+
+    static fromJS(data: any): UpdateLectureContentCommandContent {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateLectureContentCommandContent();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["lectureContentId"] = this.lectureContentId;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["isMainContent"] = this.isMainContent;
+        return data;
+    }
+}
+
+export interface IUpdateLectureContentCommandContent {
+    /** A LectureContentId identifier */
+    lectureContentId: string;
+    name: string | undefined;
+    description: string | undefined;
+    isMainContent: boolean | undefined;
 }
 
 export class FilteredQuery implements IFilteredQuery {

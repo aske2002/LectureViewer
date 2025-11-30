@@ -212,6 +212,7 @@ export class WhisperProcess {
       verbose?: boolean;
       temperature?: number;
       language?: WhisperLanguage;
+      detectLanguage?: boolean;
       stdout?: (data: string) => void;
       stderr?: (data: string) => void;
     } = {}
@@ -227,11 +228,12 @@ export class WhisperProcess {
     fs.copyFileSync(inputFilePath, this.inputFilePath);
 
     const temperature = options.temperature || 0.0;
-    const language = options.language || WhisperLanguage.Auto;
+    const language = options.language || undefined;
 
     const args = [
       ...(language ? ["--language", language] : []),
       ...(options.verbose ? ["--verbose", "True"] : []),
+      ...(options.detectLanguage ? ["--detect-language"] : []),
       "--print-progress",
       "True",
       "--temperature",
@@ -316,6 +318,30 @@ export class WhisperProcess {
     });
   }
 
+  public async await(): Promise<WhisperOutput> {
+    const state = this.getStatus();
+    if (state.status === WhisperProcessStatus.Running) {
+      return new Promise<WhisperOutput>((resolve, reject) => {
+        const callback = (event: WhisperEvent) => {
+          if (event.status === WhisperEventType.End) {
+            this.listeners = this.listeners.filter((l) => l !== callback);
+            const finalState = this.getStatus();
+            if (finalState.status === WhisperProcessStatus.Success) {
+              resolve(finalState.data);
+            } else if (finalState.status === WhisperProcessStatus.Error) {
+              reject(new Error(finalState.errorMessage));
+            }
+          }
+        };
+        this.listeners.push(callback);
+      });
+    } else if (state.status === WhisperProcessStatus.Success) {
+      return state.data;
+    } else {
+      throw new Error(state.errorMessage);
+    }
+  }
+
   public static async run(
     inputFilePath: string,
     options: {
@@ -324,6 +350,7 @@ export class WhisperProcess {
       temperature?: number;
       model?: WhisperModel;
       language?: WhisperLanguage;
+      detectLanguage?: boolean;
     } = {}
   ) {
     const model = await Whisper.getModel(options.model || WhisperModel.LargeV3);
@@ -386,6 +413,20 @@ export class Whisper {
       await this.installModel(model);
     }
     return path.join(this.modelsDir, `${model}.bin`);
+  }
+
+  public static async detectLanguage(
+    filePath: string,
+    fileName: string
+  ): Promise<WhisperLanguage> {
+    const process = await WhisperProcess.run(filePath, {
+      fileName,
+      model: WhisperModel.LargeV3,
+      detectLanguage: true,
+    });
+    const result = await process.await();
+    const language = WhisperLanguagesSchema.parse(result.result.language);
+    return language;
   }
 
   private static listInstalledModels(): WhisperModel[] {

@@ -71,6 +71,10 @@ app.UseCors(options =>
 
 app.MapEndpoints();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+
 app.Run();
 
 

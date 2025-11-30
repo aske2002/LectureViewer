@@ -25,7 +25,7 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
         {
             var jobService = sp.GetRequiredService<IMediaJobService>();
             var courseService = sp.GetRequiredService<ICourseService>();
-            var lectureContent = await courseService.GetLectureContentDetailsAsync(notification.CourseId, notification.LectureId, notification.LectureContentId);
+            var lectureContent = await courseService.GetLectureContentDetailsAsync(notification.CourseId, notification.LectureContentId);
 
             if (lectureContent == null)
             {
@@ -43,7 +43,7 @@ public class MediaUploadedHandler : INotificationHandler<MediaUploadedEvent>
             await jobService.CreateJob(job, token);
         });
 
-        _logger.LogInformation("Queued job creation for Lecture {LectureId}", notification.LectureId);
+        _logger.LogInformation("Queued job creation for LectureContent {LectureContentId}", notification.LectureContentId);
         return Task.CompletedTask;
     }
 }

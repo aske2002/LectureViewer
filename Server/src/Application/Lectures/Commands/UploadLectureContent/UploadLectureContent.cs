@@ -11,7 +11,7 @@ using backend.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace backend.Application.Lectures.Commands.CreateCourse;
+namespace backend.Application.Lectures.Commands.UploadLectureContent;
 
 public record UploadLectureMediaCommand : IRequest<LectureContent>
 {
@@ -42,12 +42,6 @@ public class UploadLectureCommandHandler : IRequestHandler<UploadLectureMediaCom
     {
         var course = await _courseService.GetCourseDetailsAsync(request.CourseId);
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(_userAccessor.GetPrincipal(), course, CoursePermissions.FromCoursePermission(CoursePermissions.CoursePermissionType.UploadMedia));
-        if (!authorizationResult.Succeeded)
-        {
-            throw new UnauthorizedAccessException("You do not have permission to upload lecture media for this course.");
-        }
-
         var lectureContent = await _courseService.UploadLectureMaterialAsync(
             courseId: request.CourseId,
             lectureId: request.LectureId,
@@ -60,8 +54,7 @@ public class UploadLectureCommandHandler : IRequestHandler<UploadLectureMediaCom
         );
 
         await _mediator.Publish(new MediaUploadedEvent(
-            CourseId: request.CourseId,
-            LectureId: request.LectureId,
+            course.Id,
             LectureContentId: lectureContent.Id
         ), cancellationToken);
 

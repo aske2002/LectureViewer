@@ -70,7 +70,7 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
     public virtual async Task<TEntity?> GetByIdAsync(
         TId id,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, 
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null,
         CancellationToken cancellationToken = default)
     {
         IQueryable<TEntity> query = _dbSet;
@@ -124,7 +124,7 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
 
     public virtual async Task RemoveAsync(TId id, CancellationToken cancellationToken = default)
     {
-        var entity = await GetByIdAsync(id, cancellationToken:cancellationToken);
+        var entity = await GetByIdAsync(id, cancellationToken: cancellationToken);
         if (entity == null)
         {
             throw new ArgumentNullException(nameof(entity));
@@ -148,5 +148,25 @@ public class DefaultRepositoryImplementation<TEntity, TId> : IRepository<TEntity
     public Task<bool> ExistsAsync(TId id, CancellationToken cancellationToken = default)
     {
         return _dbSet.AnyAsync(e => e.Id.Equals(id), cancellationToken);
+    }
+
+    public Task<TEntity?> FindAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, CancellationToken cancellationToken = default)
+    {
+        var query = WithFilter(null, filter, orderBy, include);
+        return query.FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<TProject?> FindAsync<TProject>(Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IQueryable<TProject>>? project = null, CancellationToken cancellationToken = default)
+    {
+        var query = WithFilter(null, filter, orderBy, include);
+        if (project != null)
+        {
+            return await project(query).FirstOrDefaultAsync(cancellationToken);
+        }
+        else
+        {
+            return _mapper.ProjectTo<TProject>(query).FirstOrDefault();
+        }
+
     }
 }

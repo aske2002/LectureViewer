@@ -3,4 +3,4 @@ using MediatR;
 
 namespace backend.Domain.Events;
 
-public record MediaUploadedEvent(CourseId CourseId, LectureId LectureId, LectureContentId LectureContentId) : INotification;
+public record MediaUploadedEvent(CourseId CourseId, LectureContentId LectureContentId) : INotification;

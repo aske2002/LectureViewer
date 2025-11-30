@@ -1,56 +1,41 @@
 using backend.Application.Common.Interfaces;
 using backend.Domain.Constants;
 using backend.Domain.Entities;
+using backend.Domain.Identifiers;
+using backend.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using static backend.Domain.Constants.CoursePermissions;
 
 namespace backend.Infrastructure.Identity.AuthorizationHandlers;
 
-public class CoursePermissionHandler : IAuthorizationHandler
+public class CoursePermissionHandler : AuthorizationHandler<CoursePermission>
 {
     private readonly IUserAccessor _userAccessor;
+    private readonly ICourseService _courseService;
 
-    public CoursePermissionHandler(IUserAccessor userAccessor)
+    public CoursePermissionHandler(IUserAccessor userAccessor, ICourseService courseService)
     {
         _userAccessor = userAccessor;
+        _courseService = courseService;
     }
 
-    public async Task HandleAsync(AuthorizationHandlerContext context)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CoursePermission requirement)
     {
-        var pendingRequirements = context.PendingRequirements.ToList();
-        var user = await _userAccessor.GetCurrentUserAsync();
-
-        if (context.Resource is not Course course || user == null)
+        if (context.Resource is HttpContext httpContext)
         {
-            return;
-        }
-
-        foreach (var requirement in pendingRequirements)
-        {
-
-            if (requirement is CoursePermissions.CreateLectures || requirement is CoursePermissions.UploadMedia || requirement is CoursePermissions.Delete || requirement is CoursePermissions.Edit)
+            if (CourseId.TryParse(httpContext.GetRouteValue("courseId")?.ToString() ?? string.Empty, null, id: out var courseId))
             {
-                if (IsInstructor(user, course))
+                var user = await _userAccessor.GetCurrentUserAsync();
+                var course = await _courseService.GetUserCoursePermissionsAsync(courseId, user);
+
+                if (requirement.Permissions.All(p => course.Contains(p)))
                 {
                     context.Succeed(requirement);
                 }
-            }
-            else if (requirement is CoursePermissions.View)
-            {
-                if (IsInstructor(user, course) || IsStudent(user, course))
-                {
-                    context.Succeed(requirement);
-                }
+                return;
             }
         }
-    }
-
-    private static bool IsInstructor(ApplicationUser user, Course resource)
-    {
-        return resource.Instructors.Any(i => i.InstructorId == user.Id);
-    }
-
-    private static bool IsStudent(ApplicationUser user, Course resource)
-    {
-        return resource.Enrollments.Any(e => e.User.Id == user.Id);
     }
 }

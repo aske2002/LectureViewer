@@ -35,8 +35,10 @@ public class TranscriptionCompletedEventHandler : INotificationHandler<JobSucces
         }
 
         await _dbContext.LectureProcessingJobs.Entry(lecturejob).Reference(l => l.LectureContent).LoadAsync(cancellationToken);
-        await _dbContext.LectureContents.Entry(lecturejob.LectureContent).Reference(lc => lc.Lecture).LoadAsync(cancellationToken);
-        lecturejob.LectureContent.Lecture.Transcripts.Add(transcript);
+        
+        lecturejob.LectureContent.TranscriptId = transcript.Id;
+        lecturejob.LectureContent.Transcript = transcript;
+        
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

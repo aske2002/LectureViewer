@@ -1,4 +1,4 @@
-import { LectureContentDto } from "@/api/web-api-client";
+import { LectureContentDto, LectureDto } from "@/api/web-api-client";
 import LectureContentTypeIcon, { lectureColorClasses } from "./type-icon";
 import { Card } from "@/components/ui/card";
 import {
@@ -19,18 +19,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useMemo, useState } from "react";
 import FilePreview from "@/components/shared/filePreview/file-preview";
+import { useLectureContentsApi } from "@/api/use-lecture-contents-api";
 
 interface LectureContentSectionProps {
-  courseId: string;
-  lectureId: string;
-  contents: LectureContentDto[];
+  lecture: LectureDto;
 }
 
 export default function LectureContentSection({
-  contents,
-  courseId,
-  lectureId,
+  lecture,
 }: LectureContentSectionProps) {
+  const { courseId, id: lectureId } = lecture;
+
+  const {
+    lectureContents: { data: contentsList },
+  } = useLectureContentsApi(courseId, lectureId);
+
+  const contents = useMemo(() => contentsList?.contents || [], [contentsList]);
+
   const [sortingMethod, setSortingMethod] = useState<
     "date" | "size" | "name" | "type"
   >("date");
@@ -178,13 +183,10 @@ function LectureContentSectionItem({
     resource: { fileName },
   } = content;
 
-  const {
-    mimeType,
-    id: resourceId,
-  } = useMemo(() => {
+  const { mimeType, id: resourceId } = useMemo(() => {
     if (documentMimeTypes.includes(content.resource.mimeType)) {
       return (
-        content.resource.associatedResources?.  find(
+        content.resource.associatedResources?.find(
           (res) => res.mimeType === "application/pdf"
         ) || content.resource
       );
@@ -229,28 +231,30 @@ function LectureContentSectionItem({
               className="h-6 w-6"
             />
           </div>
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-medium text-sm wrap-break-word">{content.name}</h3>
-            </div>
-            {content.description && (
-              <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
-                {content.description}
-              </p>
-            )}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-              <Calendar className="h-3 w-3" />
-              <span>{new Date(content.created).toLocaleDateString()}</span>
-              <span>•</span>
-              <span>{size}</span>
-            </div>
-            <div className="flex items-center gap-2 justify-between">
-              <Badge variant="outline" className="text-xs capitalize">
-                {content.contentType}
-              </Badge>
-              <Button size="sm" variant="ghost" className="h-7 px-2">
-                <Download className="h-3 w-3 mr-1" />
-                Download
-              </Button>
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-medium text-sm wrap-break-word">
+              {content.name}
+            </h3>
+          </div>
+          {content.description && (
+            <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+              {content.description}
+            </p>
+          )}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+            <Calendar className="h-3 w-3" />
+            <span>{new Date(content.created).toLocaleDateString()}</span>
+            <span>•</span>
+            <span>{size}</span>
+          </div>
+          <div className="flex items-center gap-2 justify-between">
+            <Badge variant="outline" className="text-xs capitalize">
+              {content.contentType}
+            </Badge>
+            <Button size="sm" variant="ghost" className="h-7 px-2">
+              <Download className="h-3 w-3 mr-1" />
+              Download
+            </Button>
           </div>
         </div>
         {thumbnailUrl && (

@@ -14,6 +14,19 @@ public interface IRepository<TEntity, TId> where TEntity : BaseEntity<TId> where
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null,
         CancellationToken cancellationToken = default);
+
+    Task<TEntity?> FindAsync(
+    Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null,
+    Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+    Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+    CancellationToken cancellationToken = default);
+
+    Task<TProject?> FindAsync<TProject>(
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IQueryable<TProject>>? project = null,
+        CancellationToken cancellationToken = default);
     Task<EntitiesResponse<TEntity>> QueryAsync(
         (int page, int pageSize)? pagination = null,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? filter = null,

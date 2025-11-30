@@ -22,15 +22,27 @@ app.delete("/transcriptions/:id", async (req, res) => {
   res.status(200).send("Transcription cancelled");
 });
 
+app.post("/detect-language", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).send("No file uploaded");
+    const language = await Whisper.detectLanguage(req.file.path, req.file.originalname);
+    res.status(200).send(language);
+  } catch (e: any) {
+    res.status(500).send(e.toString());
+  }
+});
+
 app.post("/transcriptions", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).send("No file uploaded");
-    const model = req.query.model
-      ? WhisperModelsSchema.parse(req.query.model)
+    const model = req.body.model
+      ? WhisperModelsSchema.parse(req.body.model)
       : undefined;
-    const language = req.query.language
-      ? WhisperLanguagesSchema.parse(req.query.language)
+    const language = req.body.language
+      ? WhisperLanguagesSchema.parse(req.body.language)
       : undefined;
+
+    console.log("Starting transcription with model:", model, "and language:", language);
 
     const id = await Whisper.startTranscription(req.file.path, {
       fileName: req.file.originalname,

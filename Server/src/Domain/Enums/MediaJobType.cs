@@ -8,5 +8,6 @@ public enum MediaJobType
     CategoryClassification,
     ResumeExtraction,
     KeywordExtraction,
-    LectureProcessing
+    LectureProcessing,
+    TranscriptionCorrection
 }

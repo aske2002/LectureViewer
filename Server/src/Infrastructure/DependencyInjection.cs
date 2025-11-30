@@ -22,6 +22,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OllamaSharp;
+using static backend.Domain.Constants.CoursePermissions;
+using backend.Domain.Entities;
+using Microsoft.SemanticKernel.Embeddings;
+using OpenAI;
+using Microsoft.Extensions.AI;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -36,28 +41,50 @@ public static class DependencyInjection
             options.SerializerOptions.AllowOutOfOrderMetadataProperties = true;
         });
 
+        builder.Services.AddTransient(s =>
+        {
+            var client = new HttpClient(new HttpClientHandler());
+            client.Timeout = TimeSpan.FromMinutes(30);
+            return client;
+        });
+
         builder.Services.Configure<TranscodingConfiguration>(
             builder.Configuration.GetSection("Transcoding"));
         builder.Services.Configure<TranscriptionConfiguration>(
             builder.Configuration.GetSection("Transcription"));
         builder.Services.Configure<DocumentConversionConfiguration>(
             builder.Configuration.GetSection("DocumentConversion"));
+        builder.Services.Configure<MLConfiguration>(
+            builder.Configuration.GetSection("MachineLearning"));
 
-        var mlConfig = builder.Configuration
-                    .GetSection("MachineLearning")
-                    .Get<MLConfiguration>();
-
+        var mlConfig = builder.Configuration.GetSection("MachineLearning").Get<MLConfiguration>();
         Guard.Against.Null(mlConfig, message: "MachineLearning configuration section is missing.");
 
         switch (mlConfig.Provider.ToLower())
         {
             case "openai":
                 var apiKey = mlConfig.ApiKey ?? throw new ArgumentNullException("ApiKey", "API Key cannot be null for OpenAI provider. Please check your configuration.");
+                var openaiClient = new OpenAIClient(apiKey);
+                var embeddingGenerator = openaiClient.GetEmbeddingClient(mlConfig.EmbeddingModelName ?? mlConfig.ModelName).AsIEmbeddingGenerator();
                 builder.Services.AddOpenAIChatCompletion(modelId: mlConfig.ModelName, apiKey: apiKey);
+                builder.Services.AddEmbeddingGenerator(embeddingGenerator);
                 break;
             case "ollama":
                 var host = mlConfig.LocalApiHost ?? throw new ArgumentNullException("LocalApiHost", "Local API Host cannot be null for Local provider. Please check your configuration.");
-                builder.Services.AddOllamaChatCompletion(modelId: mlConfig.ModelName, endpoint: new Uri(host));
+                var ollamaClient = new OllamaApiClient(new OllamaApiClient.Configuration()
+                {
+                    Model = mlConfig.ModelName,
+                    Uri = new Uri(host),
+                });
+                var embeddingOllamaClient = new OllamaApiClient(new OllamaApiClient.Configuration()
+                {
+                    Model = mlConfig.EmbeddingModelName ?? mlConfig.ModelName,
+                    Uri = new Uri(host),
+                });
+                builder.Services.AddSingleton(ollamaClient);
+                builder.Services.AddSingleton(embeddingOllamaClient);
+                builder.Services.AddOllamaChatCompletion(ollamaClient);
+                builder.Services.AddOllamaEmbeddingGenerator(embeddingOllamaClient);
                 break;
             default:
                 throw new NotSupportedException($"ML Provider '{mlConfig.Provider}' is not supported.");
@@ -136,6 +163,11 @@ public static class DependencyInjection
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy(Policies.CanCreateCourses, policy => policy.RequireRole(Roles.Instructor, Roles.Administrator));
+            options.AddPolicy(Policies.DeleteCourse, policy => policy.Requirements.Add(new CoursePermission(CoursePermissionType.Delete)));
+            options.AddPolicy(Policies.CreateLectures, policy => policy.Requirements.Add(new CoursePermission(CoursePermissionType.CreateLectures)));
+            options.AddPolicy(Policies.EditCourse, policy => policy.Requirements.Add(new CoursePermission(CoursePermissionType.Edit)));
+            options.AddPolicy(Policies.ViewCourse, policy => policy.Requirements.Add(new CoursePermission(CoursePermissionType.View)));
+            options.AddPolicy(Policies.UploadCourseContent, policy => policy.Requirements.Add(new CoursePermission(CoursePermissionType.UploadCourseContent)));
         });
         builder.Services.ConfigureApplicationCookie(options =>
         {

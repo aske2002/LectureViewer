@@ -19,16 +19,20 @@ public class TranscriptionResponseItem
 
 public class TranscriptionResponse
 {
+    private List<TranscriptionResponseItem> _items = new List<TranscriptionResponseItem>();
     public required TranscriptionProvider Provider {get; set;}
     public required string ModelName { get; set; }
     public required string Language {get; set;}
-    public IEnumerable<TranscriptionResponseItem> Items {get; set;} = new List<TranscriptionResponseItem>();
+    public IEnumerable<TranscriptionResponseItem> Items {
+        get => _items;
+        set => _items = value.OrderBy(i => i.TimeStamp.From).ToList();
+    }
 
     public string FullText 
     {
         get
         {
-            return string.Join(" ", Items.Select(i => i.Text));
+            return string.Join("\n", _items.Select(i => i.Text));
         }
     }
 }

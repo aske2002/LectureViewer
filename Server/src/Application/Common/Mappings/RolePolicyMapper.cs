@@ -23,6 +23,10 @@ public static class RolePolicyMapper
         return policy switch
         {
             Policies.CanCreateCourses => PolicyDto.CanCreateCourses,
+            Policies.DeleteCourse => PolicyDto.DeleteCourse,
+            Policies.CreateLectures => PolicyDto.CreateLectures,
+            Policies.EditCourse => PolicyDto.EditCourse,
+            Policies.ViewCourse => PolicyDto.ViewCourse,
             _ => null
         };
     }

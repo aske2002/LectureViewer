@@ -1027,9 +1027,6 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("LectureId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("SourceId")
                         .HasColumnType("uuid");
 
@@ -1044,8 +1041,6 @@ namespace backend.Infrastructure.Data.Migrations
 
                     b.HasIndex("JobId")
                         .IsUnique();
-
-                    b.HasIndex("LectureId");
 
                     b.HasIndex("SourceId");
 
@@ -1109,6 +1104,9 @@ namespace backend.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("KeywordExtractionMediaProcessingJobId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -1119,6 +1117,8 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("KeywordExtractionMediaProcessingJobId");
 
                     b.HasIndex("TranscriptId");
 
@@ -1263,6 +1263,10 @@ namespace backend.Infrastructure.Data.Migrations
                 {
                     b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
 
+                    b.Property<string>("SourceText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasDiscriminator().HasValue("KeywordExtraction");
                 });
 
@@ -1360,6 +1364,12 @@ namespace backend.Infrastructure.Data.Migrations
 
                     b.Property<int>("TargetLineLength")
                         .HasColumnType("integer");
+
+                    b.ToTable("MediaProcessingJobs", t =>
+                        {
+                            t.Property("SourceText")
+                                .HasColumnName("ResumeExtractionMediaProcessingJob_SourceText");
+                        });
 
                     b.HasDiscriminator().HasValue("ResumeExtraction");
                 });
@@ -1781,10 +1791,6 @@ namespace backend.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Domain.Entities.Lecture", null)
-                        .WithMany("Transcripts")
-                        .HasForeignKey("LectureId");
-
                     b.HasOne("backend.Domain.Entities.Resource", "Source")
                         .WithMany()
                         .HasForeignKey("SourceId")
@@ -1809,6 +1815,10 @@ namespace backend.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("backend.Domain.Entities.TranscriptKeyword", b =>
                 {
+                    b.HasOne("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", null)
+                        .WithMany("ExtractedKeywords")
+                        .HasForeignKey("KeywordExtractionMediaProcessingJobId");
+
                     b.HasOne("backend.Domain.Entities.Transcript", "Transcript")
                         .WithMany("Keywords")
                         .HasForeignKey("TranscriptId")
@@ -1946,8 +1956,6 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Contents");
 
                     b.Navigation("Flashcards");
-
-                    b.Navigation("Transcripts");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.LectureContent", b =>
@@ -2012,6 +2020,11 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcardAnswer", b =>
                 {
                     b.Navigation("PairAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", b =>
+                {
+                    b.Navigation("ExtractedKeywords");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TranscriptionMediaProcessingJob", b =>

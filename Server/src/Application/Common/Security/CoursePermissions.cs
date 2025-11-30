@@ -12,41 +12,19 @@ public static class CoursePermissions
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum CoursePermissionType
     {
-        UploadMedia,
         Delete,
         CreateLectures,
+        UploadCourseContent,
         Edit,
         View
     }
 
-    public class UploadMedia : IAuthorizationRequirement { }
-    public class Delete : IAuthorizationRequirement { }
-    public class CreateLectures : IAuthorizationRequirement { }
-    public class Edit : IAuthorizationRequirement { }
-    public class View : IAuthorizationRequirement { }
-    public static CoursePermissionType ToCoursePermission(IAuthorizationRequirement requirement)
+    public class CoursePermission : IAuthorizationRequirement
     {
-        return requirement switch
+        public CoursePermissionType[] Permissions { get; }
+        public CoursePermission(params CoursePermissionType[] permissionType)
         {
-            UploadMedia => CoursePermissionType.UploadMedia,
-            Delete => CoursePermissionType.Delete,
-            CreateLectures => CoursePermissionType.CreateLectures,
-            Edit => CoursePermissionType.Edit,
-            View => CoursePermissionType.View,
-            _ => throw new ArgumentOutOfRangeException(nameof(requirement), "Unknown permission requirement")
-        };
-    }
-
-    public static IAuthorizationRequirement FromCoursePermission(CoursePermissionType permission)
-    {
-        return permission switch
-        {
-            CoursePermissionType.UploadMedia => new UploadMedia(),
-            CoursePermissionType.Delete => new Delete(),
-            CoursePermissionType.CreateLectures => new CreateLectures(),
-            CoursePermissionType.Edit => new Edit(),
-            CoursePermissionType.View => new View(),
-            _ => throw new ArgumentOutOfRangeException(nameof(permission), "Unknown permission type")
-        };
+            Permissions = permissionType;
+        }
     }
 }

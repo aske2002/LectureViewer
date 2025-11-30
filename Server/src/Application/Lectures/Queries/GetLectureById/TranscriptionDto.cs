@@ -7,13 +7,14 @@ namespace backend.Application.Lectures.Queries.GetLectureById;
 
 public record TranscriptionItemDto : BaseResponse<TranscriptItemId>
 {
-    public required TimeSpan StartTime { get; set; }
-    public required TimeSpan EndTime { get; set; }
+    public required TimeSpan From { get; set; }
+    public required TimeSpan To { get; set; }
     public required string Text { get; set; }
 }
 
 public record TranscriptionDto : BaseResponse<TranscriptId>
 {
+    public required DateTimeOffset Created { get; set; }
     public IList<TranscriptionItemDto> Items { get; set; } = new List<TranscriptionItemDto>();
     public string? Summary { get; set; }
     public required string Language { get; set; }
@@ -23,7 +24,8 @@ public record TranscriptionDto : BaseResponse<TranscriptId>
     {
         public Mapping()
         {
-            CreateMap<Transcript, TranscriptionDto>();
+            CreateMap<Transcript, TranscriptionDto>()
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items.OrderBy(i => i.From)));
         }
     }
 }

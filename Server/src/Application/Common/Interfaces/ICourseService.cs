@@ -14,7 +14,7 @@ public interface ICourseService
     Task<ICollection<CourseEnrollment>> GetCourseEnrollmentsAsync(CourseId courseId);
 
     // Course management
-    Task<ICollection<CoursePermissionType>> GetUserCoursePermissionsAsync(CourseId courseId);
+    Task<ICollection<CoursePermissionType>> GetUserCoursePermissionsAsync(CourseId courseId, ApplicationUser user);
     Task<ICollection<Course>> ListCoursesAsync();
     Task<Course> GetCourseDetailsAsync(CourseId courseId);
     Task<Course> CreateCourseAsync(ApplicationUser owner, string internalIdentifier, string name, string description, Season semesterSeason, int semesterYear);
@@ -34,12 +34,14 @@ public interface ICourseService
 
     // Lecture management
     Task<ICollection<Lecture>> GetCourseLecturesAsync(CourseId courseId);
-    Task<LectureContent> GetLectureContentDetailsAsync(CourseId courseId, LectureId lectureId, LectureContentId lectureContentId);
+    Task<LectureContent> GetLectureContentDetailsAsync(CourseId courseId, LectureContentId lectureContentId);
+    Task<List<LectureContent>> ListLectureContentsAsync(LectureId lectureId);
     Task<Lecture> GetLectureDetailsAsync(CourseId courseId, LectureId lectureId);
     Task<LectureContent> UploadLectureMaterialAsync(CourseId courseId, LectureId lectureId, IFormFile file, LectureContentType contentType, string name, string? description, bool isMainContent = false, CancellationToken cancellationToken = default);
     Task<Lecture> CreateLectureAsync(CourseId courseId, string title, string description, DateTimeOffset startDate, DateTimeOffset endDate);
-    Task<IFormFile> GetLectureContentStreamAsync(CourseId courseId, LectureId lectureId, LectureContentId lectureContentId, ResourceId resourceId, CancellationToken cancellationToken = default);
+    Task<IFormFile> GetLectureContentStreamAsync(CourseId courseId, LectureContentId lectureContentId, ResourceId resourceId, CancellationToken cancellationToken = default);
     Task<Lecture> UpdateLectureAsync(CourseId courseId, LectureId lectureId, string title, string content);
+    Task<LectureContent> UpdateLectureContentAsync(CourseId courseId, LectureContentId lectureContentId, string? name, string? description, bool? isMainContent);
     Task DeleteLectureAsync(CourseId courseId, LectureId lectureId);
 
 }

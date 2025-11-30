@@ -6,7 +6,7 @@ public static class MimeTypeMappings
     {
         { new List<string> { "video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo", "video/x-ms-wmv" }, LectureContentType.Video },
         { new List<string> { "audio/mpeg", "audio/wav", "audio/ogg", "audio/aac" }, LectureContentType.Audio },
-        { new List<string> { "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "application/pdf" }, LectureContentType.Slides },
+        { new List<string> { "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "application/pdf" }, LectureContentType.Presentation },
         { new List<string> { "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "application/vnd.oasis.opendocument.text" }, LectureContentType.Document },
     };
 

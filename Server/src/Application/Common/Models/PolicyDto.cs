@@ -5,6 +5,10 @@ namespace backend.Contracts.Enums
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum PolicyDto
     {
-        CanCreateCourses
+        CanCreateCourses,
+        DeleteCourse,
+        CreateLectures,
+        EditCourse,
+        ViewCourse,
     }
 }

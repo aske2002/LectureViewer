@@ -27,6 +27,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IMediaJobHandler<ThumbnailExtractionMediaProcessingJob>, ThumnailExtractionHandler>();
         builder.Services.AddScoped<IMediaJobHandler<LectureProcessingJob>, LectureProcessingJobHandler>();
         builder.Services.AddScoped<IMediaJobHandler<ResumeExtractionMediaProcessingJob>, ResumeExtractionHandler>();
+        builder.Services.AddScoped<IMediaJobHandler<KeywordExtractionMediaProcessingJob>, KeywordExtractionHandler>();
 
         var transcriptionConfig = builder.Configuration
             .GetSection("Transcription")

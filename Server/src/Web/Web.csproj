@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <SpaRoot>../../../Client</SpaRoot>
-    <SpaProxyServerUrl>https://localhost:51089</SpaProxyServerUrl>
+    <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>yarn dev</SpaProxyLaunchCommand>
     <RootNamespace>backend.Web</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

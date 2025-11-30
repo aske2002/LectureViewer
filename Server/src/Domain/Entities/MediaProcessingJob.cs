@@ -65,7 +65,8 @@ public class ResumeExtractionMediaProcessingJob : MediaProcessingJob
 
 public class KeywordExtractionMediaProcessingJob : MediaProcessingJob
 {
-
+    public required string SourceText { get; set; }
+    public IList<TranscriptKeyword> ExtractedKeywords { get; set; } = new List<TranscriptKeyword>();
 }
 
 public class CategoryClassificationMediaProcessingJob : MediaProcessingJob

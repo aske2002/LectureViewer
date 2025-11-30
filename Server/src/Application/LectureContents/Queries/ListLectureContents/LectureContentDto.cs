@@ -3,7 +3,7 @@ using backend.Domain.Entities;
 using backend.Domain.Enums;
 using backend.Domain.Identifiers;
 
-namespace backend.Application.Lectures.Queries.GetLectureById;
+namespace backend.Application.LectureContents.Queries.ListLectureContents;
 
 public record LectureContentDto : BaseResponse<LectureContentId>
 {

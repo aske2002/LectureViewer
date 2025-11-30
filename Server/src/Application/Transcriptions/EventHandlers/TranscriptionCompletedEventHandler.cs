@@ -34,10 +34,16 @@ public class TranscriptionCompletedEventHandler : INotificationHandler<JobSucces
             var mediaJobService = sp.GetRequiredService<IMediaJobService>();
             await mediaJobService.CreateJob(new ResumeExtractionMediaProcessingJob()
             {
+                ParentJobId = notification.Job.Id,
                 TargetLineLength = 20,
                 SourceText = transcript.TranscriptText,
             }, cancellationToken);
 
+            await mediaJobService.CreateJob(new KeywordExtractionMediaProcessingJob()
+            {
+                ParentJobId = notification.Job.Id,
+                SourceText = transcript.TranscriptText,
+            }, cancellationToken);
         });
 
         return Task.CompletedTask;
