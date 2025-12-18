@@ -27,6 +27,11 @@ public interface IApplicationDbContext
 
     DbSet<Transcript> Transcripts { get; }
 
+    DbSet<TranscriptItem> TranscriptItems { get; }
+    DbSet<TranscriptKeywordOccurrence> TranscriptKeywordOccurrences { get; }
+    DbSet<Keyword> Keywords { get; }
+    DbSet<DocumentKeyword> DocumentKeywords { get; }
+
     DbSet<Country> Countries { get; }
     DbSet<Resource> Resources { get; }
     DbSet<Lecture> Lectures { get; }

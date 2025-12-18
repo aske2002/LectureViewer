@@ -119,12 +119,12 @@ public static class KeywordCandidateExtractor
             double p = (double)f / total;
 
             // high-frequency tokens: p > ~2%
-            if (p < 0.02) continue;
+            if (p < 0.01) continue;
 
             // approximate entropy: if token appears uniformly → high randomness → stopword
             double entropy = -p * Math.Log(p, 2);
 
-            if (entropy > 0.8) // threshold tuned empirically
+            if (entropy > 0.08) // threshold tuned empirically
                 stopwords.Add(token);
         }
 
@@ -201,7 +201,7 @@ public static class KeywordCandidateExtractor
             float cohesion = fPhrase / (float)Math.Pow(productFreq, 0.5);
 
             // reward longer phrases slightly
-            cohesion *= (1 + 0.3f * (words.Length - 1));
+            cohesion *= 1 + 0.5f * (words.Length - 1);
 
             scores[phrase] = cohesion;
         }

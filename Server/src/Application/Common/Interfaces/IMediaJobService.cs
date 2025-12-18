@@ -8,7 +8,7 @@ public interface IMediaJobService
     /// <summary>
     /// Attempts to start a pending job, marking it as Processing.
     /// </summary>
-    Task<(MediaProcessingJob job, MediaProcessingJobAttempt attempt)?> TryAcquireNextPendingJobAsync(CancellationToken token = default);
+    Task<(MediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource)?> TryAcquireNextPendingJobAsync(CancellationToken token = default);
 
     /// <summary>
     /// Marks a job as completed.

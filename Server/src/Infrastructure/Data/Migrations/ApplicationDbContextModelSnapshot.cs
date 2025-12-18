@@ -111,6 +111,21 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("FlashcardChoiceMultipleChoiceFlashcardAnswer");
                 });
 
+            modelBuilder.Entity("KeywordKeywordExtractionMediaProcessingJob", b =>
+                {
+                    b.Property<Guid>("ExtractedKeywordsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SourceJobsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ExtractedKeywordsId", "SourceJobsId");
+
+                    b.HasIndex("SourceJobsId");
+
+                    b.ToTable("KeywordKeywordExtractionMediaProcessingJob");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -474,6 +489,160 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("CourseInviteLinks");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.CourseKeyword", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("KeywordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("KeywordId");
+
+                    b.ToTable("CourseKeywords");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Document", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Author")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumberOfPages")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.DocumentKeyword", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("KeywordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PageNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PositionX")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PositionY")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SurroundingText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("KeywordId");
+
+                    b.ToTable("DocumentKeywords");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.DocumentPage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PageNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TextContent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.ToTable("DocumentPages");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
                 {
                     b.Property<Guid>("Id")
@@ -695,6 +864,36 @@ namespace backend.Infrastructure.Data.Migrations
                     b.ToTable("FlashcardPairAnswer");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.Keyword", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Text")
+                        .IsUnique();
+
+                    b.ToTable("Keywords");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Lecture", b =>
                 {
                     b.Property<Guid>("Id")
@@ -756,6 +955,9 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("DocumentId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsMainContent")
                         .HasColumnType("boolean");
 
@@ -779,6 +981,8 @@ namespace backend.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
 
                     b.HasIndex("LectureId");
 
@@ -1085,44 +1289,7 @@ namespace backend.Infrastructure.Data.Migrations
 
                     b.HasIndex("TranscriptId");
 
-                    b.ToTable("TranscriptItem");
-                });
-
-            modelBuilder.Entity("backend.Domain.Entities.TranscriptKeyword", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Keyword")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("KeywordExtractionMediaProcessingJobId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TranscriptId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KeywordExtractionMediaProcessingJobId");
-
-                    b.HasIndex("TranscriptId");
-
-                    b.ToTable("TranscriptKeyword");
+                    b.ToTable("TranscriptItems");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TranscriptKeywordOccurrence", b =>
@@ -1137,25 +1304,33 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<TimeSpan>("From")
+                        .HasColumnType("interval");
+
+                    b.Property<Guid>("KeywordId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan>("OccurrenceTime")
-                        .HasColumnType("interval");
-
                     b.Property<string>("SurroundingText")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("TranscriptKeywordId")
+                    b.Property<TimeSpan>("To")
+                        .HasColumnType("interval");
+
+                    b.Property<Guid>("TranscriptId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TranscriptKeywordId");
+                    b.HasIndex("KeywordId");
+
+                    b.HasIndex("TranscriptId");
 
                     b.ToTable("TranscriptKeywordOccurrences");
                 });
@@ -1252,6 +1427,23 @@ namespace backend.Infrastructure.Data.Migrations
                     b.HasDiscriminator().HasValue("CategoryClassification");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.DocumentInfoExtractionJob", b =>
+                {
+                    b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
+
+                    b.Property<Guid?>("DocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("InputResourceId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("InputResourceId");
+
+                    b.HasDiscriminator().HasValue("DocumentInfoExtraction");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.FlashcardGenerationMediaProcessingJob", b =>
                 {
                     b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
@@ -1262,6 +1454,9 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", b =>
                 {
                     b.HasBaseType("backend.Domain.Entities.MediaProcessingJob");
+
+                    b.Property<string>("Context")
+                        .HasColumnType("text");
 
                     b.Property<string>("SourceText")
                         .IsRequired()
@@ -1314,6 +1509,12 @@ namespace backend.Infrastructure.Data.Migrations
                     b.HasIndex("InputResourceId");
 
                     b.HasIndex("OutputResourceId");
+
+                    b.ToTable("MediaProcessingJobs", t =>
+                        {
+                            t.Property("InputResourceId")
+                                .HasColumnName("MediaTranscodingMediaProcessingJob_InputResourceId");
+                        });
 
                     b.HasDiscriminator().HasValue("MediaTranscoding");
                 });
@@ -1427,6 +1628,21 @@ namespace backend.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_FlashcardChoiceMultipleChoiceFlashcardAnswer_FlashCardChoi~1");
+                });
+
+            modelBuilder.Entity("KeywordKeywordExtractionMediaProcessingJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Keyword", null)
+                        .WithMany()
+                        .HasForeignKey("ExtractedKeywordsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", null)
+                        .WithMany()
+                        .HasForeignKey("SourceJobsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1574,6 +1790,66 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("backend.Domain.Entities.CourseKeyword", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Course", "Course")
+                        .WithMany("Keywords")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Keyword", "Keyword")
+                        .WithMany("CourseKeywords")
+                        .HasForeignKey("KeywordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Keyword");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Document", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.DocumentKeyword", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Document", "Document")
+                        .WithMany("DocumentKeywords")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Domain.Entities.Keyword", "Keyword")
+                        .WithMany("DocumentOccurrences")
+                        .HasForeignKey("KeywordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+
+                    b.Navigation("Keyword");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.DocumentPage", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Document", "Document")
+                        .WithMany("Pages")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+                });
+
             modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
                 {
                     b.HasOne("backend.Domain.Entities.MediaProcessingJob", "ArtifactFromJob")
@@ -1712,6 +1988,10 @@ namespace backend.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("backend.Domain.Entities.LectureContent", b =>
                 {
+                    b.HasOne("backend.Domain.Entities.Document", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId");
+
                     b.HasOne("backend.Domain.Entities.Lecture", "Lecture")
                         .WithMany("Contents")
                         .HasForeignKey("LectureId")
@@ -1727,6 +2007,8 @@ namespace backend.Infrastructure.Data.Migrations
                     b.HasOne("backend.Domain.Entities.Transcript", "Transcript")
                         .WithMany()
                         .HasForeignKey("TranscriptId");
+
+                    b.Navigation("Document");
 
                     b.Navigation("Lecture");
 
@@ -1813,11 +2095,13 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Transcript");
                 });
 
-            modelBuilder.Entity("backend.Domain.Entities.TranscriptKeyword", b =>
+            modelBuilder.Entity("backend.Domain.Entities.TranscriptKeywordOccurrence", b =>
                 {
-                    b.HasOne("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", null)
-                        .WithMany("ExtractedKeywords")
-                        .HasForeignKey("KeywordExtractionMediaProcessingJobId");
+                    b.HasOne("backend.Domain.Entities.Keyword", "Keyword")
+                        .WithMany("TranscriptOccurrences")
+                        .HasForeignKey("KeywordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("backend.Domain.Entities.Transcript", "Transcript")
                         .WithMany("Keywords")
@@ -1825,18 +2109,9 @@ namespace backend.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Keyword");
+
                     b.Navigation("Transcript");
-                });
-
-            modelBuilder.Entity("backend.Domain.Entities.TranscriptKeywordOccurrence", b =>
-                {
-                    b.HasOne("backend.Domain.Entities.TranscriptKeyword", "TranscriptKeyword")
-                        .WithMany("Occurrences")
-                        .HasForeignKey("TranscriptKeywordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TranscriptKeyword");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.SingleChoiceFlashcardAnswer", b =>
@@ -1848,6 +2123,21 @@ namespace backend.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("SelectedChoice");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.DocumentInfoExtractionJob", b =>
+                {
+                    b.HasOne("backend.Domain.Entities.Document", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId");
+
+                    b.HasOne("backend.Domain.Entities.Resource", "InputResource")
+                        .WithMany()
+                        .HasForeignKey("InputResourceId");
+
+                    b.Navigation("Document");
+
+                    b.Navigation("InputResource");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.LectureProcessingJob", b =>
@@ -1920,6 +2210,8 @@ namespace backend.Infrastructure.Data.Migrations
 
                     b.Navigation("InviteLinks");
 
+                    b.Navigation("Keywords");
+
                     b.Navigation("Lectures");
                 });
 
@@ -1931,6 +2223,13 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.CourseEnrollment", b =>
                 {
                     b.Navigation("FlashcardAnswers");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Document", b =>
+                {
+                    b.Navigation("DocumentKeywords");
+
+                    b.Navigation("Pages");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.Flashcard", b =>
@@ -1949,6 +2248,15 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("KeyForFlashcardPair");
 
                     b.Navigation("ValueForFlashcardPair");
+                });
+
+            modelBuilder.Entity("backend.Domain.Entities.Keyword", b =>
+                {
+                    b.Navigation("CourseKeywords");
+
+                    b.Navigation("DocumentOccurrences");
+
+                    b.Navigation("TranscriptOccurrences");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.Lecture", b =>
@@ -1992,11 +2300,6 @@ namespace backend.Infrastructure.Data.Migrations
                     b.Navigation("Keywords");
                 });
 
-            modelBuilder.Entity("backend.Domain.Entities.TranscriptKeyword", b =>
-                {
-                    b.Navigation("Occurrences");
-                });
-
             modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcard", b =>
                 {
                     b.Navigation("Pairs");
@@ -2020,11 +2323,6 @@ namespace backend.Infrastructure.Data.Migrations
             modelBuilder.Entity("backend.Domain.Entities.MatchingFlashcardAnswer", b =>
                 {
                     b.Navigation("PairAnswers");
-                });
-
-            modelBuilder.Entity("backend.Domain.Entities.KeywordExtractionMediaProcessingJob", b =>
-                {
-                    b.Navigation("ExtractedKeywords");
                 });
 
             modelBuilder.Entity("backend.Domain.Entities.TranscriptionMediaProcessingJob", b =>

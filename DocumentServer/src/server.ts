@@ -36,6 +36,21 @@ app.post(
 );
 
 app.post(
+  "/details",
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      if (!req.file) return res.status(400).send("No file uploaded");
+      const details = await officeService.getDocumentDetailsWithPdfjs(req.file.path);
+      res.json(details);
+    } catch (error) {
+      console.error("Get details error:", error);
+      res.status(500).send("Failed to get document details");
+    }
+  }
+);
+
+app.post(
   "/thumbnail",
   upload.single("file"),
   requestWithValidation(

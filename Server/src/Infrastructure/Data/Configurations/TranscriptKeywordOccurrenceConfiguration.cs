@@ -9,6 +9,7 @@ internal class KeywordOccurrenceConfiguration : IEntityTypeConfiguration<Transcr
 {
     public void Configure(EntityTypeBuilder<TranscriptKeywordOccurrence> builder)
     {
-        builder.HasOne(ltko => ltko.TranscriptKeyword).WithMany(ltk => ltk.Occurrences).HasForeignKey(ltko => ltko.TranscriptKeywordId);
+        builder.HasOne(ltko => ltko.Keyword).WithMany(ltk => ltk.TranscriptOccurrences).HasForeignKey(ltko => ltko.KeywordId);
+        builder.HasOne(ltko => ltko.Transcript).WithMany(t => t.Keywords).HasForeignKey(ltko => ltko.TranscriptId);
     }
 }

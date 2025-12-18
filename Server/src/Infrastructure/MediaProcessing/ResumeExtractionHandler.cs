@@ -11,12 +11,12 @@ public class ResumeExtractionHandler : MediaJobHandlerBase<ResumeExtractionMedia
 {
     public MediaJobType Type => MediaJobType.ResumeExtraction;
     private readonly ISemanticService _semanticService;
-    public ResumeExtractionHandler(ApplicationDbContext db, ISemanticService semanticService) : base(db)
+    public ResumeExtractionHandler(ISemanticService semanticService)
     {
         _semanticService = semanticService;
     }
 
-    public async override Task HandleAsync(ResumeExtractionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
+    public async override Task HandleAsync(ResumeExtractionMediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource, CancellationToken token)
     {
         var prompt = new ChatHistory();
         prompt.AddUserMessage("Generate a summary and return JSON in the given schema from the following text, using the same language as the source text:\n\n" + job.SourceText);

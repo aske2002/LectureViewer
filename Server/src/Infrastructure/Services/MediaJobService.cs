@@ -29,7 +29,7 @@ public class MediaJobService : IMediaJobService
         await _db.SaveChangesAsync(token);
     }
 
-    public async Task<(MediaProcessingJob job, MediaProcessingJobAttempt attempt)?> TryAcquireNextPendingJobAsync(CancellationToken token = default)
+    public async Task<(MediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource)?> TryAcquireNextPendingJobAsync(CancellationToken token = default)
     {
         var job = await _db.MediaProcessingJobs
             .Where(j =>
@@ -44,12 +44,30 @@ public class MediaJobService : IMediaJobService
             .OrderBy(j => j.Created)
             .FirstOrDefaultAsync(token);
 
+        Resource? resource = null;
+
         if (job is null)
             return null;
 
         if (job is IHasInputResource parentJobWithInput)
         {
             await _db.Entry(parentJobWithInput).Reference(r => r.InputResource).LoadAsync(token);
+            if (parentJobWithInput.InputResource is not null)
+            {
+                resource = parentJobWithInput.InputResource;
+            }
+            else if (parentJobWithInput.InputMimeType is not null)
+            {
+                resource = await job.GetMatchingResource(_db, r =>
+                {
+                    var mimeType = MimeTypeHelpers.FromMimeType(r.MimeType);
+                    if (mimeType == null)
+                    {
+                        return false;
+                    }
+                    return parentJobWithInput.InputMimeType.Value.HasFlag(mimeType);
+                }, token);
+            }
         }
 
         if (job is IHasOutputResource parentJobWithOutput)
@@ -77,7 +95,7 @@ public class MediaJobService : IMediaJobService
         job.StartedAt = job.StartedAt ?? DateTimeOffset.UtcNow;
         await _db.SaveChangesAsync(token);
         _logger.LogInformation("Acquired job {JobId} for processing.", job.Id);
-        return (job, attempt);
+        return (job, attempt, resource);
     }
     public async Task MarkAttemptCompleted(MediaProcessingJobAttemptId jobId, CancellationToken token = default)
     {

@@ -10,13 +10,16 @@ public class ResumeExtractedEventHandler : INotificationHandler<JobSuccessEvent<
 {
     private readonly ILogger<ResumeExtractedEventHandler> _logger;
     private readonly IApplicationDbContext _dbContext;
+    private readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
     public ResumeExtractedEventHandler(
         ILogger<ResumeExtractedEventHandler> logger,
-        IApplicationDbContext dbContext)
+        IApplicationDbContext dbContext,
+        IBackgroundTaskQueue backgroundTaskQueue)
     {
         _logger = logger;
         _dbContext = dbContext;
+        _backgroundTaskQueue = backgroundTaskQueue;
     }
 
     public async Task Handle(JobSuccessEvent<ResumeExtractionMediaProcessingJob> notification, CancellationToken cancellationToken)
@@ -41,5 +44,17 @@ public class ResumeExtractedEventHandler : INotificationHandler<JobSuccessEvent<
 
         _dbContext.Transcripts.Update(transcript);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        _backgroundTaskQueue.QueueBackgroundWorkItem(async (sp, token) =>
+        {
+            var mediaJobService = sp.GetRequiredService<IMediaJobService>();
+
+            await mediaJobService.CreateJob(new KeywordExtractionMediaProcessingJob()
+            {
+                ParentJobId = notification.Job.Id,
+                SourceText = transcript.TranscriptText,
+                Context = transcript.Summary
+            }, cancellationToken);
+        });
     }
 }

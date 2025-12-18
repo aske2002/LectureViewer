@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using backend.Domain.Identifiers;
 
 namespace backend.Domain.Entities;
@@ -10,7 +9,7 @@ public class Transcript : BaseAuditableEntity<TranscriptId>
     public required MediaProcessingJobId JobId { get; set; }
     public required TranscriptionMediaProcessingJob Job { get; set; }
     public IList<TranscriptItem> Items { get; set; } = new List<TranscriptItem>();
-    public IList<TranscriptKeyword> Keywords { get; set; } = new List<TranscriptKeyword>();
+    public IList<TranscriptKeywordOccurrence> Keywords { get; set; } = new List<TranscriptKeywordOccurrence>();
     public string? Summary { get; set; }
     public required string Language { get; set; }
     public required string TranscriptText { get; set; }

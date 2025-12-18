@@ -12,14 +12,13 @@ public class LectureProcessingJobHandler : MediaJobHandlerBase<LectureProcessing
     private readonly ApplicationDbContext _db;
     private readonly IMediaJobService _mediaJobService;
 
-    public LectureProcessingJobHandler(ApplicationDbContext db, IMediaJobService mediaJobService) : base(db)
+    public LectureProcessingJobHandler(ApplicationDbContext db, IMediaJobService mediaJobService) 
     {
         _db = db;
         _mediaJobService = mediaJobService;
-        _mediaJobService = mediaJobService;
     }
 
-    public async override Task HandleAsync(LectureProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
+    public async override Task HandleAsync(LectureProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource, CancellationToken token)
     {
         await _db.LectureProcessingJobs.Entry(job).Reference(j => j.LectureContent).LoadAsync(token);
         await _db.LectureContents.Entry(job.LectureContent).Reference(lc => lc.Resource).LoadAsync(token);
@@ -48,8 +47,15 @@ public class LectureProcessingJobHandler : MediaJobHandlerBase<LectureProcessing
                 JobType = MediaJobType.ThumbnailExtraction
             };
 
+            var infoJob = new DocumentInfoExtractionJob
+            {
+                ParentJob = officeConversionJob,
+                JobType = MediaJobType.DocumentInfoExtraction,
+            };
+
             await _mediaJobService.CreateJob(officeConversionJob, token);
             await _mediaJobService.CreateJob(thumbnailJob, token);
+            await _mediaJobService.CreateJob(infoJob, token);
         }
         else if (MimeTypeHelpers.IsVideoMimeType(resource.MimeType) ||
                  MimeTypeHelpers.IsAudioMimeType(resource.MimeType))

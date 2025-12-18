@@ -11,18 +11,20 @@ public class TranscodingJobHandler : MediaJobHandlerBase<MediaTranscodingMediaPr
     public MediaJobType Type => MediaJobType.MediaTranscoding;
     private readonly IResourceService _resourceService;
     private readonly IMediaService _mediaService;
-    public TranscodingJobHandler(ApplicationDbContext db, IResourceService resourceService, IMediaService mediaService) : base(db)
+    private readonly ApplicationDbContext _db;
+
+    public TranscodingJobHandler(ApplicationDbContext db, IResourceService resourceService, IMediaService mediaService)
     {
         _resourceService = resourceService;
         _mediaService = mediaService;
+        _db = db;
     }
 
-    public async override Task HandleAsync(MediaTranscodingMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
+    public async override Task HandleAsync(MediaTranscodingMediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource, CancellationToken token)
     {
-        var resource = await FirstResourceOrDefaultAsync(job, (r) => MimeTypeHelpers.IsAudioMimeType(r.MimeType) ||
+        var resource = await job.GetMatchingResource(_db, (r) => MimeTypeHelpers.IsAudioMimeType(r.MimeType) ||
                                                                      MimeTypeHelpers.IsImageMimeType(r.MimeType) ||
                                                                      MimeTypeHelpers.IsVideoMimeType(r.MimeType), token);
-
         if (resource == null)
         {
             throw new Exception("Input resource not found.");

@@ -27,6 +27,7 @@ public interface IHasInputResource
 {
     ResourceId? InputResourceId { get; set; }
     Resource? InputResource { get; set; }
+    public MimeTypeHelpers.MimeTypes? InputMimeType { get; }
 }
 
 public abstract class MediaProcessingJob : BaseAuditableEntity<MediaProcessingJobId>, IMediaProcessingJob
@@ -40,7 +41,7 @@ public abstract class MediaProcessingJob : BaseAuditableEntity<MediaProcessingJo
     public MediaJobType JobType { get; set; }
     public int MaxRetries { get; set; } = 3;
     public string? ErrorMessage { get; set; }
-    public bool Failed{ get; set; } = false;
+    public bool Failed { get; set; } = false;
     public JobStatus Status => Attempts.Where(a => a.Status == JobStatus.InProgress).Any()
         ? JobStatus.InProgress
         : Attempts.Where(a => a.Status == JobStatus.Failed).Count() >= MaxRetries
@@ -66,7 +67,8 @@ public class ResumeExtractionMediaProcessingJob : MediaProcessingJob
 public class KeywordExtractionMediaProcessingJob : MediaProcessingJob
 {
     public required string SourceText { get; set; }
-    public IList<TranscriptKeyword> ExtractedKeywords { get; set; } = new List<TranscriptKeyword>();
+    public string? Context { get; set; } = null;
+    public IList<Keyword> ExtractedKeywords { get; set; } = new List<Keyword>();
 }
 
 public class CategoryClassificationMediaProcessingJob : MediaProcessingJob
@@ -84,7 +86,7 @@ public class FlashcardGenerationMediaProcessingJob : MediaProcessingJob
 
 }
 
-public class ThumbnailExtractionMediaProcessingJob : MediaProcessingJob,IHasOutputResource, IHasInputResource
+public class ThumbnailExtractionMediaProcessingJob : MediaProcessingJob, IHasOutputResource, IHasInputResource
 {
     public int? Width { get; set; }
     public int? Height { get; set; }
@@ -92,6 +94,8 @@ public class ThumbnailExtractionMediaProcessingJob : MediaProcessingJob,IHasOutp
     public Resource? InputResource { get; set; }
     public ResourceId? OutputResourceId { get; set; }
     public Resource? OutputResource { get; set; }
+
+    public MimeTypeHelpers.MimeTypes? InputMimeType => MimeTypeHelpers.ImageMimeTypes;
 }
 
 public class MediaTranscodingMediaProcessingJob : MediaProcessingJob, IHasOutputResource, IHasInputResource
@@ -104,6 +108,8 @@ public class MediaTranscodingMediaProcessingJob : MediaProcessingJob, IHasOutput
     public int? TargetWidth { get; set; }
     public int? TargetHeight { get; set; }
     public int? TargetBitrateKbps { get; set; }
+
+    public MimeTypeHelpers.MimeTypes? InputMimeType => MimeTypeHelpers.AudioMimeTypes | MimeTypeHelpers.VideoMimeTypes;
 }
 
 public class OfficeConversionMediaProcessingJob : MediaProcessingJob, IHasOutputResource, IHasInputResource
@@ -113,4 +119,14 @@ public class OfficeConversionMediaProcessingJob : MediaProcessingJob, IHasOutput
     public ResourceId? OutputResourceId { get; set; }
     public Resource? OutputResource { get; set; }
     public required string TargetFormat { get; set; }
+    public MimeTypeHelpers.MimeTypes? InputMimeType => MimeTypeHelpers.DocumentMimeTypes;
+}
+
+public class DocumentInfoExtractionJob : MediaProcessingJob, IHasInputResource
+{
+    public DocumentId? DocumentId { get; set; }
+    public Document? Document { get; set; }
+    public MimeTypeHelpers.MimeTypes? InputMimeType => MimeTypeHelpers.MimeTypes.Pdf;
+    public ResourceId? InputResourceId { get; set; }
+    public Resource? InputResource { get; set; }
 }

@@ -24,7 +24,16 @@ internal class MediaProcessingJobConfiguration : IEntityTypeConfiguration<MediaP
             .HasValue<MediaTranscodingMediaProcessingJob>(MediaJobType.MediaTranscoding)
             .HasValue<KeywordExtractionMediaProcessingJob>(MediaJobType.KeywordExtraction)
             .HasValue<CategoryClassificationMediaProcessingJob>(MediaJobType.CategoryClassification)
-            .HasValue<ResumeExtractionMediaProcessingJob>(MediaJobType.ResumeExtraction);
+            .HasValue<ResumeExtractionMediaProcessingJob>(MediaJobType.ResumeExtraction)
+            .HasValue<DocumentInfoExtractionJob>(MediaJobType.DocumentInfoExtraction);
+    }
+}
+
+internal class KeywordExtractionMediaProcessingJobConfiguration : IEntityTypeConfiguration<KeywordExtractionMediaProcessingJob>
+{
+    public void Configure(EntityTypeBuilder<KeywordExtractionMediaProcessingJob> builder)
+    {
+        builder.HasMany(j => j.ExtractedKeywords).WithMany(k => k.SourceJobs);
     }
 }
 
@@ -42,6 +51,15 @@ internal class OfficeConversionMediaProcessingJobConfiguration : IEntityTypeConf
     {
         builder.HasOne(j => j.InputResource).WithMany().HasForeignKey(j => j.InputResourceId);
         builder.HasOne(j => j.OutputResource).WithMany().HasForeignKey(j => j.OutputResourceId);
+    }
+}
+
+internal class DocumentInfoExtractionJobConfiguration : IEntityTypeConfiguration<DocumentInfoExtractionJob>
+{
+    public void Configure(EntityTypeBuilder<DocumentInfoExtractionJob> builder)
+    {
+        builder.HasOne(j => j.InputResource).WithMany().HasForeignKey(j => j.InputResourceId);
+        builder.HasOne(j => j.Document).WithMany().HasForeignKey(j => j.DocumentId);
     }
 }
 internal class ThumbnailExtractionMediaProcessingJobConfiguration : IEntityTypeConfiguration<ThumbnailExtractionMediaProcessingJob>

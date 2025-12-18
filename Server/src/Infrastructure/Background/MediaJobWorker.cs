@@ -31,7 +31,7 @@ public class MediaJobWorker : BackgroundService
                 continue;
             }
 
-            var (job, attempt) = result.Value;
+            var (job, attempt, resource) = result.Value;
             var genericHandlerType = typeof(IMediaJobHandler<>).MakeGenericType(job.GetType());
             var handler = scope.ServiceProvider.GetService(genericHandlerType) as IMediaJobHandler;
 
@@ -44,7 +44,7 @@ public class MediaJobWorker : BackgroundService
             try
             {
                 _logger.LogInformation("Executing {JobType} job {JobId}", job.JobType, job.Id);
-                await handler.HandleAsync(job, attempt, stoppingToken);
+                await handler.HandleAsync(job, attempt, resource, stoppingToken);
 
                 await _jobService.MarkAttemptCompleted(attempt.Id, stoppingToken);
                 _logger.LogInformation("Completed {JobType} job {JobId}", job.JobType, job.Id);

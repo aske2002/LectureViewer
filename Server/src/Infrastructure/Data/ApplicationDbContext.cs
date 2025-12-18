@@ -33,15 +33,26 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<MediaProcessingJobAttempt> MediaProcessingJobAttempts => Set<MediaProcessingJobAttempt>();
     public DbSet<MediaProcessingJobLog> MediaProcessingJobLogs => Set<MediaProcessingJobLog>();
     public DbSet<ResumeExtractionMediaProcessingJob> ResumeExtractionMediaProcessingJobs => Set<ResumeExtractionMediaProcessingJob>();
+    public DbSet<DocumentInfoExtractionJob> DocumentInfoExtractionJobs => Set<DocumentInfoExtractionJob>();
 
     // Lecture related DbSets
     public DbSet<Lecture> Lectures => Set<Lecture>();
     public DbSet<LectureContent> LectureContents => Set<LectureContent>();
+
+    // Keyword related DbSets
+    public DbSet<Keyword> Keywords => Set<Keyword>();
+    public DbSet<DocumentKeyword> DocumentKeywords => Set<DocumentKeyword>();
+    public DbSet<TranscriptKeywordOccurrence> TranscriptKeywordOccurrences => Set<TranscriptKeywordOccurrence>();
+    public DbSet<CourseKeyword> CourseKeywords => Set<CourseKeyword>();
+
+    // Transcript related DbSets
     public DbSet<Transcript> Transcripts => Set<Transcript>();
-    public DbSet<TranscriptKeyword> TranscriptTimestamps => Set<TranscriptKeyword>();
-    public DbSet<TranscriptKeyword> TranscriptKeywords => Set<TranscriptKeyword>();
-    public DbSet<TranscriptKeywordOccurrence> TranscriptKeywordOccurrences => Set<TranscriptKeywordOccurrence>();  
-    
+    public DbSet<TranscriptItem> TranscriptItems => Set<TranscriptItem>();
+
+    // Document related DbSets
+    public DbSet<Document> Documents => Set<Document>();
+    public DbSet<DocumentPage> DocumentPages => Set<DocumentPage>();
+
     // Flashcard related DbSets
     public DbSet<Flashcard> Flashcards => Set<Flashcard>();
     public DbSet<FlashcardChoice> FlashCardChoiceAnswers => Set<FlashcardChoice>();

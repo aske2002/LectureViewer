@@ -10,6 +10,8 @@ public class LectureContent : BaseAuditableEntity<LectureContentId>
     public LectureProcessingJob? Job { get; init; }
     public TranscriptId? TranscriptId { get; set; }
     public Transcript? Transcript { get; set; }
+    public DocumentId? DocumentId { get; set; }
+    public Document? Document { get; set; }
     public required bool IsMainContent { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }

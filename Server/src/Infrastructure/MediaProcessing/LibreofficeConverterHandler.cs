@@ -18,17 +18,17 @@ public class LibreOfficeConverterHandler : MediaJobHandlerBase<OfficeConversionM
 
 
     public LibreOfficeConverterHandler(ILogger<LibreOfficeConverterHandler> logger, IResourceService resourceService, ApplicationDbContext db,
-        IDocumentService documentService) : base(db)
+        IDocumentService documentService)
     {
         _documentService = documentService;
         _logger = logger;
         _resourceService = resourceService;
         _db = db;
     }
-    public async override Task HandleAsync(OfficeConversionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
+    public async override Task HandleAsync(OfficeConversionMediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource, CancellationToken token)
     {
 
-        var resource = await FirstResourceOrDefaultAsync(job, r => MimeTypeHelpers.IsDocumentMimeType(r.MimeType), token);
+        var resource = await job.GetMatchingResource(_db, r => MimeTypeHelpers.IsDocumentMimeType(r.MimeType), token);
 
 
         if (resource == null)

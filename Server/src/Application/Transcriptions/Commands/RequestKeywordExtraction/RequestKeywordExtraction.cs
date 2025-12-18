@@ -39,6 +39,7 @@ public class RequestKeywordExtractionCommandHandler : IRequestHandler<RequestKey
 
             await mediaJobService.CreateJob(new KeywordExtractionMediaProcessingJob()
             {
+                Context = transcript.Summary,
                 SourceText = string.Join("\n", transcript.Items.Select(i => i.Text)),
             }, cancellationToken);
         });

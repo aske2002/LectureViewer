@@ -10,6 +10,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Embeddings;
+using Microsoft.SemanticKernel.Text;
 using OllamaSharp;
 using OllamaSharp.Models;
 using OpenAI;
@@ -23,6 +24,11 @@ public interface ISemanticService
     Task<GeneratedEmbeddings<Embedding<float>>> GenerateFastEmbeddingsAsync(List<string> input, CancellationToken cancellationToken = default);
     Task<Embedding<float>> GenerateEmbeddingAsync(string input, CancellationToken cancellationToken = default);
     Task<Embedding<float>> GenerateFastEmbeddingAsync(string input, CancellationToken cancellationToken = default);
+    Task<Embedding<float>> GenerateLongTextEmbeddingAsync(
+       string text,
+       int maxTokens = 5000,
+       CancellationToken cancellationToken = default);
+    Task<List<T>> GetLongTextCompletionAsync<T>(ChatHistory history, string text, Func<string, string> chunkFormatter, int maxTokens = 5000, CancellationToken cancellationToken = default);
 }
 
 public class SemanticService : ISemanticService
@@ -81,6 +87,91 @@ public class SemanticService : ISemanticService
 
         _modelChecked = true;
     }
+
+    private List<string> ChunkText(string text, int maxTokens)
+    {
+        var chunks = new List<string>();
+        int currentIndex = 0;
+        var words = text.Split(' ');
+
+        while (currentIndex < words.Length)
+        {
+            int tokenCount = 0;
+            int startIndex = currentIndex;
+
+            while (currentIndex < words.Length && tokenCount + words[currentIndex].Length <= maxTokens)
+            {
+                tokenCount += words[currentIndex].Length + 1; // +1 for space
+                currentIndex++;
+            }
+
+            var chunk = string.Join(' ', words[startIndex..currentIndex]);
+            chunks.Add(chunk);
+        }
+
+        return chunks;
+    }
+
+    public async Task<List<T>> GetLongTextCompletionAsync<T>(ChatHistory history, string text, Func<string, string> chunkFormatter, int maxTokens = 5000, CancellationToken cancellationToken = default)
+    {
+        var chunks = ChunkText(text, maxTokens);
+        var tasks = chunks.Select(async chunk =>
+        {
+            var clonedHistory = new ChatHistory(history.ToList());
+            clonedHistory.AddUserMessage(chunkFormatter(chunk));
+            return await GetChatCompletionAsync<T>(clonedHistory, cancellationToken);
+        });
+
+        var results = await Task.WhenAll(tasks);
+        return results.ToList();
+    }
+
+    public async Task<Embedding<float>> GenerateLongTextEmbeddingAsync(
+        string text,
+        int maxTokens = 5000,
+        CancellationToken cancellationToken = default)
+    {
+        var chunks = ChunkText(text, maxTokens);
+        // 2) Generate embeddings for all chunks in one call
+        var chunkEmbeddings = new List<Embedding<float>>();
+
+        foreach (var chunk in chunks)
+        {
+            var embedding = await GenerateEmbeddingAsync(chunk, cancellationToken);
+            chunkEmbeddings.Add(embedding);
+        }
+
+        // 3) Combine embeddings into a single vector (length-weighted average)
+        int dim = chunkEmbeddings[0].Vector.Length;
+        var combined = new float[dim];
+        float totalWeight = 0f;
+
+        for (int i = 0; i < chunkEmbeddings.Count; i++)
+        {
+            var span = chunkEmbeddings[i].Vector.Span;
+
+            // Use chunk length as a simple weight (you can plug in token count if you have it)
+            float weight = chunks[i].Length;
+            totalWeight += weight;
+
+            for (int d = 0; d < dim; d++)
+            {
+                combined[d] += span[d] * weight;
+            }
+        }
+
+        if (totalWeight > 0)
+        {
+            for (int d = 0; d < dim; d++)
+            {
+                combined[d] /= totalWeight;
+            }
+        }
+
+        return new Embedding<float>(combined);
+    }
+
+
 
     public async Task<Embedding<float>> GenerateFastEmbeddingAsync(string input, CancellationToken cancellationToken = default)
     {

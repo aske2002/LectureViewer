@@ -15,7 +15,7 @@ public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaPro
     private readonly ApplicationDbContext _db;
     private readonly ISemanticService _semanticService;
     private readonly ILogger<TranscriptionJobHandler> _logger;
-    public TranscriptionJobHandler(ApplicationDbContext db, ITranscriptionService transcriptionService, ISemanticService semanticService, ILogger<TranscriptionJobHandler> logger) : base(db)
+    public TranscriptionJobHandler(ApplicationDbContext db, ITranscriptionService transcriptionService, ISemanticService semanticService, ILogger<TranscriptionJobHandler> logger)
     {
         _transcriptionService = transcriptionService;
         _db = db;
@@ -23,7 +23,7 @@ public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaPro
         _logger = logger;
     }
 
-    private async Task<TranscriptionResponse> CorrectTranscriptionAsync(TranscriptionResponse transcript, CancellationToken token)
+    private async Task<TranscriptionResponse> CorrectTranscriptionAsync(TranscriptionResponse transcript, string language, CancellationToken token)
     {
         List<TranscriptionResponseItem> correctedItems = new List<TranscriptionResponseItem>();
         var chunks = transcript.Items.Chunk(50);
@@ -32,8 +32,8 @@ public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaPro
         {
             var correctionPrompt = new ChatHistory();
             var chunkItems = string.Join("\n", chunk.Select((i, index) => $"{index}: {i.Text}").ToList());
-            correctionPrompt.AddSystemMessage("You are a professional corrector. Correct grammar issues and missing/misused words in the following transcription items, using the same language as the source text, and return JSON in the given schema. Each item is formatted as 'index: text', in the response these need to match for EVERY item.");
-            correctionPrompt.AddUserMessage(chunkItems);
+            correctionPrompt.AddSystemMessage($"You are a professional corrector. Correct grammar issues and missing/misused words in the following transcription items, and return JSON in the given schema. Each item is formatted as 'index: text', in the response these need to match for EVERY item. RESPONSE HAS TO BE IN LANGUAGE: {language}");
+            correctionPrompt.AddUserMessage($"Items:\n{chunkItems}");
             var correctionResponse = await _semanticService.GetChatCompletionAsync<List<CorrectedTranscriptionItemResponse>>(correctionPrompt, token);
             foreach (var correctedItem in correctionResponse)
             {
@@ -53,14 +53,14 @@ public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaPro
             }
             _logger.LogInformation("Corrected {Count} of {Total} transcription items in current chunk.", correctedItems.Count, transcript.Items.Count());
         }
-        
+
         transcript.Items = correctedItems;
         return transcript;
     }
 
-    public async override Task HandleAsync(TranscriptionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
+    public async override Task HandleAsync(TranscriptionMediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource, CancellationToken token)
     {
-        var resource = await FirstResourceOrDefaultAsync(job, (r) => MimeTypeHelpers.IsAudioMimeType(r.MimeType) || MimeTypeHelpers.IsVideoMimeType(r.MimeType), token);
+        var resource = await job.GetMatchingResource(_db, (r) => MimeTypeHelpers.IsAudioMimeType(r.MimeType) || MimeTypeHelpers.IsVideoMimeType(r.MimeType), token);
 
         if (resource == null)
         {
@@ -68,7 +68,7 @@ public class TranscriptionJobHandler : MediaJobHandlerBase<TranscriptionMediaPro
         }
 
         var transcriptionResponse = await _transcriptionService.TranscribeAsync(resource, token);
-        var correctedTranscription = await CorrectTranscriptionAsync(transcriptionResponse, token);
+        var correctedTranscription = await CorrectTranscriptionAsync(transcriptionResponse, transcriptionResponse.Language, token);
 
         var transcript = new Transcript
         {

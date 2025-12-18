@@ -30,6 +30,27 @@ public static class JobExtensions
 
         return jobs;
     }
+
+    public static async Task<Resource?> GetMatchingResource(this MediaProcessingJob job, IApplicationDbContext dbContext, Func<Resource, bool> predicate, CancellationToken token = default)
+    {
+        if (job is IHasInputResource jobWithInput && jobWithInput.InputResource != null)
+        {
+            if (predicate(jobWithInput.InputResource))
+            {
+                return jobWithInput.InputResource;
+            }
+        }
+
+        var allPreviousJobs = await job.GetAllParents(dbContext, token);
+
+        return allPreviousJobs.OfType<IHasOutputResource>()
+            .Select(pj => pj.OutputResource)
+            .Where(r => r != null)
+            .Cast<Resource>()
+            .OrderByDescending(r => r.Created)
+            .ToList().FirstOrDefault(predicate);
+    }
+
     public static async Task<T?> GetJobOfType<T>(this MediaProcessingJob job, IApplicationDbContext dbContext, CancellationToken token = default) where T : MediaProcessingJob
     {
         var jobs = await job.GetAllParents(dbContext, token);

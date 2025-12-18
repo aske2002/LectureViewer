@@ -12,16 +12,19 @@ public class ThumnailExtractionHandler : MediaJobHandlerBase<ThumbnailExtraction
     private readonly IResourceService _resourceService;
     private readonly IMediaService _mediaService;
     private readonly IDocumentService _documentService;
-    public ThumnailExtractionHandler(ApplicationDbContext db, IResourceService resourceService, IMediaService mediaService, IDocumentService documentService) : base(db)
+    private readonly ApplicationDbContext _db;
+
+    public ThumnailExtractionHandler(ApplicationDbContext db, IResourceService resourceService, IMediaService mediaService, IDocumentService documentService)
     {
         _resourceService = resourceService;
         _mediaService = mediaService;
+        _db = db;
         _documentService = documentService;
     }
 
-    public async override Task HandleAsync(ThumbnailExtractionMediaProcessingJob job, MediaProcessingJobAttempt attempt, CancellationToken token)
+    public async override Task HandleAsync(ThumbnailExtractionMediaProcessingJob job, MediaProcessingJobAttempt attempt, Resource? inputResource, CancellationToken token)
     {
-        var resource = await FirstResourceOrDefaultAsync(job, (r) => MimeTypeHelpers.IsVideoMimeType(r.MimeType) ||
+        var resource = await job.GetMatchingResource(_db, (r) => MimeTypeHelpers.IsVideoMimeType(r.MimeType) ||
                                                                     MimeTypeHelpers.IsAudioMimeType(r.MimeType) ||
                                                                     MimeTypeHelpers.IsDocumentMimeType(r.MimeType), token);
         if (resource == null)

@@ -124,6 +124,7 @@ public static class DependencyInjection
         builder.Services.AddTransient<IResourceService, ResourceService>();
         builder.Services.AddTransient<ICourseService, CourseService>();
         builder.Services.AddTransient<ISemanticService, SemanticService>();
+        builder.Services.AddTransient<IKeywordService, KeywordService>();
 
         // Database setup
         var connectionString = builder.Configuration.GetConnectionString("BackendDB");

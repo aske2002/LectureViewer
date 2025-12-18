@@ -38,12 +38,6 @@ public class TranscriptionCompletedEventHandler : INotificationHandler<JobSucces
                 TargetLineLength = 20,
                 SourceText = transcript.TranscriptText,
             }, cancellationToken);
-
-            await mediaJobService.CreateJob(new KeywordExtractionMediaProcessingJob()
-            {
-                ParentJobId = notification.Job.Id,
-                SourceText = transcript.TranscriptText,
-            }, cancellationToken);
         });
 
         return Task.CompletedTask;
